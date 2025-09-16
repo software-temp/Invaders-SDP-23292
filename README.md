@@ -12,12 +12,6 @@ Please list your team name and members in the table below. In addition, submit y
 - In the 'Members' column, each team member should link to their GitHub profile.
 - In the 'Requirements' column, link to your team's requirements document. (e.g. `requirements/instruct.md`)
 
-<<<<<<< HEAD
-| No. | Name                                | Members                                                                                                                                                                              | Requirements      |
-|-----|-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|                              |                                                                                                                                                                                      |                   |
-=======
-
-=======
 | No. | Name                                                                        | Members                                                                                                                                                                                                                                                                                                                           | Requirements                                |
 |-----|-----------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------|
 | 0   | [Instructors](https://github.com/PurpleBananass/PurpleBananass)             | [Scott Uk-Jin Lee](https://github.com/scottukjinlee/scottukjinlee), [Seungho Kim](https://github.com/oh-gnues/oh-gnues), [Joonwoo Lee](https://github.com/PurpleBananass/PurpleBananass)                                                                                                                                          | [Instruct students](teams/instruct.md)      |
