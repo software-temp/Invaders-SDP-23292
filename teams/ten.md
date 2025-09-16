@@ -4,6 +4,7 @@ Hello, we are team 'C# Only'. Our team consists of the following members:
 Member
 
 | Name                                           | Email                    | Github Address                     |
+|--------------------------------------------------|-------------------------|------------------------------------|
 | 진가강                                          | chenjiakang73@gmail.com   | https://github.com/chenjiakang1    |
 | 이수현                                          | xli76218628@gmail.com     | https://github.com/ninemorning     |
 | 정가위                                          | 2023089716@hanyang.ac.kr  | https://github.com/weiwei20040619-web  |
