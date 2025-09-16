@@ -14,7 +14,7 @@ Please list your team name and members in the table below. In addition, submit y
 
 | No. | Name                                | Members                                                                                                                                                                              | Requirements      |
 |-----|-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
-| 0   | [KWAK](https://github.com/jpltask/Invaders-SDP-23292.git) | [Kwak Gyeonggyu](https://github.com/scottukjinlee/scottukjinlee), [Lee Jupil](https://github.com/oh-gnues/oh-gnues), [Kim Minjun](https://github.com/PurpleBananass/PurpleBananass), [Choi Hunseok](), [Kim Minsub](), [Lee Jaehoo](), [Park Gisu]() | [Instruct students](teams/instruct.md) |
+| 0   | [KWAK](https://github.com/jpltask/Invaders-SDP-23292.git) | [Kwak Gyeonggyu](https://github.com/KINer0515), [Lee Jupil](https://github.com/jpltask), [Kim Minjun](https://github.com/popcorn77), [Choi Hunseok](https://github.com/saiam12), [Kim Minsub](https://github.com/GarlicCook), [Lee Jaehoo](https://github.com/msssggg3-14), [Park Gisu](https://github.com/parkgisu) | [Instruct students](teams/instruct.md) |
 |     |                                     |                                                                                                                                                                                      |                   |
 
 
