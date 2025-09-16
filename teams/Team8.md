@@ -6,7 +6,12 @@ Hello everyone, we are team 8 in charge of the gameplay HUD. Our Goal is to make
 
 ## Team members
 
-Antoine Mao, Elena Denaix, Jack O’Sullivan, Man Gwan Cahill Wan, Yacine Ramdane, Willys
+- Team Leader: Antoine Mao
+- Developer 1: Jack O’Sullivan
+- Developer 2 : Man Gwan Cahill Wan
+- Developer 3: Elena Denaix
+- Developer 4: Yacine Ramdane
+- Developer 5: Willys Martias
 
 ## Team requirements
 To implement the overall gameplay HUD for the space invaders game.
