@@ -10,7 +10,7 @@ Member
 | [E.Khongor]()                                    | Hongorhongor3@gmail.com |                                              |
 | [LEE SANGHYEON]()                                | hyeoni000401@gmail.com  |      https://github.com/rudwnl               |
 | [Lee Seong min]()                                | aydd4488@gmail.com      |  https://github.com/lookback03/lookback03     |
-| [CHO GUNHA]()                                    | jojo88092@gmail.com |                                                  |
+| [CHO GUNHA]()                                    | jojo88092@gmail.com     |  https://github.com/GUNHA96                  |
 | [Lee SeokMin]()                                  | seokmin04@hanyang.ac.kr |                                              |
 | [Amartsogt Tsogtbaatar]()                        | amartsogttsogtbaatar@gmail.com |                                       |
 
