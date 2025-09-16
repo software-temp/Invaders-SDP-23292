@@ -24,7 +24,7 @@ Our mission is to make the gameplay more engaging by introducing in-game currenc
 
 
 
-##Team Requirements
+## Team Requirements
 
 
 
@@ -38,7 +38,7 @@ Our team is responsible for:
 
 
 
-##Detailed Requirements
+## Detailed Requirements
 
 
 
