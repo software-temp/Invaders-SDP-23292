@@ -7,7 +7,7 @@ Member
 | Name                                             | Email                   | Github Address                               |
 |--------------------------------------------------|-------------------------|----------------------------------------------|
 | [Kisan Nam](https://github.com/soumt-r) (Leader) | soumt@hanyang.ac.kr     |                                              |
-| [E.Khongor]()                                    | Hongorhongor3@gmail.com |                                              |
+| [E.Khongor]()                                    | Hongorhongor3@gmail.com | https://github.com/spicytortillabn                                              |
 | [LEE SANGHYEON]()                                | hyeoni000401@gmail.com  |      https://github.com/rudwnl               |
 | [Lee Seong min](https://github.com/lookback03/lookback03)   | aydd4488@gmail.com      |  https://github.com/lookback03    |
 | [CHO GUNHA]()                                    | jojo88092@gmail.com     |  https://github.com/GUNHA96                  |
