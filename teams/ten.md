@@ -1,6 +1,6 @@
 # TEAM 'TEN'
 ## TEAM Introduction
-Hello, we are team 'C# Only'. Our team consists of the following members:
+Hello, we are team 'TEN'. Our team consists of the following members:
 Member
 
 | Name                                           | Email                    | Github Address                     |
