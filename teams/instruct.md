@@ -1,11 +1,16 @@
-# Instructors
+# Team KWAK
 ## Team Introduction
-Hello
-- Lecturer
-    - `Scott Uk-Jin Lee`
-- Teaching Assistants
-    - `Joonwoo Lee`
-    - `Seungho Kim`
+
+- Team Leader
+    - `Kwak Gyeonggyu`
+- Git Manager 
+    - `Lee Jupil`
+- Team member
+    - `Kim Minjun`
+    - `Choi Hunseok`
+    - `Kim Minsub`
+    - `Lee Jaehoo`
+    - `Park Gisu`
 ## Team Requirements
 ### - Item System
 ## Detailed Requirements
