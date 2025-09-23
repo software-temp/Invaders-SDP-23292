@@ -1,4 +1,4 @@
-# Space Invaders
+[Visual effects system.md.txt](https://github.com/user-attachments/files/22483540/Visual.effects.system.md.txt)[Visual effects system.md.txt](https://github.com/user-attachments/files/22483539/Visual.effects.system.md.txt)# Space Invaders
 
 > Course: Software Development Practices (CES2024) - 25-2-23292
 
@@ -24,7 +24,15 @@ Please list your team name and members in the table below. In addition, submit y
 | 7   | [Team8](https://github.com/Anetlow/Team-8)      | [Jack O'Sullivan](https://github.com/C23322693), [Man Gwan Cahill Wan](https://github.com/Watergun4), [Elena Denaix](https://github.com/Lna21), [Yacine Ramdane](https://github.com/Yacine0808), [Willys Martias](https://github.com/Willys94), [Antoine Mao](https://github.com/Anetlow) | [Gameplay HUD](teams/Team8.md)       |
 | 8   | [KWAK](https://github.com/jpltask/Invaders-SDP-23292.git) | [Kwak Gyeonggyu](https://github.com/KINer0515), [Lee Jupil](https://github.com/jpltask), [Kim Minjun](https://github.com/popcorn77), [Choi Hunseok](https://github.com/saiam12), [Kim Minsub](https://github.com/GarlicCook), [Lee Jaehoo](https://github.com/msssggg3-14), [Park Gisu](https://github.com/parkgisu) | [Item System](teams/KWAK.md) |
 | 9   | [ten](https://github.com/jpltask/Invaders-SDP-23292.git) | [진가강](https://github.com/chenjiakang1), [이수현]( https://github.com/ninemorning), [정가위](https://github.com/weiwei20040619-web), [사지곤](https://github.com/SHUAIZHIJUN), [류자오닝](https://github.com/962464thdl), [묘홍빈](https://github.com/mikey813),[서낙범](https://github.com/xlf06) | [Two-player Mode](teams/ten.md)       |
-| 10  | [IET.md](https://github.com/user-attachments/files/22483266/IET.md)
+| 10  | [IET.md](https://github.com/user-attachments/files/22483266/IET.md)[LU WENCHAO.md](https://github.com/user-attachments/files/22483459/LU.WENCHAO.md)[QIN XIAOXIANG.md](https://github.com/user-attachments/files/22483499/QIN.XIAOXIANG.md)[WANG JUNBO.md](https://github.com/user-attachments/files/22483500/WANG.JUNBO.md)[DENG TAO.md](https://github.com/user-attachments/files/22483503/DENG.TAO.md)[ZHU ZHIHAO.md](https://github.com/user-attachments/files/22483508/ZHU.ZHIHAO.md)[BI SHAOYU.md](https://github.com/user-attachments/files/22483525/BI.SHAOYU.md)[LIN SHENGHUI.md](https://github.com/user-attachments/files/22483527/LIN.SHENGHUI.md)
+[Visual effects system.md](https://github.com/user-attachments/files/22483541/Visual.effects.system.md)
+
+
+
+
+
+
+
 
 
 ## Screenshots
