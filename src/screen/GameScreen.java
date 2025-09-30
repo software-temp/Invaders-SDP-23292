@@ -166,7 +166,7 @@ public class GameScreen extends Screen {
                 boolean isUpBorder = this.ship.getPositionY()
                         - this.ship.getSpeed() < SEPARATION_LINE_HEIGHT;
                 boolean isDownBorder = this.ship.getPositionY()
-                        + this.ship.getHeight() > this.height - 1;
+                        + this.ship.getHeight() + this.ship.getSpeed() > this.height - 1;
 
 				if (moveRight && !isRightBorder) {
 					this.ship.moveRight();
