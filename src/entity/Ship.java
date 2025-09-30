@@ -59,7 +59,16 @@ public class Ship extends Entity {
 		this.positionX -= SPEED;
 	}
 
-	/**
+    public final void moveUp() {
+        this.positionY -= SPEED;
+    }
+
+
+    public final void moveDown() {
+        this.positionY += SPEED;
+    }
+
+    /**
 	 * Shoots a bullet upwards.
 	 * 
 	 * @param bullets
