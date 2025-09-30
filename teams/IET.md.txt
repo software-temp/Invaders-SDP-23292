@@ -12,7 +12,8 @@ Hello
 ⦁	BI SHAOYU
 ⦁	LIN SHENGHUI
 Team Requirements
-⦁	Our team needs to develop a visual effects system.
+⦁Visval effects system:	Our team needs to develop a visual effects system.
 Detailed Requirements
 -1. May be bound to background music
+
 2. Some visual effects and HUDs are displayed, while the other three will be gradually refined during compilation.
