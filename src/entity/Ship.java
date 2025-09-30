@@ -67,7 +67,6 @@ public class Ship extends Entity {
     public final void moveDown() {
         this.positionY += SPEED;
     }
-
     /**
 	 * Shoots a bullet upwards.
 	 * 

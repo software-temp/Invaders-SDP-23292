@@ -181,7 +181,7 @@ public class GameScreen extends Screen {
                     this.ship.moveDown();
                 }
 
-                if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
+				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
 					if (this.ship.shoot(this.bullets))
 						this.bulletsShot++;
 			}
