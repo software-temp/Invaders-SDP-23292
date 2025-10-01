@@ -59,6 +59,22 @@ public class Ship extends Entity {
 		this.positionX -= SPEED;
 	}
 
+    /**
+     * Moves the ship speed units Up, or until the SEPARATION_LINE_HEIGHT border is
+     * reached.
+     */
+    public final void moveUp() {
+        this.positionY -= SPEED;
+    }
+
+    /**
+     * Moves the ship speed units Down, or until the down screen border is
+     * reached.
+     */
+    public final void moveDown() {
+        this.positionY += SPEED;
+    }
+
 	/**
 	 * Shoots a bullet upwards.
 	 * 
