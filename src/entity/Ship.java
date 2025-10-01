@@ -1,4 +1,5 @@
 package entity;
+import audio.Sound;
 
 import java.awt.Color;
 import java.util.Set;
@@ -71,6 +72,7 @@ public class Ship extends Entity {
 			this.shootingCooldown.reset();
 			bullets.add(BulletPool.getBullet(positionX + this.width / 2,
 					positionY, BULLET_SPEED));
+            Sound.play("sfx/laser.wav");
 			return true;
 		}
 		return false;
@@ -91,6 +93,7 @@ public class Ship extends Entity {
 	 */
 	public final void destroy() {
 		this.destructionCooldown.reset();
+        Sound.play("sfx/impact.wav");
 	}
 
 	/**
