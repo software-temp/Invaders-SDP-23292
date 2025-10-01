@@ -1,48 +1,51 @@
-# 워크플로우의 이름
-name: Java CI for Team Project
+# Name of the workflow
+name: Java CI for software-temp
 
-# 어떤 이벤트에서 이 워크플로우를 실행할지 정의
+# Controls when the workflow will run
 on:
-  # master 브랜치를 대상으로 하는 Pull Request가 열리거나 업데이트될 때 실행
+  # Triggers the workflow on pull request events but only for the master branch
   pull_request:
     branches: [ master ]
 
-# 실행될 작업(Job)들을 정의
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # build-and-test 라는 이름의 Job
+  # This workflow contains a single job called "build-and-test"
   build-and-test:
-    # 이 Job을 실행할 가상 머신(Runner)의 운영체제 지정 (Ubuntu 최신 버전)
+    # This condition is the key: The job only runs if the repository owner is 'software-temp'
+    if: github.repository_owner == 'software-temp'
+
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Job 안에서 순차적으로 실행될 단계(Step)들을 정의
+    # A sequence of tasks that will be executed as part of the job
     steps:
-      # 1. 레포지토리 코드 체크아웃
+      # 1. Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. JDK 20 설치
+      # 2. Sets up a JDK 20 environment
       - name: Set up JDK 20
         uses: actions/setup-java@v4
         with:
           java-version: '20'
           distribution: 'temurin'
 
-      # 3. 소스 코드 컴파일
+      # 3. Compiles the Java source code
       - name: Compile source code
         run: javac -d out/production $(find src -name "*.java")
 
-      # 4. 테스트 코드 컴파일
+      # 4. Compiles the Java test code
       - name: Compile test code
         run: |
           javac -d out/test \
           -cp "lib/*:out/production" \
           $(find test -name "*.java")
 
-      # 5. 리소스 파일 복사 (추가된 부분)
+      # 5. Copies resource files to the classpath to be found by the tests
       - name: Copy resources to classpath
         run: cp -r res/* out/production/
 
-      # 6. JUnit 테스트 실행
+      # 6. Runs the JUnit tests
       - name: Run JUnit tests
         run: |
           java -jar lib/junit-platform-console-standalone-1.10.2.jar \
