@@ -1,5 +1,11 @@
 package engine;
 
+// 필요한 클래스들을 import
+import java.util.logging.Logger;
+import engine.Core;
+import engine.DrawManager;
+import engine.Cooldown;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,7 +20,7 @@ class CoreTest {
     void testGetLogger_shouldReturnNonNull() {
         // Core.getLogger()가 null이 아닌 Logger 객체를 반환하는지 확인
         Logger logger = Core.getLogger();
-        assertNotNull(logger, "Logger 인스턴스는 null이 아니어야 합니다.");
+        assertNotNull(logger, "Logger 인턴스는 null이 아니어야 합니다.");
         System.out.println("Logger 인스턴스 테스트 통과!");
     }
 
