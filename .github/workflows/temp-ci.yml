@@ -25,23 +25,24 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '20'
-          distribution: 'temurin' # Eclipse Temurin 배포판 사용
+          distribution: 'temurin'
 
       # 3. 소스 코드 컴파일
-      # src 폴더의 모든 .java 파일을 out/production 폴더로 컴파일
       - name: Compile source code
         run: javac -d out/production $(find src -name "*.java")
 
       # 4. 테스트 코드 컴파일
-      # lib 폴더의 jar 파일과 컴파일된 소스 코드를 클래스패스에 추가하여 테스트 코드를 컴파일
       - name: Compile test code
         run: |
           javac -d out/test \
           -cp "lib/*:out/production" \
           $(find test -name "*.java")
 
-      # 5. JUnit 테스트 실행
-      # JUnit Platform Console Standalone을 사용하여 테스트를 실행
+      # 5. 리소스 파일 복사 (추가된 부분)
+      - name: Copy resources to classpath
+        run: cp -r res/* out/production/
+
+      # 6. JUnit 테스트 실행
       - name: Run JUnit tests
         run: |
           java -jar lib/junit-platform-console-standalone-1.10.2.jar \
