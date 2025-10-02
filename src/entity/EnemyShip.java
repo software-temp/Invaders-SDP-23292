@@ -1,5 +1,5 @@
 package entity;
-import audio.Sound;
+import audio.SoundManager;
 
 
 import java.awt.Color;
@@ -141,7 +141,7 @@ public class EnemyShip extends Entity {
 	public final void destroy() {
 		this.isDestroyed = true;
 		this.spriteType = SpriteType.Explosion;
-        Sound.play("sfx/disappearance.wav");
+        SoundManager.play("sfx/disappearance.wav");
 	}
 
 	/**

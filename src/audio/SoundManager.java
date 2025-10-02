@@ -5,12 +5,12 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Sound {
+public class SoundManager {
     private static final Map<String, Clip> CACHE = new ConcurrentHashMap<>();
 
     public static void play(String resourcePath) {
         try {
-            Clip c = CACHE.computeIfAbsent(resourcePath, Sound::loadClip);
+            Clip c = CACHE.computeIfAbsent(resourcePath, SoundManager::loadClip);
             if (c == null) return;
             if (c.isRunning()) c.stop();
             c.setFramePosition(0);
