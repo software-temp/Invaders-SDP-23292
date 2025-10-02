@@ -165,9 +165,9 @@ pip-log.txt
 #################
 ## INTELLIJ IDEA
 #################
-.idea
+.idea/
 *.iml
-out
+out/
 
 #############
 ## Custom
