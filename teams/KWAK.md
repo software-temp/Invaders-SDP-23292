@@ -20,4 +20,4 @@
 - 4. Activation (instant or key input)
 - 5. Types:
 Offensive: Multi-Shot, Attack Speed Increase, Penetration, Explosion
-Defensive: Enemy Movement (Slow, Stop, Retreat), Shield (Use or Duration), Trench (Create or Repair), and Recovery. 
+Defensive: Enemy Movement (Slow, Stop, Retreat), Shield (Use or Duration), Trench (Create or Repair), and Recovery.
