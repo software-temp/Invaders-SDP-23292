@@ -75,6 +75,9 @@ public class GameScreen extends Screen {
     // Achievement popup
     private String achievementText;
     private Cooldown achievementPopupCooldown;
+    /** Health change popup. */
+    private String healthPopupText;
+    private Cooldown healthPopupCooldown;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -262,6 +265,13 @@ public class GameScreen extends Screen {
         }
 
 
+        // Health notification popup
+        if(this.healthPopupText != null && !this.healthPopupCooldown.checkFinished()) {
+            drawManager.drawHealthPopup(this, this.healthPopupText);
+        } else {
+            this.healthPopupText = null;
+        }
+
         // Countdown to game start.
 		if (!this.inputDelay.checkFinished()) {
 			int countdown = (int) ((INPUT_DELAY
@@ -305,6 +315,7 @@ public class GameScreen extends Screen {
 					if (!this.ship.isDestroyed()) {
 						this.ship.destroy();
 						this.lives--;
+                        showHealthPopup("-1 Health");
 						this.logger.info("Hit on player ship, " + this.lives
 								+ " lives remaining.");
 					}
@@ -358,6 +369,7 @@ public class GameScreen extends Screen {
 
 		return distanceX < maxDistanceX && distanceY < maxDistanceY;
 	}
+
     /**
      * Shows an achievement popup message on the HUD.
      *
@@ -368,6 +380,19 @@ public class GameScreen extends Screen {
         this.achievementText = message;
         this.achievementPopupCooldown = Core.getCooldown(2500); // Show for 2.5 seconds
         this.achievementPopupCooldown.reset();
+    }
+
+    /**
+     * Displays a notification popup when the player gains or loses health
+     *
+     * @param message
+     *          Text to display in the popup
+     */
+
+    public void showHealthPopup(String message) {
+        this.healthPopupText = message;
+        this.healthPopupCooldown = Core.getCooldown(500);
+        this.healthPopupCooldown.reset();
     }
 
     /**
