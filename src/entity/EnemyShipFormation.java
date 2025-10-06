@@ -96,14 +96,12 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	private int shipCount;
 
 	/** Directions the formation can move. */
-	private enum Direction {
-		/** Movement to the right side of the screen. */
-		RIGHT,
-		/** Movement to the left side of the screen. */
-		LEFT,
-		/** Movement to the bottom of the screen. */
-		DOWN
-	};
+    private enum Direction {
+        DOWN_RIGHT,
+        DOWN_LEFT,
+        UP_RIGHT,
+        UP_LEFT
+    };
 
 	/**
 	 * Constructor, sets the initial conditions.
@@ -115,7 +113,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 		this.drawManager = Core.getDrawManager();
 		this.logger = Core.getLogger();
 		this.enemyShips = new ArrayList<List<EnemyShip>>();
-		this.currentDirection = Direction.RIGHT;
+		this.currentDirection = Direction.DOWN_RIGHT;
 		this.movementInterval = 0;
 		this.nShipsWide = gameSettings.getFormationWidth();
 		this.nShipsHigh = gameSettings.getFormationHeight();
@@ -217,43 +215,55 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 			boolean isAtLeftSide = positionX <= SIDE_MARGIN;
 			boolean isAtHorizontalAltitude = positionY % DESCENT_DISTANCE == 0;
 
-			if (currentDirection == Direction.DOWN) {
-				if (isAtHorizontalAltitude)
-					if (previousDirection == Direction.RIGHT) {
-						currentDirection = Direction.LEFT;
-						this.logger.info("Formation now moving left 1");
-					} else {
-						currentDirection = Direction.RIGHT;
-						this.logger.info("Formation now moving right 2");
-					}
-			} else if (currentDirection == Direction.LEFT) {
-				if (isAtLeftSide)
-					if (!isAtBottom) {
-						previousDirection = currentDirection;
-						currentDirection = Direction.DOWN;
-						this.logger.info("Formation now moving down 3");
-					} else {
-						currentDirection = Direction.RIGHT;
-						this.logger.info("Formation now moving right 4");
-					}
-			} else {
-				if (isAtRightSide)
-					if (!isAtBottom) {
-						previousDirection = currentDirection;
-						currentDirection = Direction.DOWN;
-						this.logger.info("Formation now moving down 5");
-					} else {
-						currentDirection = Direction.LEFT;
-						this.logger.info("Formation now moving left 6");
-					}
-			}
+            boolean isAtTop = positionY <= INIT_POS_Y;
 
-			if (currentDirection == Direction.RIGHT)
-				movementX = X_SPEED;
-			else if (currentDirection == Direction.LEFT)
-				movementX = -X_SPEED;
-			else
-				movementY = Y_SPEED;
+            if (currentDirection == Direction.DOWN_RIGHT) {
+                if (isAtRightSide && !isAtBottom) {
+                    currentDirection = Direction.DOWN_LEFT;
+                    this.logger.info("Formation now moving down-left (hit right wall)");
+                } else if (isAtBottom) {
+                    currentDirection = Direction.UP_RIGHT;
+                    this.logger.info("Formation now moving up-right (hit bottom)");
+                }
+            } else if (currentDirection == Direction.DOWN_LEFT) {
+                if (isAtLeftSide && !isAtBottom) {
+                    currentDirection = Direction.DOWN_RIGHT;
+                    this.logger.info("Formation now moving down-right (hit left wall)");
+                } else if (isAtBottom) {
+                    currentDirection = Direction.UP_LEFT;
+                    this.logger.info("Formation now moving up-left (hit bottom)");
+                }
+            } else if (currentDirection == Direction.UP_RIGHT) {
+                if (isAtRightSide && !isAtTop) {
+                    currentDirection = Direction.UP_LEFT;
+                    this.logger.info("Formation now moving up-left (hit right wall)");
+                } else if (isAtTop) {
+                    currentDirection = Direction.DOWN_RIGHT;
+                    this.logger.info("Formation now moving down-right (back to top)");
+                }
+            } else if (currentDirection == Direction.UP_LEFT) {
+                if (isAtLeftSide && !isAtTop) {
+                    currentDirection = Direction.UP_RIGHT;
+                    this.logger.info("Formation now moving up-right (hit left wall)");
+                } else if (isAtTop) {
+                    currentDirection = Direction.DOWN_LEFT;
+                    this.logger.info("Formation now moving down-left (back to top)");
+                }
+            }
+
+            if (currentDirection == Direction.DOWN_RIGHT) {
+                movementX = X_SPEED;
+                movementY = Y_SPEED;
+            } else if (currentDirection == Direction.DOWN_LEFT) {
+                movementX = -X_SPEED;
+                movementY = Y_SPEED;
+            } else if (currentDirection == Direction.UP_RIGHT) {
+                movementX = X_SPEED;
+                movementY = -Y_SPEED;
+            } else if (currentDirection == Direction.UP_LEFT) {
+                movementX = -X_SPEED;
+                movementY = -Y_SPEED;
+            }
 
 			positionX += movementX;
 			positionY += movementY;
