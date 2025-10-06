@@ -299,6 +299,35 @@ public final class DrawManager {
         drawCenteredRegularString(screen, text, y + popupHeight / 2 + 5);
     }
 
+    /**
+     * Draws a notification popup for changes in health
+     *
+     * @param screen
+     *          Screen to draw on.
+     * @param text
+     *          Text to display change in health (+1 Health / -1 Health).
+     */
+    public void drawHealthPopup(final Screen screen, final String text) {
+        int popupWidth = 250;
+        int popupHeight = 40;
+        int x = screen.getWidth() / 2 - popupWidth / 2;
+        int y = 100;
+
+        backBufferGraphics.setColor(new Color(0, 0, 0, 200));
+        backBufferGraphics.fillRoundRect(x, y, popupWidth, popupHeight, 15, 15);
+
+        Color textColor;
+        if (text.startsWith("+")) {
+            textColor = new Color(50, 255, 50);
+        } else {
+            textColor = new Color(255, 50, 50);
+        }
+
+        backBufferGraphics.setColor(textColor);
+        drawCenteredBigString(screen, text, y + popupHeight / 2 + 5);
+    }
+
+
 	/**
 	 * Draws a thick line from side to side of the screen.
 	 * 
