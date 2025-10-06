@@ -219,53 +219,65 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 			boolean isAtLeftSide = positionX <= SIDE_MARGIN;
             boolean isAtTop = positionY <= INIT_POS_Y;
 
-            // 대각선 이동 방향 전환 로직 (우선순위: 좌우 벽 > 상하 경계)
+            // Diagonal movement direction change logic
             if (currentDirection == Direction.DOWN_RIGHT) {
-                if (isAtRightSide && !isAtBottom) {
-                    currentDirection = Direction.DOWN_LEFT;
-                    this.logger.info("Formation now moving down-left (hit right wall)");
+                if (isAtBottom && isAtRightSide) {
+                    currentDirection = Direction.UP_LEFT;
+                    this.logger.info("Formation now moving up-left (hit corner)");
                 } else if (isAtBottom) {
                     currentDirection = Direction.UP_RIGHT;
                     this.logger.info("Formation now moving up-right (hit bottom)");
+                } else if (isAtRightSide) {
+                    currentDirection = Direction.DOWN_LEFT;
+                    this.logger.info("Formation now moving down-left (hit right wall)");
                 }
             } else if (currentDirection == Direction.DOWN_LEFT) {
-                if (isAtLeftSide && !isAtBottom) {
-                    currentDirection = Direction.DOWN_RIGHT;
-                    this.logger.info("Formation now moving down-right (hit left wall)");
+                if (isAtBottom && isAtLeftSide) {
+                    currentDirection = Direction.UP_RIGHT;
+                    this.logger.info("Formation now moving up-right (hit corner)");
                 } else if (isAtBottom) {
                     currentDirection = Direction.UP_LEFT;
                     this.logger.info("Formation now moving up-left (hit bottom)");
+                } else if (isAtLeftSide) {
+                    currentDirection = Direction.DOWN_RIGHT;
+                    this.logger.info("Formation now moving down-right (hit left wall)");
                 }
             } else if (currentDirection == Direction.UP_RIGHT) {
-                if (isAtRightSide && !isAtTop) {
-                    currentDirection = Direction.UP_LEFT;
-                    this.logger.info("Formation now moving up-left (hit right wall)");
+                if (isAtTop && isAtRightSide) {
+                    currentDirection = Direction.DOWN_LEFT;
+                    this.logger.info("Formation now moving down-left (hit corner)");
                 } else if (isAtTop) {
                     currentDirection = Direction.DOWN_RIGHT;
                     this.logger.info("Formation now moving down-right (back to top)");
+                } else if (isAtRightSide) {
+                    currentDirection = Direction.UP_LEFT;
+                    this.logger.info("Formation now moving up-left (hit right wall)");
                 }
             } else if (currentDirection == Direction.UP_LEFT) {
-                if (isAtLeftSide && !isAtTop) {
-                    currentDirection = Direction.UP_RIGHT;
-                    this.logger.info("Formation now moving up-right (hit left wall)");
+                if (isAtTop && isAtLeftSide) {
+                    currentDirection = Direction.DOWN_RIGHT;
+                    this.logger.info("Formation now moving down-right (hit corner)");
                 } else if (isAtTop) {
                     currentDirection = Direction.DOWN_LEFT;
                     this.logger.info("Formation now moving down-left (back to top)");
+                } else if (isAtLeftSide) {
+                    currentDirection = Direction.UP_RIGHT;
+                    this.logger.info("Formation now moving up-right (hit left wall)");
                 }
             }
 
             if (currentDirection == Direction.DOWN_RIGHT) {
-                movementX = X_SPEED;   // 오른쪽으로
-                movementY = Y_SPEED;   // 아래로
+                movementX = X_SPEED;   // right
+                movementY = Y_SPEED;   // down
             } else if (currentDirection == Direction.DOWN_LEFT) {
-                movementX = -X_SPEED;  // 왼쪽으로
-                movementY = Y_SPEED;   // 아래로
+                movementX = -X_SPEED;  // left
+                movementY = Y_SPEED;   // down
             } else if (currentDirection == Direction.UP_RIGHT) {
-                movementX = X_SPEED;   // 오른쪽으로
-                movementY = -Y_SPEED;  // 위로
+                movementX = X_SPEED;   // right
+                movementY = -Y_SPEED;  // up
             } else if (currentDirection == Direction.UP_LEFT) {
-                movementX = -X_SPEED;  // 왼쪽으로
-                movementY = -Y_SPEED;  // 위로
+                movementX = -X_SPEED;  // left
+                movementY = -Y_SPEED;  // up
             }
 
 			positionX += movementX;
