@@ -95,11 +95,15 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	/** Number of not destroyed ships. */
 	private int shipCount;
 
-	/** Directions the formation can move. */
+    /** Directions the formation can move. */
     private enum Direction {
+        /** Movement to the right-down diagonal. */
         DOWN_RIGHT,
+        /** Movement to the left-down diagonal. */
         DOWN_LEFT,
+        /** Movement to the right-up diagonal. */
         UP_RIGHT,
+        /** Movement to the left-up diagonal. */
         UP_LEFT
     };
 
@@ -213,10 +217,9 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 			boolean isAtRightSide = positionX
 					+ this.width >= screen.getWidth() - SIDE_MARGIN;
 			boolean isAtLeftSide = positionX <= SIDE_MARGIN;
-			boolean isAtHorizontalAltitude = positionY % DESCENT_DISTANCE == 0;
-
             boolean isAtTop = positionY <= INIT_POS_Y;
 
+            // 대각선 이동 방향 전환 로직 (우선순위: 좌우 벽 > 상하 경계)
             if (currentDirection == Direction.DOWN_RIGHT) {
                 if (isAtRightSide && !isAtBottom) {
                     currentDirection = Direction.DOWN_LEFT;
@@ -252,17 +255,17 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
             }
 
             if (currentDirection == Direction.DOWN_RIGHT) {
-                movementX = X_SPEED;
-                movementY = Y_SPEED;
+                movementX = X_SPEED;   // 오른쪽으로
+                movementY = Y_SPEED;   // 아래로
             } else if (currentDirection == Direction.DOWN_LEFT) {
-                movementX = -X_SPEED;
-                movementY = Y_SPEED;
+                movementX = -X_SPEED;  // 왼쪽으로
+                movementY = Y_SPEED;   // 아래로
             } else if (currentDirection == Direction.UP_RIGHT) {
-                movementX = X_SPEED;
-                movementY = -Y_SPEED;
+                movementX = X_SPEED;   // 오른쪽으로
+                movementY = -Y_SPEED;  // 위로
             } else if (currentDirection == Direction.UP_LEFT) {
-                movementX = -X_SPEED;
-                movementY = -Y_SPEED;
+                movementX = -X_SPEED;  // 왼쪽으로
+                movementY = -Y_SPEED;  // 위로
             }
 
 			positionX += movementX;
