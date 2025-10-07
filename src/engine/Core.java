@@ -8,6 +8,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import entity.Item;
 import screen.GameScreen;
 import screen.HighScoreScreen;
 import screen.ScoreScreen;
@@ -29,7 +30,7 @@ public final class Core {
 	/** Max fps of current screen. */
 	private static final int FPS = 60;
 
-	/** Max lives. */
+	/** Max lives. */	
 	private static final int MAX_LIVES = 3;
 	/** Levels between extra life. */
 	private static final int EXTRA_LIFE_FRECUENCY = 3;
@@ -97,6 +98,17 @@ public final class Core {
 			// TODO handle exception
 			e.printStackTrace();
 		}
+
+		//아이템 임시 테스트
+		Item.setSpreadShotLevel(3);      // 확산탄 3레벨
+		Item.setRapidFireLevel(2);       // 연사력 2레벨
+		Item.setBulletSpeedLevel(1);     // 총알 속도 1레벨
+		Item.setMovementSpeedLevel(2);   // 이동 속도 2레벨
+		Item.setExtraLives(1);           // 추가 생명 1개
+
+		// 아이템 상태 출력
+		System.out.println(Item.getItemStatus());
+		// =============================
 
 		frame = new Frame(WIDTH, HEIGHT);
 		DrawManager.getInstance().setFrame(frame);
