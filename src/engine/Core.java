@@ -8,6 +8,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import entity.Item;
 import screen.GameScreen;
 import screen.HighScoreScreen;
 import screen.ScoreScreen;
@@ -97,6 +98,13 @@ public final class Core {
 			// TODO handle exception
 			e.printStackTrace();
 		}
+
+		//아이템 임시 테스트
+		Item.setSpreadShotLevel(3);      // 확산탄 3레벨
+
+		// 아이템 상태 출력
+		System.out.println(Item.getItemStatus());
+		// =============================
 
 		frame = new Frame(WIDTH, HEIGHT);
 		DrawManager.getInstance().setFrame(frame);
