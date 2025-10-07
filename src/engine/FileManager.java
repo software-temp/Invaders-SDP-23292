@@ -71,8 +71,8 @@ public final class FileManager {
 
 		try {
 			inputStream = DrawManager.class.getClassLoader()
-					.getResourceAsStream("graphics");
-			char c;
+                    .getResourceAsStream("res/graphics");
+            char c;
 
 			// Sprite loading.
 			for (Map.Entry<SpriteType, boolean[][]> sprite : spriteMap
@@ -117,7 +117,7 @@ public final class FileManager {
 		try {
 			// Font loading.
 			inputStream = FileManager.class.getClassLoader()
-					.getResourceAsStream("font.ttf");
+					.getResourceAsStream("res/font.ttf");
 			font = Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(
 					size);
 		} finally {

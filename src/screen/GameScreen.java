@@ -71,6 +71,8 @@ public class GameScreen extends Screen {
 	private boolean levelFinished;
 	/** Checks if a bonus life is received. */
 	private boolean bonusLife;
+    /** Current coin. */
+    private int coin;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -79,7 +81,7 @@ public class GameScreen extends Screen {
 	 *            Current game state.
 	 * @param gameSettings
 	 *            Current game settings.
-	 * @param bonnusLife
+	 * @param bonusLife
 	 *            Checks if a bonus life is awarded this level.
 	 * @param width
 	 *            Screen width.
@@ -157,11 +159,19 @@ public class GameScreen extends Screen {
 						|| inputManager.isKeyDown(KeyEvent.VK_D);
 				boolean moveLeft = inputManager.isKeyDown(KeyEvent.VK_LEFT)
 						|| inputManager.isKeyDown(KeyEvent.VK_A);
+                boolean moveUp = inputManager.isKeyDown(KeyEvent.VK_UP)
+                        || inputManager.isKeyDown(KeyEvent.VK_W);
+                boolean moveDown = inputManager.isKeyDown(KeyEvent.VK_DOWN)
+                        || inputManager.isKeyDown(KeyEvent.VK_S);
 
 				boolean isRightBorder = this.ship.getPositionX()
 						+ this.ship.getWidth() + this.ship.getSpeed() > this.width - 1;
 				boolean isLeftBorder = this.ship.getPositionX()
 						- this.ship.getSpeed() < 1;
+                boolean isUpBorder = this.ship.getPositionY()
+                        - this.ship.getSpeed() < SEPARATION_LINE_HEIGHT;
+                boolean isDownBorder = this.ship.getPositionY()
+                        + this.ship.getHeight() + this.ship.getSpeed() > this.height - 1;
 
 				if (moveRight && !isRightBorder) {
 					this.ship.moveRight();
@@ -169,9 +179,16 @@ public class GameScreen extends Screen {
 				if (moveLeft && !isLeftBorder) {
 					this.ship.moveLeft();
 				}
+                if (moveUp && !isUpBorder) {
+                    this.ship.moveUp();
+                }
+                if (moveDown && !isDownBorder) {
+                    this.ship.moveDown();
+                }
+
 				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
-					if (this.ship.shoot(this.bullets))
-						this.bulletsShot++;
+                    if (this.ship.shoot(this.bullets))
+                        this.bulletsShot++;
 			}
 
 			if (this.enemyShipSpecial != null) {
@@ -234,6 +251,7 @@ public class GameScreen extends Screen {
 
 		// Interface.
 		drawManager.drawScore(this, this.score);
+        drawManager.drawCoin(this,this.coin);
 		drawManager.drawLives(this, this.lives);
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 
@@ -289,6 +307,7 @@ public class GameScreen extends Screen {
 					if (!enemyShip.isDestroyed()
 							&& checkCollision(bullet, enemyShip)) {
 						this.score += enemyShip.getPointValue();
+                        this.coin += (enemyShip.getPointValue()/10);
 						this.shipsDestroyed++;
 						this.enemyShipFormation.destroy(enemyShip);
 						recyclable.add(bullet);
@@ -297,6 +316,7 @@ public class GameScreen extends Screen {
 						&& !this.enemyShipSpecial.isDestroyed()
 						&& checkCollision(bullet, this.enemyShipSpecial)) {
 					this.score += this.enemyShipSpecial.getPointValue();
+                    this.coin += (this.enemyShipSpecial.getPointValue()/10);
 					this.shipsDestroyed++;
 					this.enemyShipSpecial.destroy();
 					this.enemyShipSpecialExplosionCooldown.reset();
@@ -339,6 +359,6 @@ public class GameScreen extends Screen {
 	 */
 	public final GameState getGameState() {
 		return new GameState(this.level, this.score, this.lives,
-				this.bulletsShot, this.shipsDestroyed);
+				this.bulletsShot, this.shipsDestroyed,this.coin);
 	}
 }
