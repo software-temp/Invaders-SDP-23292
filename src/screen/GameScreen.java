@@ -101,8 +101,7 @@ public class GameScreen extends Screen {
 		if (this.bonusLife)
 			this.lives++;
 
-		// 아이템 추가 생명 적용
-		this.lives += Item.getExtraLives();
+
 
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
