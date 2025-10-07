@@ -92,7 +92,7 @@ public class EnemyShipSpecialFormation implements Iterable<EnemyShip> {
     }
 
 
-    // 필드변수 정의
+    // Cooldown Field
     private Cooldown enemyShipSpecialCooldown;
     private Cooldown enemyShipSpecialExplosionCooldown;
 
@@ -191,14 +191,13 @@ public class EnemyShipSpecialFormation implements Iterable<EnemyShip> {
 
             } else if (this.enemyShipSpecialExplosionCooldown.checkFinished())
                 this.enemyShipSpecial = null;
+        }
 
-            // TO DO : start special enemy by CoolDown
-            if (this.enemyShipSpecial == null
-                    && this.enemyShipSpecialCooldown.checkFinished()) {
-                this.enemyShipSpecial = new EnemyShip();
-                this.enemyShipSpecialCooldown.reset();
-                this.logger.info("A special ship appears");
-            }
+        // recreate special enemy by CoolDown
+        if (this.enemyShipSpecialCooldown.checkFinished()) {
+            this.enemyShipSpecial = new EnemyShip();
+            this.enemyShipSpecialCooldown.reset();
+            this.logger.info("A special ship appears");
         }
     }
 
