@@ -38,7 +38,8 @@ public class Ship extends Entity {
 	public Ship(final int positionX, final int positionY) {
 		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
 		this.spriteType = SpriteType.Ship;
-
+		this.shootingCooldown = Core.getCooldown(SHOOTING_INTERVAL);
+		this.destructionCooldown = Core.getCooldown(1000);
 
 	}
 
@@ -83,19 +84,18 @@ public class Ship extends Entity {
 		if (this.shootingCooldown.checkFinished()) {
 			this.shootingCooldown.reset();
 
-			// Item 클래스에서 확산탄 정보 가져오기
+			// Get Spread Shot information from the Item class
 			int bulletCount = Item.getSpreadShotBulletCount();
 			int spacing = Item.getSpreadShotSpacing();
-			int bulletSpeed = Item.getBulletSpeed();
 
 			int centerX = positionX + this.width / 2;
 			int centerY = positionY;
 
 			if (bulletCount == 1) {
-				// 일반 발사 (확산탄 미구매)
-				bullets.add(BulletPool.getBullet(centerX, centerY, bulletSpeed));
+				// Normal shot (when Spread Shot is not purchased)
+				bullets.add(BulletPool.getBullet(centerX, centerY, BULLET_SPEED));
 			} else {
-				// 확산탄 발사
+				// Fire Spread Shot
 				int startOffset = -(bulletCount / 2) * spacing;
 
 				for (int i = 0; i < bulletCount; i++) {
@@ -103,7 +103,7 @@ public class Ship extends Entity {
 					bullets.add(BulletPool.getBullet(
 							centerX + offsetX,
 							centerY,
-							bulletSpeed
+							BULLET_SPEED
 					));
 				}
 			}
