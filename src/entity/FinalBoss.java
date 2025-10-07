@@ -12,7 +12,7 @@ public class FinalBoss extends Entity{
     private int healPoint;
     private int maxHp;
     private final int pointValue;
-    private boolean isDestroy;
+    private boolean isDestroyed;
     /** for move pattern **/
     private int zigDirection = 1;
     /** for move pattern **/
@@ -30,7 +30,7 @@ public class FinalBoss extends Entity{
         this.maxHp = healPoint;
         this.pointValue = 1000;
         this.spriteType = DrawManager.SpriteType.EnemyShipSpecial;
-        this.isDestroy = false;
+        this.isDestroyed = false;
 
         this.animationCooldown = Core.getCooldown(500);
         this.shootCooldown = Core.getCooldown(1000);
@@ -111,14 +111,14 @@ public class FinalBoss extends Entity{
 
     /** flag final boss' destroy **/
     public void destroy(){
-        if(!this.isDestroy){
-            this.isDestroy = true;
+        if(!this.isDestroyed){
+            this.isDestroyed = true;
             this.spriteType = DrawManager.SpriteType.Explosion;
         }
     }
 
     /** check final boss' destroy **/
     public boolean isDestroyed(){
-        return this.isDestroy;
+        return this.isDestroyed;
     }
 }
