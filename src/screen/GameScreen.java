@@ -151,7 +151,7 @@ public class GameScreen extends Screen {
 
             /** spawn final boss to check object (for test) **/
             if(this.finalBoss == null){
-                this.finalBoss = new FinalBoss(this.width/2-50,50);
+                this.finalBoss = new FinalBoss(this.width/2-50,50,this);
                 this.logger.info("Final Boss created.");
             }
 
@@ -339,7 +339,7 @@ public class GameScreen extends Screen {
                 /** when final boss collide with bullet **/
                 if(this.finalBoss != null && !this.finalBoss.isDestroyed() && checkCollision(bullet,this.finalBoss)){
                     this.finalBoss.takeDamage(1);
-                    if(this.finalBoss.healPoint == 0){
+                    if(this.finalBoss.healPoint <= 0){
                         this.score += this.finalBoss.getPointValue();
                         this.coin += (this.finalBoss.getPointValue()/10);
                     }

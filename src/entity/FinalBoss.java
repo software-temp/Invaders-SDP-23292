@@ -3,6 +3,8 @@ package entity;
 import engine.DrawManager;
 import engine.Cooldown;
 import engine.Core;
+import screen.GameScreen;
+
 import java.awt.*;
 
 public class FinalBoss extends Entity{
@@ -18,10 +20,12 @@ public class FinalBoss extends Entity{
 
     private Cooldown animationCooldown;
     private Cooldown shootCooldown;
-
+    private final GameScreen screen;
     /** basic attribute of final boss **/
-    public FinalBoss(int positionX, int positionY){
+    public FinalBoss(int positionX, int positionY, GameScreen screen){
+
         super(positionX,positionY,100,80, Color.RED);
+        this.screen = screen;
         this.healPoint = 20;
         this.Hp = healPoint;
         this.pointValue = 1000;
@@ -74,17 +78,17 @@ public class FinalBoss extends Entity{
     /** move zigzag **/
     public void moveZigzag(int zigSpeed, int vertSpeed){
         this.positionX += (this.zigDirection * zigSpeed);
-        if(this.positionX <= 0 || this.positionX >= 448-this.width){
+        if(this.positionX <= 0 || this.positionX >= screen.getWidth()-this.width){
             this.zigDirection *= -1;
         }
 
         if(goingDown) {
             this.positionY += vertSpeed;
-            if (this.positionY >= 280 - this.height) goingDown = false;
+            if (this.positionY >= screen.getHeight()/2 - this.height) goingDown = false;
         }
         else {
             this.positionY -= vertSpeed;
-            if(positionY <= 0) goingDown = true;
+            if(this.positionY <= 0) goingDown = true;
         }
     }
 
