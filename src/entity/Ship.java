@@ -40,9 +40,6 @@ public class Ship extends Entity {
 		this.spriteType = SpriteType.Ship;
 
 
-		// Item에서 발사 간격 가져오기
-		this.shootingCooldown = Core.getCooldown(Item.getShootingInterval());
-		this.destructionCooldown = Core.getCooldown(1000);
 	}
 
 	/**
@@ -50,7 +47,7 @@ public class Ship extends Entity {
 	 * reached.
 	 */
 	public final void moveRight() {
-		this.positionX += Item.getMovementSpeed();
+		this.positionX += SPEED;
 	}
 
 	/**
@@ -58,7 +55,7 @@ public class Ship extends Entity {
 	 * reached.
 	 */
 	public final void moveLeft() {
-		this.positionX -= Item.getMovementSpeed();
+		this.positionX -= SPEED;
 	}
     /**
      * Moves the ship speed units up, or until the SEPARATION_LINE_HEIGHT is
