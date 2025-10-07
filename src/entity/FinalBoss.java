@@ -9,8 +9,8 @@ import java.awt.*;
 
 public class FinalBoss extends Entity{
 
-    public int healPoint;
-    private int Hp;
+    private int healPoint;
+    private int maxHp;
     private final int pointValue;
     private boolean isDestroy;
     /** for move pattern **/
@@ -27,7 +27,7 @@ public class FinalBoss extends Entity{
         super(positionX,positionY,100,80, Color.RED);
         this.screen = screen;
         this.healPoint = 20;
-        this.Hp = healPoint;
+        this.maxHp = healPoint;
         this.pointValue = 1000;
         this.spriteType = DrawManager.SpriteType.EnemyShipSpecial;
         this.isDestroy = false;
@@ -61,13 +61,16 @@ public class FinalBoss extends Entity{
         }
     }
 
+    public int getHealPoint(){
+        return this.healPoint;
+    }
     public int getPointValue(){
         return this.pointValue;
     }
 
     /** movement pattern of final boss **/
     public void movePattern(){
-        if(this.healPoint > this.Hp/2){
+        if(this.healPoint > this.maxHp/2){
             this.move(0,0);
         }
         else {
