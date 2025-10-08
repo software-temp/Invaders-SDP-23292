@@ -102,6 +102,7 @@ public class GameScreen extends Screen {
 			this.lives++;
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
+
 	}
 
 	/**
@@ -109,7 +110,7 @@ public class GameScreen extends Screen {
 	 */
 	public final void initialize() {
 		super.initialize();
-		BossBullet.getBossBullets().clear(); //보스가 쏜 총알 초기화
+		BossBullet.getBossBullets().clear();
 		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
 		enemyShipFormation.attach(this);
 		this.ship = new Ship(this.width / 2, this.height - 30);
@@ -153,12 +154,15 @@ public class GameScreen extends Screen {
 			if(this.finalBoss == null){
 				this.finalBoss = new FinalBoss(this.width/2-50,50,this);
 				this.logger.info("Final Boss created.");
+
 			}
+
 			if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
+
 				this.finalBoss.update();
-				this.finalBoss.shoot1(); // 총알 생성은 BossBullet 내부에서 자동 관리
+				this.finalBoss.shoot1();
 				this.finalBoss.shoot2();
-//				this.finalBoss.shoot3(this.ship.getPositionX(),this.ship.getPositionY()); 개발중
+//				this.finalBoss.shoot3(this.ship.getPositionX(),this.ship.getPositionY()); developing
 				Set<BossBullet> bulletsToRemove = new HashSet<>();
 
 				for (BossBullet b : BossBullet.getBossBullets()) {
@@ -178,7 +182,7 @@ public class GameScreen extends Screen {
 
 					}
 				}
-// 제거는 순회 끝나고 한 번에
+
 				BossBullet.getBossBullets().removeAll(bulletsToRemove);
 			}
 
@@ -278,21 +282,17 @@ public class GameScreen extends Screen {
 
 		/** draw final boss at the field **/
 		if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
-			drawManager.drawEntity(this.finalBoss,
-					this.finalBoss.getPositionX(),
-					this.finalBoss.getPositionY());
+			finalBoss.draw(drawManager);
 		}
 
 		enemyShipFormation.draw();
+
 
 		for (Bullet bullet : this.bullets)
 			drawManager.drawEntity(bullet, bullet.getPositionX(),
 					bullet.getPositionY());
 
-		//보스 총알 그리기
-		for (BossBullet bossBullet : BossBullet.getBossBullets()) {
-			drawManager.drawEntity(bossBullet, bossBullet.getPositionX(), bossBullet.getPositionY());
-		}
+
 
 		// Interface.
 		drawManager.drawScore(this, this.score);

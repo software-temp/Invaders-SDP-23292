@@ -108,33 +108,41 @@ public class FinalBoss extends Entity{
     }
 
     /** not yet implemented **/
-    public void shoot1(){
+    public void shoot1(){ //boss_bullet five-way
         if(this.shootCooldown1.checkFinished()){
             this.shootCooldown1.reset();
-            // 총알 5방향 객체 생성 로직
             int arr[] = {0,1,-1,2,-2};
             for (int i : arr){
                 new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3,this.getPositionY() + this.getHeight(), i,4,6,10);
             }
         }
     }
-    public void shoot2() {
+    public void shoot2() {  // field bullet
         random_x = (int) (Math.random() * 450);
         if (this.shootCooldown2.checkFinished()) {
             this.shootCooldown2.reset();
-            // 총알 일직선 객체 생성 로직
             new BossBullet(random_x, 1, 0, 2,6,10);
 //            new BossBullet(bullet_a, 450, 0, -4,6,10);
 
         }
     }
-    public void shoot3(int x, int y) {
+    public void shoot3(int x, int y) { //laser bullet
         if (this.shootCooldown3.checkFinished()) {
             this.shootCooldown3.reset();
-            // 총알 일직선 객체 생성 로직
             new BossBullet(1, 1, 0, 5,6,10);
 
         }
+    }
+
+
+
+    public void draw(DrawManager drawManager){
+
+        for (BossBullet bossBullet : BossBullet.getBossBullets()) {
+            drawManager.drawEntity(bossBullet, bossBullet.getPositionX(), bossBullet.getPositionY());
+        }
+        drawManager.drawEntity(this, this.getPositionX(), this.getPositionY());
+
     }
 
     /** flag final boss' destroy **/
