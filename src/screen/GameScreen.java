@@ -293,7 +293,7 @@ public class GameScreen extends Screen {
 						this.score += enemyShipSpecial.getPointValue();
 						this.coin += (enemyShipSpecial.getPointValue()/10);
 						this.shipsDestroyed++;
-						this.enemyShipSpecialFormation.destroy();
+						this.enemyShipSpecialFormation.destroy(enemyShipSpecial);
 						recyclable.add(bullet);
 				}
 			}
