@@ -60,7 +60,7 @@ public class Ship extends Entity {
 	}
 
     /**
-     * Moves the ship speed units Up, or until the SEPARATION_LINE_HEIGHT border is
+     * Moves the ship speed units up, or until the SEPARATION_LINE_HEIGHT is
      * reached.
      */
     public final void moveUp() {
@@ -68,7 +68,8 @@ public class Ship extends Entity {
     }
 
     /**
-     * Moves the ship speed units Down, or until the down screen border is
+     * Moves the ship speed units down, or until the down screen border is
+>>>>>>> master
      * reached.
      */
     public final void moveDown() {
