@@ -8,12 +8,7 @@ import engine.Cooldown;
 import engine.Core;
 import engine.GameSettings;
 import engine.GameState;
-import entity.Bullet;
-import entity.BulletPool;
-import entity.EnemyShip;
-import entity.EnemyShipFormation;
-import entity.Entity;
-import entity.Ship;
+import entity.*;
 
 /**
  * Implements the game screen, where the action happens.
@@ -51,6 +46,10 @@ public class GameScreen extends Screen {
 	/** Minimum time between bonus ship appearances. */
 	private Cooldown enemyShipSpecialCooldown;
 	/** Time until bonus ship explosion disappears. */
+
+    /** team drawing may implement **/
+    private FinalBoss finalBoss;
+
 	private Cooldown enemyShipSpecialExplosionCooldown;
 	/** Time from finishing the level to screen change. */
 	private Cooldown screenFinishedCooldown;
@@ -122,7 +121,6 @@ public class GameScreen extends Screen {
 				.getCooldown(BONUS_SHIP_EXPLOSION);
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
 		this.bullets = new HashSet<Bullet>();
-
 		// Special input delay / countdown.
 		this.gameStartTime = System.currentTimeMillis();
 		this.inputDelay = Core.getCooldown(INPUT_DELAY);
@@ -150,6 +148,12 @@ public class GameScreen extends Screen {
 		super.update();
 
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
+
+            /** spawn final boss to check object (for test) **/
+            if(this.finalBoss == null){
+                this.finalBoss = new FinalBoss(this.width/2-50,50,this);
+                this.logger.info("Final Boss created.");
+            }
 
 			if (!this.ship.isDestroyed()) {
 				boolean moveRight = inputManager.isKeyDown(KeyEvent.VK_RIGHT)
@@ -210,6 +214,11 @@ public class GameScreen extends Screen {
 			this.ship.update();
 			this.enemyShipFormation.update();
 			this.enemyShipFormation.shoot(this.bullets);
+
+            /** when the final boss is at the field **/
+            if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
+                this.finalBoss.update();
+            }
 		}
 
 		manageCollisions();
@@ -239,6 +248,13 @@ public class GameScreen extends Screen {
 			drawManager.drawEntity(this.enemyShipSpecial,
 					this.enemyShipSpecial.getPositionX(),
 					this.enemyShipSpecial.getPositionY());
+
+        /** draw final boss at the field **/
+        if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
+            drawManager.drawEntity(this.finalBoss,
+                    this.finalBoss.getPositionX(),
+                    this.finalBoss.getPositionY());
+        }
 
 		enemyShipFormation.draw();
 
@@ -319,6 +335,17 @@ public class GameScreen extends Screen {
 					this.enemyShipSpecialExplosionCooldown.reset();
 					recyclable.add(bullet);
 				}
+
+                /** when final boss collide with bullet **/
+                if(this.finalBoss != null && !this.finalBoss.isDestroyed() && checkCollision(bullet,this.finalBoss)){
+                    this.finalBoss.takeDamage(1);
+                    if(this.finalBoss.getHealPoint() <= 0){
+                        this.score += this.finalBoss.getPointValue();
+                        this.coin += (this.finalBoss.getPointValue()/10);
+                    }
+                    recyclable.add(bullet);
+                }
+
 			}
 		this.bullets.removeAll(recyclable);
 		BulletPool.recycle(recyclable);
