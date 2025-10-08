@@ -12,9 +12,9 @@ import entity.*;
 
 /**
  * Implements the game screen, where the action happens.
- * 
+ *
  * @author <a href="mailto:RobertoIA1987@gmail.com">Roberto Izquierdo Amo</a>
- * 
+ *
  */
 public class GameScreen extends Screen {
 
@@ -47,8 +47,8 @@ public class GameScreen extends Screen {
 	private Cooldown enemyShipSpecialCooldown;
 	/** Time until bonus ship explosion disappears. */
 
-    /** team drawing may implement **/
-    private FinalBoss finalBoss;
+	/** team drawing may implement **/
+	private FinalBoss finalBoss;
 
 	private Cooldown enemyShipSpecialExplosionCooldown;
 	/** Time from finishing the level to screen change. */
@@ -69,12 +69,12 @@ public class GameScreen extends Screen {
 	private boolean levelFinished;
 	/** Checks if a bonus life is received. */
 	private boolean bonusLife;
-    /** Current coin. */
-    private int coin;
+	/** Current coin. */
+	private int coin;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
-	 * 
+	 *
 	 * @param gameState
 	 *            Current game state.
 	 * @param gameSettings
@@ -89,8 +89,8 @@ public class GameScreen extends Screen {
 	 *            Frames per second, frame rate at which the game is run.
 	 */
 	public GameScreen(final GameState gameState,
-			final GameSettings gameSettings, final boolean bonusLife,
-			final int width, final int height, final int fps) {
+					  final GameSettings gameSettings, final boolean bonusLife,
+					  final int width, final int height, final int fps) {
 		super(width, height, fps);
 
 		this.gameSettings = gameSettings;
@@ -109,7 +109,7 @@ public class GameScreen extends Screen {
 	 */
 	public final void initialize() {
 		super.initialize();
-
+		BossBullet.getBossBullets().clear(); //보스가 쏜 총알 초기화
 		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
 		enemyShipFormation.attach(this);
 		this.ship = new Ship(this.width / 2, this.height - 30);
@@ -129,7 +129,7 @@ public class GameScreen extends Screen {
 
 	/**
 	 * Starts the action.
-	 * 
+	 *
 	 * @return Next screen code.
 	 */
 	public final int run() {
@@ -149,30 +149,57 @@ public class GameScreen extends Screen {
 
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
 
-            /** spawn final boss to check object (for test) **/
-            if(this.finalBoss == null){
-                this.finalBoss = new FinalBoss(this.width/2-50,50,this);
-                this.logger.info("Final Boss created.");
-            }
+			/** spawn final boss to check object (for test) **/
+			if(this.finalBoss == null){
+				this.finalBoss = new FinalBoss(this.width/2-50,50,this);
+				this.logger.info("Final Boss created.");
+			}
+			if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
+				this.finalBoss.update();
+				this.finalBoss.shoot1(); // 총알 생성은 BossBullet 내부에서 자동 관리
+				this.finalBoss.shoot2();
+//				this.finalBoss.shoot3(this.ship.getPositionX(),this.ship.getPositionY()); 개발중
+				Set<BossBullet> bulletsToRemove = new HashSet<>();
+
+				for (BossBullet b : BossBullet.getBossBullets()) {
+					b.update();
+
+					if (b.isOffScreen(width, height)) {
+						bulletsToRemove.add(b);
+					} else if (b.collidesWith(this.ship)) {
+						if (!this.ship.isDestroyed()) {
+							this.ship.destroy();
+							this.lives--;
+							this.logger.info("Hit on player ship, " + this.lives
+									+ " lives remaining.");
+
+						}
+						bulletsToRemove.add(b);
+
+					}
+				}
+// 제거는 순회 끝나고 한 번에
+				BossBullet.getBossBullets().removeAll(bulletsToRemove);
+			}
 
 			if (!this.ship.isDestroyed()) {
 				boolean moveRight = inputManager.isKeyDown(KeyEvent.VK_RIGHT)
 						|| inputManager.isKeyDown(KeyEvent.VK_D);
 				boolean moveLeft = inputManager.isKeyDown(KeyEvent.VK_LEFT)
 						|| inputManager.isKeyDown(KeyEvent.VK_A);
-                boolean moveUp = inputManager.isKeyDown(KeyEvent.VK_UP)
-                        || inputManager.isKeyDown(KeyEvent.VK_W);
-                boolean moveDown = inputManager.isKeyDown(KeyEvent.VK_DOWN)
-                        || inputManager.isKeyDown(KeyEvent.VK_S);
+				boolean moveUp = inputManager.isKeyDown(KeyEvent.VK_UP)
+						|| inputManager.isKeyDown(KeyEvent.VK_W);
+				boolean moveDown = inputManager.isKeyDown(KeyEvent.VK_DOWN)
+						|| inputManager.isKeyDown(KeyEvent.VK_S);
 
 				boolean isRightBorder = this.ship.getPositionX()
 						+ this.ship.getWidth() + this.ship.getSpeed() > this.width - 1;
 				boolean isLeftBorder = this.ship.getPositionX()
 						- this.ship.getSpeed() < 1;
-                boolean isUpBorder = this.ship.getPositionY()
-                        - this.ship.getSpeed() < SEPARATION_LINE_HEIGHT;
-                boolean isDownBorder = this.ship.getPositionY()
-                        + this.ship.getHeight() + this.ship.getSpeed() > this.height - 1;
+				boolean isUpBorder = this.ship.getPositionY()
+						- this.ship.getSpeed() < SEPARATION_LINE_HEIGHT;
+				boolean isDownBorder = this.ship.getPositionY()
+						+ this.ship.getHeight() + this.ship.getSpeed() > this.height - 1;
 
 				if (moveRight && !isRightBorder) {
 					this.ship.moveRight();
@@ -180,16 +207,16 @@ public class GameScreen extends Screen {
 				if (moveLeft && !isLeftBorder) {
 					this.ship.moveLeft();
 				}
-                if (moveUp && !isUpBorder) {
-                    this.ship.moveUp();
-                }
-                if (moveDown && !isDownBorder) {
-                    this.ship.moveDown();
-                }
+				if (moveUp && !isUpBorder) {
+					this.ship.moveUp();
+				}
+				if (moveDown && !isDownBorder) {
+					this.ship.moveDown();
+				}
 
 				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
-                    if (this.ship.shoot(this.bullets))
-                        this.bulletsShot++;
+					if (this.ship.shoot(this.bullets))
+						this.bulletsShot++;
 			}
 
 			if (this.enemyShipSpecial != null) {
@@ -215,10 +242,10 @@ public class GameScreen extends Screen {
 			this.enemyShipFormation.update();
 			this.enemyShipFormation.shoot(this.bullets);
 
-            /** when the final boss is at the field **/
-            if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
-                this.finalBoss.update();
-            }
+			/** when the final boss is at the field **/
+			if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
+				this.finalBoss.update();
+			}
 		}
 
 		manageCollisions();
@@ -249,12 +276,12 @@ public class GameScreen extends Screen {
 					this.enemyShipSpecial.getPositionX(),
 					this.enemyShipSpecial.getPositionY());
 
-        /** draw final boss at the field **/
-        if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
-            drawManager.drawEntity(this.finalBoss,
-                    this.finalBoss.getPositionX(),
-                    this.finalBoss.getPositionY());
-        }
+		/** draw final boss at the field **/
+		if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
+			drawManager.drawEntity(this.finalBoss,
+					this.finalBoss.getPositionX(),
+					this.finalBoss.getPositionY());
+		}
 
 		enemyShipFormation.draw();
 
@@ -262,9 +289,14 @@ public class GameScreen extends Screen {
 			drawManager.drawEntity(bullet, bullet.getPositionX(),
 					bullet.getPositionY());
 
+		//보스 총알 그리기
+		for (BossBullet bossBullet : BossBullet.getBossBullets()) {
+			drawManager.drawEntity(bossBullet, bossBullet.getPositionX(), bossBullet.getPositionY());
+		}
+
 		// Interface.
 		drawManager.drawScore(this, this.score);
-        drawManager.drawCoin(this,this.coin);
+		drawManager.drawCoin(this,this.coin);
 		drawManager.drawLives(this, this.lives);
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 
@@ -272,7 +304,7 @@ public class GameScreen extends Screen {
 		if (!this.inputDelay.checkFinished()) {
 			int countdown = (int) ((INPUT_DELAY
 					- (System.currentTimeMillis()
-							- this.gameStartTime)) / 1000);
+					- this.gameStartTime)) / 1000);
 			drawManager.drawCountDown(this, this.level, countdown,
 					this.bonusLife);
 			drawManager.drawHorizontalLine(this, this.height / 2 - this.height
@@ -320,7 +352,7 @@ public class GameScreen extends Screen {
 					if (!enemyShip.isDestroyed()
 							&& checkCollision(bullet, enemyShip)) {
 						this.score += enemyShip.getPointValue();
-                        this.coin += (enemyShip.getPointValue()/10);
+						this.coin += (enemyShip.getPointValue()/10);
 						this.shipsDestroyed++;
 						this.enemyShipFormation.destroy(enemyShip);
 						recyclable.add(bullet);
@@ -329,22 +361,22 @@ public class GameScreen extends Screen {
 						&& !this.enemyShipSpecial.isDestroyed()
 						&& checkCollision(bullet, this.enemyShipSpecial)) {
 					this.score += this.enemyShipSpecial.getPointValue();
-                    this.coin += (this.enemyShipSpecial.getPointValue()/10);
+					this.coin += (this.enemyShipSpecial.getPointValue()/10);
 					this.shipsDestroyed++;
 					this.enemyShipSpecial.destroy();
 					this.enemyShipSpecialExplosionCooldown.reset();
 					recyclable.add(bullet);
 				}
 
-                /** when final boss collide with bullet **/
-                if(this.finalBoss != null && !this.finalBoss.isDestroyed() && checkCollision(bullet,this.finalBoss)){
-                    this.finalBoss.takeDamage(1);
-                    if(this.finalBoss.getHealPoint() <= 0){
-                        this.score += this.finalBoss.getPointValue();
-                        this.coin += (this.finalBoss.getPointValue()/10);
-                    }
-                    recyclable.add(bullet);
-                }
+				/** when final boss collide with bullet **/
+				if(this.finalBoss != null && !this.finalBoss.isDestroyed() && checkCollision(bullet,this.finalBoss)){
+					this.finalBoss.takeDamage(1);
+					if(this.finalBoss.getHealPoint() <= 0){
+						this.score += this.finalBoss.getPointValue();
+						this.coin += (this.finalBoss.getPointValue()/10);
+					}
+					recyclable.add(bullet);
+				}
 
 			}
 		this.bullets.removeAll(recyclable);
@@ -353,7 +385,7 @@ public class GameScreen extends Screen {
 
 	/**
 	 * Checks if two entities are colliding.
-	 * 
+	 *
 	 * @param a
 	 *            First entity, the bullet.
 	 * @param b
@@ -378,7 +410,7 @@ public class GameScreen extends Screen {
 
 	/**
 	 * Returns a GameState object representing the status of the game.
-	 * 
+	 *
 	 * @return Current game state.
 	 */
 	public final GameState getGameState() {

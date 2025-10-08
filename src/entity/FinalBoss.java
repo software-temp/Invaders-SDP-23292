@@ -19,7 +19,10 @@ public class FinalBoss extends Entity{
     private boolean goingDown = true;
 
     private Cooldown animationCooldown;
-    private Cooldown shootCooldown;
+    private Cooldown shootCooldown1;
+    private Cooldown shootCooldown2;
+    private Cooldown shootCooldown3;
+    private static int random_x;
     private final GameScreen screen;
     /** basic attribute of final boss **/
     public FinalBoss(int positionX, int positionY, GameScreen screen){
@@ -33,7 +36,9 @@ public class FinalBoss extends Entity{
         this.isDestroyed = false;
 
         this.animationCooldown = Core.getCooldown(500);
-        this.shootCooldown = Core.getCooldown(1000);
+        this.shootCooldown1 = Core.getCooldown(5000);
+        this.shootCooldown2 = Core.getCooldown(400);
+        this.shootCooldown3 = Core.getCooldown(100);
     }
 
     /** for vibrant moving with final boss **/
@@ -50,7 +55,8 @@ public class FinalBoss extends Entity{
             }
         }
         movePattern();
-        shoot();
+        shoot1();
+        shoot2();
     }
 
     /** decrease boss' healpoint **/
@@ -102,10 +108,32 @@ public class FinalBoss extends Entity{
     }
 
     /** not yet implemented **/
-    public void shoot(){
-        if(this.shootCooldown.checkFinished()){
-            this.shootCooldown.reset();
-            // 총알 객체 생성 로직
+    public void shoot1(){
+        if(this.shootCooldown1.checkFinished()){
+            this.shootCooldown1.reset();
+            // 총알 5방향 객체 생성 로직
+            int arr[] = {0,1,-1,2,-2};
+            for (int i : arr){
+                new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3,this.getPositionY() + this.getHeight(), i,4,6,10);
+            }
+        }
+    }
+    public void shoot2() {
+        random_x = (int) (Math.random() * 450);
+        if (this.shootCooldown2.checkFinished()) {
+            this.shootCooldown2.reset();
+            // 총알 일직선 객체 생성 로직
+            new BossBullet(random_x, 1, 0, 2,6,10);
+//            new BossBullet(bullet_a, 450, 0, -4,6,10);
+
+        }
+    }
+    public void shoot3(int x, int y) {
+        if (this.shootCooldown3.checkFinished()) {
+            this.shootCooldown3.reset();
+            // 총알 일직선 객체 생성 로직
+            new BossBullet(1, 1, 0, 5,6,10);
+
         }
     }
 
