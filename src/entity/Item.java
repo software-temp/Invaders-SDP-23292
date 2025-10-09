@@ -118,7 +118,6 @@ public class Item {
      *
      * @return The current level (0-3).
      */
-    //
     public static int getBulletSpeedLevel() {
         return bulletSpeedLevel;
     }
@@ -130,23 +129,6 @@ public class Item {
      */
     public static int getBulletSpeed() {
         return BULLET_SPEED_VALUES[bulletSpeedLevel];
-    }
-
-    // ==================== Bomb Item Methods ====================
-
-    /**
-     * Destroy all enemies on the screen.
-     *
-     * @param Current enemy ship formation.
-     * @return The number of destroyed enemies.
-     *
-     */
-
-    public static int Bomb(final EnemyShipFormation formation) {
-        if (formation != null) {
-            return formation.destroyAll(); // To add the score or coin, declare as an int method.
-        }
-        return 0;
     }
 
 

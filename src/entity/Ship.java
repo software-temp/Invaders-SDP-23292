@@ -87,13 +87,13 @@ public class Ship extends Entity {
 			// Get Spread Shot information from the Item class
 			int bulletCount = Item.getSpreadShotBulletCount();
 			int spacing = Item.getSpreadShotSpacing();
-            int currentbulletSpead = Item.getBulletSpeed();
+            int currentBulletSpeed = Item.getBulletSpeed();
 			int centerX = positionX + this.width / 2;
 			int centerY = positionY;
 
 			if (bulletCount == 1) {
 				// Normal shot (when Spread Shot is not purchased)
-				bullets.add(BulletPool.getBullet(centerX, centerY, currentbulletSpead));
+				bullets.add(BulletPool.getBullet(centerX, centerY, currentBulletSpeed));
 			} else {
 				// Fire Spread Shot
 				int startOffset = -(bulletCount / 2) * spacing;
@@ -103,7 +103,7 @@ public class Ship extends Entity {
 					bullets.add(BulletPool.getBullet(
 							centerX + offsetX,
 							centerY,
-                            currentbulletSpead
+                            currentBulletSpeed
 					));
 				}
 			}
