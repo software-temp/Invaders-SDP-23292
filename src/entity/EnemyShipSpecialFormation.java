@@ -61,12 +61,6 @@ public class EnemyShipSpecialFormation implements Iterable<EnemyShip> {
      */
     private int shootingVariance;
     /**
-     * Current direction the formation is moving on.
-     */
-    private Direction currentDirectionRed;
-    private Direction currentDirectionBlue;
-
-    /**
      * Width of one ship.
      */
     private int shipWidth;
@@ -78,24 +72,6 @@ public class EnemyShipSpecialFormation implements Iterable<EnemyShip> {
      * List of ships that are able to shoot.
      */
     private List<EnemyShip> shooters;
-    /**
-     * Directions the formation can move.
-     */
-    private enum Direction {
-        /**
-         * Movement to the right side of the screen.
-         */
-        RIGHT,
-        /**
-         * Movement to the left side of the screen.
-         */
-        LEFT,
-        /**
-         * Movement to the bottom of the screen.
-         */
-        DOWN
-    }
-
 
     // Cooldown Field
     private Cooldown enemyShipSpecialCooldown;
@@ -114,8 +90,8 @@ public class EnemyShipSpecialFormation implements Iterable<EnemyShip> {
         this.logger = Core.getLogger();
 
         /** Move **/
-        this.currentDirectionRed = Direction.RIGHT;
-        this.currentDirectionBlue = Direction.RIGHT;
+//        this.currentDirectionRed = Direction.RIGHT;
+//        this.currentDirectionBlue = Direction.RIGHT;
 
         /** Shoot **/
         this.shootingInterval = gameSettings.getShootingFrecuency();
@@ -123,8 +99,8 @@ public class EnemyShipSpecialFormation implements Iterable<EnemyShip> {
                 * SHOOTING_VARIANCE);
 
         /** Initial : create Special Enemy **/
-        this.enemyShipSpecialRed = new EnemyShip(Color.RED);
-        this.enemyShipSpecialBlue = new EnemyShip(Color.BLUE);
+        this.enemyShipSpecialRed = new EnemyShip(Color.RED, EnemyShip.Direction.RIGHT, 2);
+        this.enemyShipSpecialBlue = new EnemyShip(Color.BLUE, EnemyShip.Direction.RIGHT, 6);
 
         /** special enemy information: width & height **/
         this.shipWidth = this.enemyShipSpecialRed.getWidth();
@@ -172,93 +148,68 @@ public class EnemyShipSpecialFormation implements Iterable<EnemyShip> {
             this.shootingCooldown.reset();
         }
 
-        movePatternRed();
-        movePatternBlue();
+        moveSpecialEnemy(enemyShipSpecialRed);
+        moveSpecialEnemy(enemyShipSpecialBlue);
 
         // recreate special enemy by CoolDown
         if (this.enemyShipSpecialCooldown.checkFinished()) {
-            this.enemyShipSpecialRed = new EnemyShip(Color.RED);
+            this.enemyShipSpecialRed = new EnemyShip(Color.RED, EnemyShip.Direction.RIGHT, 2);
             this.enemyShipSpecialCooldown.reset();
             this.logger.info("A special ship appears");
         }
     }
 
-    /** Red Special Enemy Moving Pattern **/
-    public final void movePatternRed(){
+    public final void moveSpecialEnemy(EnemyShip enemyShipSpecial) {
         // initial : move option X,Y
         int movementX = 0;
         int movementY = 0;
 
-        if(this.enemyShipSpecialRed != null) {
-            // left & right possible move point
-            boolean isAtRightSide = this.enemyShipSpecialRed.getPositionX() + this.shipWidth >= screen.getWidth() - SIDE_MARGIN;
-            boolean isAtLeftSide = this.enemyShipSpecialRed.getPositionX() <= SIDE_MARGIN;
+        if (enemyShipSpecial != null) {
+            /** Check the special enemy type by Color (RED & BLUE) **/
+            Color color = enemyShipSpecial.getColor();
 
-            // TO DO: feature 2 Horizontal move
-//            boolean isAtBottom = positionY
-//                    + this.height > screen.getHeight() - BOTTOM_MARGIN;
-//            boolean isAtHorizontalAltitude = positionY % DESCENT_DISTANCE == 0;
+            /** Varidation Check : left & right possible move point **/
+            boolean isAtRightSide = enemyShipSpecial.getPositionX() + this.shipWidth >= screen.getWidth() - SIDE_MARGIN;
+            boolean isAtLeftSide = enemyShipSpecial.getPositionX() <= SIDE_MARGIN;
 
-            // moving logic
-            if (!this.enemyShipSpecialRed.isDestroyed()) {
-                if (currentDirectionRed == Direction.LEFT) {
+            /** moving logic **/
+            if (!enemyShipSpecial.isDestroyed()) {
+                if (enemyShipSpecial.getDirection() == EnemyShip.Direction.LEFT) {
                     if (isAtLeftSide)
-                        currentDirectionRed = Direction.RIGHT;
-                    this.logger.info("Formation now moving right 4");
+                        enemyShipSpecial.setDirection(EnemyShip.Direction.RIGHT);
+                    this.logger.info("LEFT moving");
                 } else {
                     if (isAtRightSide) {
-                        currentDirectionRed = Direction.LEFT;
-                        this.logger.info("Formation now moving left 6");
+                        enemyShipSpecial.setDirection(EnemyShip.Direction.LEFT);
+                        this.logger.info("RIGHT moving");
                     }
                 }
 
-                // change moving direction
-                if (currentDirectionRed == Direction.RIGHT)
-                    movementX = X_RED_SPEED;
-                else if (currentDirectionRed == Direction.LEFT)
-                    movementX = -X_RED_SPEED;
-                enemyShipSpecialRed.move(movementX, movementY);
+                /** change moving direction **/
+                if (enemyShipSpecial.getDirection() == EnemyShip.Direction.RIGHT)
+                    movementX = enemyShipSpecial.getXSpeed();
+                else if (enemyShipSpecial.getDirection() == EnemyShip.Direction.LEFT)
+                    movementX = -enemyShipSpecial.getXSpeed();
+                enemyShipSpecial.move(movementX, movementY);
 
+            /** explosion logic **/
             } else if (this.enemyShipSpecialExplosionCooldown.checkFinished())
-                this.enemyShipSpecialRed = null;
+                if (color == Color.RED) {
+                    this.enemyShipSpecialRed = null;
+                } else if (color == Color.BLUE) {
+                    this.enemyShipSpecialBlue = null;
+                }
         }
     }
 
-    /** Blue Special Enemy Moving Pattern **/
-    public final void movePatternBlue(){
-        // initial : move option X,Y
-        int movementX = 0;
-        int movementY = 0;
-
-        if(this.enemyShipSpecialBlue != null) {
-            // left & right possible move point
-            boolean isAtRightSide = this.enemyShipSpecialBlue.getPositionX() + this.shipWidth >= screen.getWidth() - SIDE_MARGIN;
-            boolean isAtLeftSide = this.enemyShipSpecialBlue.getPositionX() <= SIDE_MARGIN;
-
-            // moving logic
-            if (!this.enemyShipSpecialBlue.isDestroyed()) {
-                if (currentDirectionBlue == Direction.LEFT) {
-                    if (isAtLeftSide)
-                        currentDirectionBlue = Direction.RIGHT;
-                    this.logger.info("Formation now moving right 4");
-                } else {
-                    if (isAtRightSide) {
-                        currentDirectionBlue = Direction.LEFT;
-                        this.logger.info("Formation now moving left 6");
-                    }
-                }
-
-                // change moving direction
-                if (currentDirectionBlue == Direction.RIGHT)
-                    movementX = X_BLUE_SPEED;
-                else if (currentDirectionBlue == Direction.LEFT)
-                    movementX = -X_BLUE_SPEED;
-                enemyShipSpecialBlue.move(movementX, movementY);
-
-            } else if (this.enemyShipSpecialExplosionCooldown.checkFinished())
-                this.enemyShipSpecialBlue = null;
+    public final int getSpeed(EnemyShip enemyShipSpecial) {
+        if (enemyShipSpecial.getColor() == Color.RED) {
+            return X_RED_SPEED;
+        } else if (enemyShipSpecial.getColor() == Color.BLUE) {
+            return X_BLUE_SPEED;
         }
-
+        this.logger.info("ERROR Color");
+        return 0;
     }
 
         /**
