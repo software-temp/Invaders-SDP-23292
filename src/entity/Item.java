@@ -113,6 +113,19 @@ public class Item {
     }
 
     /**
+     * Check getting a slowdown item.
+     *
+     * @return if a slowdown item has been gotten.
+     */
+    public static boolean isGetSlowDown(){
+        boolean isSlowDown = false;
+        if(getItemStatus().equals("Slowdown")){ // if user get a slowdown item, change isSlowDown to True.
+            return !isSlowDown;
+        }
+        return isSlowDown;
+    }
+
+    /**
      * For testing - sets the Spread Shot to its maximum level.
      */
     public static void setMaxLevelForTesting() {

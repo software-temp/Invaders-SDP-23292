@@ -13,6 +13,7 @@ import engine.Core;
 import engine.DrawManager;
 import engine.DrawManager.SpriteType;
 import engine.GameSettings;
+import entity.Item;
 
 /**
  * Groups enemy ships into a formation that moves together.
@@ -94,6 +95,8 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	private List<EnemyShip> shooters;
 	/** Number of not destroyed ships. */
 	private int shipCount;
+    /** Number of slowdown movement */
+    private int slowDownCount;
 
 	/** Directions the formation can move. */
 	private enum Direction {
@@ -254,6 +257,15 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 				movementX = -X_SPEED;
 			else
 				movementY = Y_SPEED;
+
+            // If get a slowdown item, activate this.
+            if(Item.isGetSlowDown()){
+                if(slowDownCount <= 6) { // The speed is slow in half.
+                    movementX = 4;       // At least, have to use this function 6 times.
+                    slowDownCount++;
+                }
+                else slowDownCount = 0;
+            }
 
 			positionX += movementX;
 			positionY += movementY;
