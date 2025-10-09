@@ -33,6 +33,20 @@ public class Item {
      */
     private Item() {
     }
+    //==================== Rapid Fire Item =======================
+
+    /** Rapid Fire lever (0 = not purchased, 1~5 = enhancement levels)*/
+    private static int rapidFireLevel = 0;
+
+    /** maximum Rapid Fire level */
+    private static final int MAX_RAPID_FIRE_LEVEL = 5;
+
+    /** Base Shooting Interval */
+    private static final int BASE_SHOOTING_INTERVAL = 750;
+
+    /** Rapid Fire Reduction Per Level (%)*/
+    private static final int[] RAPID_FIRE_REDUCTION ={0, 5, 10, 15, 20, 30};
+
 
 
     // ==================== Spread Shot Methods ====================
@@ -87,6 +101,43 @@ public class Item {
         return spreadShotLevel > 0;
     }
 
+    //==================== Rapid Fire Methods ====================
+
+    /**
+     * Sets rapid fire level.
+     *
+     * @param level The level to set (0-5).
+     * @return True if the level was set successfully, false otherwise.
+     */
+    public static boolean setRapidFireLevel(int level) {
+        if (level < 0 || level > MAX_RAPID_FIRE_LEVEL) {
+            return false;
+        }
+        rapidFireLevel = level;
+        return true;
+    }
+
+    /**
+     * Returns the current rapid fire level.
+     *
+     * @return The current level (0-5).
+     */
+    public static int getRapidFireLevel() {
+        return rapidFireLevel;
+    }
+
+    /**
+     * Returns the current shooting interval.
+     *
+     * @return The shooting interval.
+     */
+    public static int getShootingInterval() {
+        int reduction = RAPID_FIRE_REDUCTION[rapidFireLevel];
+        return BASE_SHOOTING_INTERVAL * (100 - reduction) / 100;
+    }
+
+
+
 
     // ==================== Utility Methods ====================
 
@@ -95,6 +146,7 @@ public class Item {
      */
     public static void resetAllItems() {
         spreadShotLevel = 0;
+        rapidFireLevel = 0;
     }
 
     /**
@@ -107,8 +159,9 @@ public class Item {
         status.append("=== Item Status ===\n");
         status.append("Spread Shot Level: ").append(spreadShotLevel)
                 .append(" (Bullets: ").append(getSpreadShotBulletCount())
-                .append(", Spacing: ").append(getSpreadShotSpacing())
-                .append("px)\n");
+                .append(", Spacing: ").append(getSpreadShotSpacing());
+        status.append("Rapid Fire Level: ").append(rapidFireLevel)
+                .append(" (Interval: ").append(getShootingInterval());
         return status.toString();
     }
 
@@ -117,5 +170,6 @@ public class Item {
      */
     public static void setMaxLevelForTesting() {
         spreadShotLevel = MAX_SPREAD_SHOT_LEVEL;
+        rapidFireLevel = MAX_RAPID_FIRE_LEVEL;
     }
 }

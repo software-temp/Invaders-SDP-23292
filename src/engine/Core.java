@@ -99,10 +99,11 @@ public final class Core {
 			e.printStackTrace();
 		}
 
-		//아이템 임시 테스트
-		Item.setSpreadShotLevel(3);      // 확산탄 3레벨
+		//item test code
+		Item.setSpreadShotLevel(2);
+		Item.setRapidFireLevel(1);
 
-		// 아이템 상태 출력
+		// print item status
 		System.out.println(Item.getItemStatus());
 		// =============================
 
