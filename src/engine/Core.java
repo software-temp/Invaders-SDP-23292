@@ -99,6 +99,13 @@ public final class Core {
 			e.printStackTrace();
 		}
 
+		//아이템 임시 테스트
+		Item.setSpreadShotLevel(3);      // 확산탄 3레벨
+
+		// 아이템 상태 출력
+		System.out.println(Item.getItemStatus());
+		// =============================
+
 		frame = new Frame(WIDTH, HEIGHT);
 		DrawManager.getInstance().setFrame(frame);
 		int width = frame.getWidth();

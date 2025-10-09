@@ -102,6 +102,9 @@ public class GameScreen extends Screen {
 		this.lives = gameState.getLivesRemaining();
 		if (this.bonusLife)
 			this.lives++;
+
+
+
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
 	}
@@ -190,9 +193,9 @@ public class GameScreen extends Screen {
 
 				// ===== 여기에 테스트 코드 추가 =====
 
-				// P키: 푸시백 아이템 (적을 20픽셀 뒤로 밀기)
+				// P키: 푸시백 아이템 (적을 4픽셀 뒤로 밀기)
 				if (inputManager.isKeyDown(KeyEvent.VK_P)) {
-					Item.PushbackItem(this.enemyShipFormation, 20);
+					Item.PushbackItem(this.enemyShipFormation, 4);
 					this.logger.info("Pushback item activated!");
 				}
 
