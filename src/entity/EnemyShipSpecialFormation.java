@@ -202,16 +202,6 @@ public class EnemyShipSpecialFormation implements Iterable<EnemyShip> {
         }
     }
 
-    public final int getSpeed(EnemyShip enemyShipSpecial) {
-        if (enemyShipSpecial.getColor() == Color.RED) {
-            return X_RED_SPEED;
-        } else if (enemyShipSpecial.getColor() == Color.BLUE) {
-            return X_BLUE_SPEED;
-        }
-        this.logger.info("ERROR Color");
-        return 0;
-    }
-
         /**
          * Shoots a bullet downwards. TO DO:feature 2
          *
