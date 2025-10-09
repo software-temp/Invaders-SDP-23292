@@ -156,10 +156,10 @@ public class GameScreen extends Screen {
 						|| inputManager.isKeyDown(KeyEvent.VK_D);
 				boolean moveLeft = inputManager.isKeyDown(KeyEvent.VK_LEFT)
 						|| inputManager.isKeyDown(KeyEvent.VK_A);
-                boolean moveUp = inputManager.isKeyDown(KeyEvent.VK_UP)
-                        || inputManager.isKeyDown(KeyEvent.VK_W);
-                boolean moveDown = inputManager.isKeyDown(KeyEvent.VK_DOWN)
-                        || inputManager.isKeyDown(KeyEvent.VK_S);
+				boolean moveUp = inputManager.isKeyDown(KeyEvent.VK_UP)
+						|| inputManager.isKeyDown(KeyEvent.VK_W);
+				boolean moveDown = inputManager.isKeyDown(KeyEvent.VK_DOWN)
+						|| inputManager.isKeyDown(KeyEvent.VK_S);
 
 				boolean isRightBorder = this.ship.getPositionX()
 						+ this.ship.getWidth() + this.ship.getSpeed() > this.width - 1;
