@@ -102,7 +102,6 @@ public class GameScreen extends Screen {
 			this.lives++;
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
-
 	}
 
 	/**
@@ -152,17 +151,13 @@ public class GameScreen extends Screen {
 
 			/** spawn final boss to check object (for test) **/
 			if(this.finalBoss == null){
-				this.finalBoss = new FinalBoss(this.width/2-50,50,this);
+				this.finalBoss = new FinalBoss(this.width/2-50,50,this, ship);
 				this.logger.info("Final Boss created.");
-
 			}
-
 			if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
-
 				this.finalBoss.update();
-				this.finalBoss.shoot1();
-				this.finalBoss.shoot2();
-//				this.finalBoss.shoot3(this.ship.getPositionX(),this.ship.getPositionY()); developing
+				this.finalBoss.boss_shoot(logger);
+
 				Set<BossBullet> bulletsToRemove = new HashSet<>();
 
 				for (BossBullet b : BossBullet.getBossBullets()) {
