@@ -418,7 +418,27 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 		return enemyShipsList.iterator();
 	}
 
-	/**
+    /**
+     * Destroy all ships in the formation.
+     *
+     * @return The number of destroyed ships.
+     */
+
+    public final int destroyAll() {
+        int destroyed = 0;
+        for (List<EnemyShip> column : this.enemyShips) {
+            for (EnemyShip enemyShip : column) {
+                if (enemyShip.isDestroyed()) {
+                    enemyShip.destroy();
+                    destroyed++;
+                }
+            }
+        }
+        this.shipCount = 0;
+        return destroyed;
+    }
+
+    /**
 	 * Checks if there are any ships remaining.
 	 * 
 	 * @return True when all ships have been destroyed.
@@ -426,4 +446,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	public final boolean isEmpty() {
 		return this.shipCount <= 0;
 	}
+
+
+
 }
