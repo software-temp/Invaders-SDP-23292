@@ -183,6 +183,11 @@ public class GameScreen extends Screen {
 				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
                     if (this.ship.shoot(this.bullets))
                         this.bulletsShot++;
+                // Bomb test code
+                if (inputManager.isKeyDown(KeyEvent.VK_B)){
+                    int destroyedByBomb = Item.Bomb(this.enemyShipFormation);
+                }
+
 			}
 
 			if (this.enemyShipSpecial != null) {

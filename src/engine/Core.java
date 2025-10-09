@@ -36,7 +36,7 @@ public final class Core {
 	private static final int EXTRA_LIFE_FRECUENCY = 3;
 	/** Total number of levels. */
 	private static final int NUM_LEVELS = 7;
-	
+
 	/** Difficulty settings for level 1. */
 	private static final GameSettings SETTINGS_LEVEL_1 =
 			new GameSettings(5, 4, 60, 2000);
@@ -99,10 +99,11 @@ public final class Core {
 			e.printStackTrace();
 		}
 
-		//아이템 임시 테스트
-		Item.setSpreadShotLevel(3);      // 확산탄 3레벨
+		// Test item
+		Item.setSpreadShotLevel(3);
+        Item.setBulletSpeedLevel(3);
 
-		// 아이템 상태 출력
+		// Print current item status
 		System.out.println(Item.getItemStatus());
 		// =============================
 

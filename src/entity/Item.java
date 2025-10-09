@@ -26,6 +26,16 @@ public class Item {
     /** Spacing between bullets per level (in pixels) */
     private static final int[] SPREAD_SHOT_SPACING = {0, 10, 8, 5};
 
+    // ==================== Bullet Speed Item ====================
+
+    /** Bullet Speed level (0 = not purchased, 1-3 = enhancement levels) */
+    private static int bulletSpeedLevel = 0;
+
+    /** Maximum Bullet Speed level */
+    private static final int MAX_BULLET_SPEED_LEVEL = 3;
+
+    /** Bullet speed value per level */
+    private static final int[] BULLET_SPEED_VALUES = {-6, -8, -10, -12};
 
     /**
      * Private constructor - this class should not be instantiated.
@@ -87,6 +97,58 @@ public class Item {
         return spreadShotLevel > 0;
     }
 
+    // ==================== Bullet Speed Methods ====================
+
+    /**
+     * Sets the Bullet Speed level (called upon purchase from a shop).
+     *
+     * @param level The level to set (0-3).
+     * @return true if the level was set successfully, false otherwise.
+     */
+    public static boolean setBulletSpeedLevel(int level) {
+        if (level < 0 || level > MAX_BULLET_SPEED_LEVEL) {
+            return false;
+        }
+        bulletSpeedLevel = level;
+        return true;
+    }
+
+    /**
+     * Returns the current Bullet Speed level.
+     *
+     * @return The current level (0-3).
+     */
+    //
+    public static int getBulletSpeedLevel() {
+        return bulletSpeedLevel;
+    }
+
+    /**
+     * Returns the bullet speed for the current enhancement level.
+     *
+     * @return The bullet speed.
+     */
+    public static int getBulletSpeed() {
+        return BULLET_SPEED_VALUES[bulletSpeedLevel];
+    }
+
+    // ==================== Bomb Item Methods ====================
+
+    /**
+     * Destroy all enemies on the screen.
+     *
+     * @param Current enemy ship formation.
+     * @return The number of destroyed enemies.
+     *
+     */
+
+    public static int Bomb(final EnemyShipFormation formation) {
+        if (formation != null) {
+            return formation.destroyAll(); // To add the score or coin, declare as an int method.
+        }
+        return 0;
+    }
+
 
     // ==================== Utility Methods ====================
 
@@ -109,6 +171,9 @@ public class Item {
                 .append(" (Bullets: ").append(getSpreadShotBulletCount())
                 .append(", Spacing: ").append(getSpreadShotSpacing())
                 .append("px)\n");
+        status.append("Bullet Speed Level: ").append(bulletSpeedLevel)
+                .append(" (Speed: ").append(getBulletSpeed())
+                .append("px/)\n");
         return status.toString();
     }
 
@@ -117,5 +182,6 @@ public class Item {
      */
     public static void setMaxLevelForTesting() {
         spreadShotLevel = MAX_SPREAD_SHOT_LEVEL;
+        bulletSpeedLevel = MAX_BULLET_SPEED_LEVEL;
     }
 }
