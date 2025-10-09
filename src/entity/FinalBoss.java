@@ -14,20 +14,25 @@ public class FinalBoss extends Entity{
     private int maxHp;
     private final int pointValue;
     private boolean isDestroyed;
-    /** for move pattern **/
+    /** for move pattern */
     private int zigDirection = 1;
-    /** for move pattern **/
+    /** for move pattern */
     private boolean goingDown = true;
 
     private Cooldown animationCooldown;
+    /** Shoot1's cool down */
     private Cooldown shootCooldown1;
+    /** Shoot2's cool down */
     private Cooldown shootCooldown2;
+    /** Shoot3's cool down */
     private Cooldown shootCooldown3;
+    /** random x coordinate of Shoot2's bullet  */
     private static int random_x;
+    /** Is the bullet on the screen erased */
     private boolean is_cleared = false;
     private static Ship ship;
     private final GameScreen screen;
-    /** basic attribute of final boss **/
+    /** basic attribute of final boss */
     public FinalBoss(int positionX, int positionY, GameScreen screen, Ship ship){
 
         super(positionX,positionY,100,80, Color.RED);
@@ -46,9 +51,9 @@ public class FinalBoss extends Entity{
 
     }
 
-    /** for vibrant moving with final boss **/
-    /** final boss spritetype is the same with special enemy and enemyshipA, because final boss spritetype have not yet implemented **/
-    /** becasue final boss is single object, moving and shooting pattern are included in update methods **/
+    /** for vibrant moving with final boss */
+    /** final boss spritetype is the same with special enemy and enemyshipA, because final boss spritetype have not yet implemented */
+    /** becasue final boss is single object, moving and shooting pattern are included in update methods */
     public void update(){
         if(this.animationCooldown.checkFinished()){
             this.animationCooldown.reset();
@@ -114,7 +119,7 @@ public class FinalBoss extends Entity{
         this.positionY += distanceY;
     }
 
-    /** not yet implemented **/
+    /** shooting pattern of final boss **/
 
     public void boss_shoot(Logger logger){
         if(this.healPoint > this.maxHp/4) {
@@ -133,39 +138,39 @@ public class FinalBoss extends Entity{
             }
         }
     }
-
+    /** first shooting pattern of final boss **/
     public void shoot1(){
         if(this.shootCooldown1.checkFinished()){
             this.shootCooldown1.reset();
-            // 총알 5방향 객체 생성 로직
             int arr[] = {0,1,-1,2,-2};
             for (int i : arr){
-                new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3,this.getPositionY() + this.getHeight(), i,4,6,10);
+                new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3,this.getPositionY() + this.getHeight(), i,4,6,10,Color.yellow);
             }
         }
     }
+    /** second shooting pattern of final boss **/
     public void shoot2() {
         random_x = (int) (Math.random() * 450);
         if (this.shootCooldown2.checkFinished()) {
             this.shootCooldown2.reset();
-            // 총알 일직선 객체 생성 로직
-            new BossBullet(random_x, 1, 0, 2,6,10);
+            new BossBullet(random_x, 1, 0, 2,6,10,Color.yellow);
 
 
         }
     }
+    /** third shooting pattern of final boss **/
     public void shoot3() {
         if (this.shootCooldown3.checkFinished()) {
             this.shootCooldown3.reset();
             if (!(this.getPositionX() == 0 || this.getPositionX() == 400)){
-                new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3 + 70, this.positionY, 0, 5,6,10);
-                new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3 - 70, this.positionY, 0, 5,6,10);
+                new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3 + 70, this.positionY, 0, 5,6,10,Color.blue);
+                new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3 - 70, this.positionY, 0, 5,6,10,Color.blue);
             }
         }
     }
 
 
-
+    /** draw final boss bullet **/
     public void draw(DrawManager drawManager){
 
         for (BossBullet bossBullet : BossBullet.getBossBullets()) {

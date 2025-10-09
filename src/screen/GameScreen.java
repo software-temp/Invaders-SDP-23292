@@ -15,7 +15,7 @@ import entity.*;
  *
  * @author <a href="mailto:RobertoIA1987@gmail.com">Roberto Izquierdo Amo</a>
  *
- */
+ **/
 public class GameScreen extends Screen {
 
 	/** Milliseconds until the screen accepts user input. */
@@ -47,7 +47,7 @@ public class GameScreen extends Screen {
 	private Cooldown enemyShipSpecialCooldown;
 	/** Time until bonus ship explosion disappears. */
 
-	/** team drawing may implement **/
+	/** team drawing may implement */
 	private FinalBoss finalBoss;
 
 	private Cooldown enemyShipSpecialExplosionCooldown;
@@ -109,6 +109,7 @@ public class GameScreen extends Screen {
 	 */
 	public final void initialize() {
 		super.initialize();
+		/** Initialize the bullet Boss fired */
 		BossBullet.getBossBullets().clear();
 		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
 		enemyShipFormation.attach(this);
@@ -149,23 +150,27 @@ public class GameScreen extends Screen {
 
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
 
-			/** spawn final boss to check object (for test) **/
+			/** spawn final boss to check object (for test) */
 			if(this.finalBoss == null){
 				this.finalBoss = new FinalBoss(this.width/2-50,50,this, ship);
 				this.logger.info("Final Boss created.");
 			}
 			if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
 				this.finalBoss.update();
+			/** called the boss shoot logic */
 				this.finalBoss.boss_shoot(logger);
-
+				/** bullets to erase */
 				Set<BossBullet> bulletsToRemove = new HashSet<>();
 
 				for (BossBullet b : BossBullet.getBossBullets()) {
 					b.update();
-
+					/** If the bullet goes off the screen */
 					if (b.isOffScreen(width, height)) {
+						/** bulletsToRemove carry bullet */
 						bulletsToRemove.add(b);
-					} else if (b.collidesWith(this.ship)) {
+					}
+					/** If the bullet collides with ship */
+					else if (this.checkCollision(b,this.ship)) {
 						if (!this.ship.isDestroyed()) {
 							this.ship.destroy();
 							this.lives--;
@@ -174,10 +179,9 @@ public class GameScreen extends Screen {
 
 						}
 						bulletsToRemove.add(b);
-
 					}
 				}
-
+				/** all bullets are removed */
 				BossBullet.getBossBullets().removeAll(bulletsToRemove);
 			}
 
@@ -241,7 +245,7 @@ public class GameScreen extends Screen {
 			this.enemyShipFormation.update();
 			this.enemyShipFormation.shoot(this.bullets);
 
-			/** when the final boss is at the field **/
+			/** when the final boss is at the field */
 			if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
 				this.finalBoss.update();
 			}
@@ -275,7 +279,8 @@ public class GameScreen extends Screen {
 					this.enemyShipSpecial.getPositionX(),
 					this.enemyShipSpecial.getPositionY());
 
-		/** draw final boss at the field **/
+		/** draw final boss at the field */
+		/** draw final boss bullets */
 		if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
 			finalBoss.draw(drawManager);
 		}
@@ -363,7 +368,7 @@ public class GameScreen extends Screen {
 					recyclable.add(bullet);
 				}
 
-				/** when final boss collide with bullet **/
+				/** when final boss collide with bullet */
 				if(this.finalBoss != null && !this.finalBoss.isDestroyed() && checkCollision(bullet,this.finalBoss)){
 					this.finalBoss.takeDamage(1);
 					if(this.finalBoss.getHealPoint() <= 0){
