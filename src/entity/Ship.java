@@ -69,7 +69,6 @@ public class Ship extends Entity {
 
     /**
      * Moves the ship speed units down, or until the down screen border is
->>>>>>> master
      * reached.
      */
     public final void moveDown() {
