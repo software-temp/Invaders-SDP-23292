@@ -102,8 +102,6 @@ public class GameScreen extends Screen {
 		this.lives = gameState.getLivesRemaining();
 		if (this.bonusLife)
 			this.lives++;
-		// 아이템 추가 생명 적용
-		this.lives += Item.getExtraLives();
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
 	}
@@ -189,6 +187,22 @@ public class GameScreen extends Screen {
 				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
                     if (this.ship.shoot(this.bullets))
                         this.bulletsShot++;
+
+				// ===== 여기에 테스트 코드 추가 =====
+
+				// P키: 푸시백 아이템 (적을 20픽셀 뒤로 밀기)
+				if (inputManager.isKeyDown(KeyEvent.VK_P)) {
+					Item.PushbackItem(this.enemyShipFormation, 20);
+					this.logger.info("Pushback item activated!");
+				}
+
+				// T키: 타임프리즈 아이템 (3초 동안 적 정지)
+				if (inputManager.isKeyDown(KeyEvent.VK_T)) {
+					Item.applyTimeFreezeItem(3000);  // 3000밀리초 = 3초
+					this.logger.info("Time freeze activated for 3 seconds!");
+				}
+
+				// ===== 테스트 코드 끝 =====
 			}
 
 			if (this.enemyShipSpecial != null) {
@@ -211,8 +225,11 @@ public class GameScreen extends Screen {
 			}
 
 			this.ship.update();
-			this.enemyShipFormation.update();
-			this.enemyShipFormation.shoot(this.bullets);
+			/**여기 부분 추가 (TimeFreeze)**/
+			if (!Item.isTimeFreezeActive()) {
+				this.enemyShipFormation.update();
+				this.enemyShipFormation.shoot(this.bullets);
+			}
 		}
 
 		manageCollisions();

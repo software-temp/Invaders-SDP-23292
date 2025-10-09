@@ -37,9 +37,8 @@ public class Ship extends Entity {
 	 */
 	public Ship(final int positionX, final int positionY) {
 		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
-
 		this.spriteType = SpriteType.Ship;
-		this.shootingCooldown = Core.getCooldown(Item.getShootingInterval());
+		this.shootingCooldown = Core.getCooldown(SHOOTING_INTERVAL);
 		this.destructionCooldown = Core.getCooldown(1000);
 	}
 
@@ -48,7 +47,7 @@ public class Ship extends Entity {
 	 * reached.
 	 */
 	public final void moveRight() {
-		this.positionX += Item.getMovementSpeed();
+		this.positionX += SPEED;
 	}
 
 	/**
@@ -56,7 +55,7 @@ public class Ship extends Entity {
 	 * reached.
 	 */
 	public final void moveLeft() {
-		this.positionX -= Item.getMovementSpeed();
+		this.positionX -= SPEED;
 	}
     /**
      * Moves the ship speed units up, or until the SEPARATION_LINE_HEIGHT is
@@ -79,41 +78,19 @@ public class Ship extends Entity {
 	 *            List of bullets on screen, to add the new bullet.
 	 * @return Checks if the bullet was shot correctly.
 	 */
-	public final boolean shoot(final Set<Bullet> bullets) {
-		if (this.shootingCooldown.checkFinished()) {
-			this.shootingCooldown.reset();
-			// Item 클래스에서 확산탄 정보 가져오기
-			int bulletCount = Item.getSpreadShotBulletCount();
-			int spacing = Item.getSpreadShotSpacing();
-			int bulletSpeed = Item.getBulletSpeed();
-
-			int centerX = positionX + this.width / 2;
-			int centerY = positionY;
-
-			if (bulletCount == 1) {
-				// 일반 발사 (확산탄 미구매)
-				bullets.add(BulletPool.getBullet(centerX, centerY, bulletSpeed));
-			} else {
-				// 확산탄 발사
-				int startOffset = -(bulletCount / 2) * spacing;
-
-				for (int i = 0; i < bulletCount; i++) {
-					int offsetX = startOffset + (i * spacing);
-					bullets.add(BulletPool.getBullet(
-							centerX + offsetX,
-							centerY,
-							bulletSpeed
-					));
-				}
-			}
-			return true;
-		}
-		return false;
-	}
 
 	/**
 	 * Updates status of the ship.
 	 */
+	public final boolean shoot(final Set<Bullet> bullets) {
+		if (this.shootingCooldown.checkFinished()) {
+			this.shootingCooldown.reset();
+			bullets.add(BulletPool.getBullet(positionX + this.width / 2,
+					positionY, BULLET_SPEED));
+			return true;
+		}
+		return false;
+	}
 	public final void update() {
 		if (!this.destructionCooldown.checkFinished())
 			this.spriteType = SpriteType.ShipDestroyed;
