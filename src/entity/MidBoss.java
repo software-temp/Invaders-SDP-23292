@@ -1,5 +1,7 @@
 package entity;
 
+import screen.GameScreen;
+
 import java.awt.*;
 
 /**
@@ -25,7 +27,7 @@ public abstract class MidBoss extends Entity implements BossEntity {
      * @param height    Height of the entity.
      * @param color     Color of the entity.
      */
-    public MidBoss(int positionX, int positionY, int width, int height, Color color) {
+    public MidBoss(int positionX, int positionY, int width, int height, GameScreen screen, Color color) {
         super(positionX, positionY, width, height, color);
 
     }
@@ -37,5 +39,5 @@ public abstract class MidBoss extends Entity implements BossEntity {
     public int getPointValue() { return this.pointValue; }
 
     @Override
-    public boolean isDestroyed() { return false; }
+    public boolean isDestroyed() { return this.isDestroyed; }
 }
