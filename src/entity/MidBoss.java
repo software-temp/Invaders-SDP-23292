@@ -10,8 +10,14 @@ import java.awt.*;
  */
 public abstract class MidBoss extends Entity implements BossEntity {
 
-    /**
-     * Constructor, establishes the entity's generic properties.
+    protected int healPoint=10;
+    protected int maxHp=healPoint;
+    protected int pointValue=500;
+    protected boolean isDestroyed=false;
+
+
+    /**public abstract class MidBoss extends Entity implements BossEntity
+     * Constructor, establishes the boss entity's generic properties.
      *
      * @param positionX Initial position of the entity in the X axis.
      * @param positionY Initial position of the entity in the Y axis.
@@ -21,5 +27,15 @@ public abstract class MidBoss extends Entity implements BossEntity {
      */
     public MidBoss(int positionX, int positionY, int width, int height, Color color) {
         super(positionX, positionY, width, height, color);
+
     }
+
+    @Override
+    public int getHealPoint() { return this.healPoint; }
+
+    @Override
+    public int getPointValue() { return this.pointValue; }
+
+    @Override
+    public boolean isDestroyed() { return false; }
 }
