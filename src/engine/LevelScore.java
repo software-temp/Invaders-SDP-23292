@@ -1,4 +1,3 @@
-// src/engine/ScoreCalculator.java
 package engine;
 
 import java.util.List;
@@ -6,7 +5,7 @@ import java.util.Map;
 
 /**
  * Implements the logic for calculating scores, including time-based bonuses.
- * * @author Nam
+ * @author Nam
  * */
 public class LevelScore {
 

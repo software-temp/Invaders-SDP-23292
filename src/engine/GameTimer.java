@@ -2,7 +2,7 @@ package engine;
 
 /**
  * Implements a simple game timer to measure elapsed time.
- * * @author Amartsogt / CHO
+ * @author Amartsogt / CHO
  */
 public class GameTimer {
 
@@ -39,18 +39,13 @@ public class GameTimer {
      * @return Elapsed time in milliseconds.
      */
     public long getElapsedTime() {
-        long elapsed;
-        if (this.running) {
-            elapsed = (System.nanoTime() - this.startTime) / 1000000;
-        } else {
-            elapsed = (this.stopTime - this.startTime) / 1000000;
-        }
-        return elapsed;
+        final long endTime = this.running ? System.nanoTime() : this.stopTime;
+        return (endTime - this.startTime) / 1000000;
     }
 
     /**
      * Checks if the timer is currently running.
-     * * @return True if the timer is running.
+     * @return True if the timer is running.
      */
     public boolean isRunning() {
         return this.running;
