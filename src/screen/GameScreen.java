@@ -8,12 +8,7 @@ import engine.Cooldown;
 import engine.Core;
 import engine.GameSettings;
 import engine.GameState;
-import entity.Bullet;
-import entity.BulletPool;
-import entity.EnemyShip;
-import entity.EnemyShipFormation;
-import entity.Entity;
-import entity.Ship;
+import entity.*;
 
 /**
  * Implements the game screen, where the action happens.
@@ -72,6 +67,8 @@ public class GameScreen extends Screen {
 	private boolean bonusLife;
     /** Current coin. */
     private int coin;
+    /** Set of Items on screen. **/
+    private Set<Item> items;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -122,6 +119,7 @@ public class GameScreen extends Screen {
 				.getCooldown(BONUS_SHIP_EXPLOSION);
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
 		this.bullets = new HashSet<Bullet>();
+        this.items = new HashSet<Item>();
 
 		// Special input delay / countdown.
 		this.gameStartTime = System.currentTimeMillis();
@@ -212,6 +210,7 @@ public class GameScreen extends Screen {
 			this.enemyShipFormation.shoot(this.bullets);
 		}
 
+        cleanItems();
 		manageCollisions();
 		cleanBullets();
 		draw();
@@ -245,6 +244,9 @@ public class GameScreen extends Screen {
 		for (Bullet bullet : this.bullets)
 			drawManager.drawEntity(bullet, bullet.getPositionX(),
 					bullet.getPositionY());
+
+        for (Item item : this.items)
+            drawManager.drawEntity(item, item.getPositionX(), item.getPositionY());
 
 		// Interface.
 		drawManager.drawScore(this, this.score);
@@ -283,46 +285,93 @@ public class GameScreen extends Screen {
 		BulletPool.recycle(recyclable);
 	}
 
+    /**
+     * Cleans Items that go off screen.
+     */
+
+    private void cleanItems() {
+        Set<Item> recyclable = new HashSet<Item>();
+        for (Item item : this.items) {
+            item.update();
+            if (item.getPositionY() < SEPARATION_LINE_HEIGHT
+                    || item.getPositionY() > this.height)
+                recyclable.add(item);
+        }
+        this.items.removeAll(recyclable);
+        ItemPool.recycle(recyclable);
+    }
+
 	/**
 	 * Manages collisions between bullets and ships.
 	 */
 	private void manageCollisions() {
-		Set<Bullet> recyclable = new HashSet<Bullet>();
-		for (Bullet bullet : this.bullets)
-			if (bullet.getSpeed() > 0) {
-				if (checkCollision(bullet, this.ship) && !this.levelFinished) {
-					recyclable.add(bullet);
-					if (!this.ship.isDestroyed()) {
-						this.ship.destroy();
-						this.lives--;
-						this.logger.info("Hit on player ship, " + this.lives
-								+ " lives remaining.");
-					}
-				}
-			} else {
-				for (EnemyShip enemyShip : this.enemyShipFormation)
-					if (!enemyShip.isDestroyed()
-							&& checkCollision(bullet, enemyShip)) {
-						this.score += enemyShip.getPointValue();
-                        this.coin += (enemyShip.getPointValue()/10);
-						this.shipsDestroyed++;
-						this.enemyShipFormation.destroy(enemyShip);
-						recyclable.add(bullet);
-					}
-				if (this.enemyShipSpecial != null
-						&& !this.enemyShipSpecial.isDestroyed()
-						&& checkCollision(bullet, this.enemyShipSpecial)) {
-					this.score += this.enemyShipSpecial.getPointValue();
-                    this.coin += (this.enemyShipSpecial.getPointValue()/10);
-					this.shipsDestroyed++;
-					this.enemyShipSpecial.destroy();
-					this.enemyShipSpecialExplosionCooldown.reset();
-					recyclable.add(bullet);
-				}
-			}
-		this.bullets.removeAll(recyclable);
-		BulletPool.recycle(recyclable);
-	}
+        Set<Bullet> recyclable = new HashSet<Bullet>();
+        for (Bullet bullet : this.bullets)
+            if (bullet.getSpeed() > 0) {
+                if (checkCollision(bullet, this.ship) && !this.levelFinished) {
+                    recyclable.add(bullet);
+                    if (!this.ship.isDestroyed()) {
+                        this.ship.destroy();
+                        this.lives--;
+                        this.logger.info("Hit on player ship, " + this.lives
+                                + " lives remaining.");
+                    }
+                }
+            } else {
+                for (EnemyShip enemyShip : this.enemyShipFormation)
+                    if (!enemyShip.isDestroyed()
+                            && checkCollision(bullet, enemyShip)) {
+                        this.score += enemyShip.getPointValue();
+                        this.coin += (enemyShip.getPointValue() / 10);
+                        this.shipsDestroyed++;
+                        Item.ItemType droppedType = Item.getRandomItemType(0.3);
+                        if (droppedType != null) {
+                            final int ITEM_DROP_SPEED = 2;
+
+                            Item newItem = ItemPool.getItem(
+                                    enemyShip.getPositionX() + enemyShip.getWidth() / 2,
+                                    enemyShip.getPositionY() + enemyShip.getHeight() / 2,
+                                    ITEM_DROP_SPEED,
+                                    droppedType
+                            );
+                            this.items.add(newItem);
+                            this.logger.info("An item (" + droppedType + ") dropped");
+                        }
+                        this.enemyShipFormation.destroy(enemyShip);
+                        recyclable.add(bullet);
+                    }
+                if (this.enemyShipSpecial != null
+                        && !this.enemyShipSpecial.isDestroyed()
+                        && checkCollision(bullet, this.enemyShipSpecial)) {
+                    this.score += this.enemyShipSpecial.getPointValue();
+                    this.coin += (this.enemyShipSpecial.getPointValue() / 10);
+                    this.shipsDestroyed++;
+                    this.enemyShipSpecial.destroy();
+                    this.enemyShipSpecialExplosionCooldown.reset();
+                    recyclable.add(bullet);
+                }
+            }
+        this.bullets.removeAll(recyclable);
+        BulletPool.recycle(recyclable);
+
+        Set<Item> acquiredItems = new HashSet<Item>();
+
+        if (!this.levelFinished && !this.ship.isDestroyed()) {
+            for (Item item : this.items) {
+
+                if (checkCollision(this.ship, item)) {
+                    GameState currentGameState = this.getGameState();
+                    item.applyEffect(currentGameState);
+                    this.lives = currentGameState.getLivesRemaining();
+                    this.score = currentGameState.getScore();
+                    this.logger.info("Player acquired item: " + item.getItemType());
+                    acquiredItems.add(item);
+                }
+            }
+            this.items.removeAll(acquiredItems);
+            ItemPool.recycle(acquiredItems);
+        }
+    }
 
 	/**
 	 * Checks if two entities are colliding.
