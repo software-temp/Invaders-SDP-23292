@@ -14,6 +14,7 @@ import entity.EnemyShip;
 import entity.EnemyShipFormation;
 import entity.Entity;
 import entity.Ship;
+import entity.Item;
 
 /**
  * Implements the game screen, where the action happens.
@@ -56,6 +57,8 @@ public class GameScreen extends Screen {
 	private Cooldown screenFinishedCooldown;
 	/** Set of all bullets fired by on screen ships. */
 	private Set<Bullet> bullets;
+	/** Set of all items dropped by on screen ships. */
+	private Set<Item> items;
 	/** Current score. */
 	private int score;
 	/** Player lives left. */
@@ -72,6 +75,8 @@ public class GameScreen extends Screen {
 	private boolean bonusLife;
     /** Current coin. */
     private int coin;
+	/** Maximum number of lives. */
+	private int maxLives;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -82,6 +87,8 @@ public class GameScreen extends Screen {
 	 *            Current game settings.
 	 * @param bonusLife
 	 *            Checks if a bonus life is awarded this level.
+	 * @param maxLives
+	 *            Maximum number of lives.
 	 * @param width
 	 *            Screen width.
 	 * @param height
@@ -90,12 +97,13 @@ public class GameScreen extends Screen {
 	 *            Frames per second, frame rate at which the game is run.
 	 */
 	public GameScreen(final GameState gameState,
-			final GameSettings gameSettings, final boolean bonusLife,
-			final int width, final int height, final int fps) {
+					  final GameSettings gameSettings, final boolean bonusLife, final int maxLives,
+					  final int width, final int height, final int fps) {
 		super(width, height, fps);
 
 		this.gameSettings = gameSettings;
 		this.bonusLife = bonusLife;
+		this.maxLives = maxLives;
 		this.level = gameState.getLevel();
 		this.score = gameState.getScore();
 		this.lives = gameState.getLivesRemaining();
@@ -122,6 +130,7 @@ public class GameScreen extends Screen {
 				.getCooldown(BONUS_SHIP_EXPLOSION);
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
 		this.bullets = new HashSet<Bullet>();
+		this.items = new HashSet<Item>();
 
 		// Special input delay / countdown.
 		this.gameStartTime = System.currentTimeMillis();
@@ -292,11 +301,13 @@ public class GameScreen extends Screen {
 			if (bullet.getSpeed() > 0) {
 				if (checkCollision(bullet, this.ship) && !this.levelFinished) {
 					recyclable.add(bullet);
-					if (!this.ship.isDestroyed()) {
-						this.ship.destroy();
-						this.lives--;
-						this.logger.info("Hit on player ship, " + this.lives
-								+ " lives remaining.");
+					if (!this.ship.isInvincible()) {
+						if (!this.ship.isDestroyed()) {
+							this.ship.destroy();
+							this.lives--;
+							this.logger.info("Hit on player ship, " + this.lives
+									+ " lives remaining.");
+						}
 					}
 				}
 			} else {
@@ -357,5 +368,14 @@ public class GameScreen extends Screen {
 	public final GameState getGameState() {
 		return new GameState(this.level, this.score, this.lives,
 				this.bulletsShot, this.shipsDestroyed,this.coin);
+	}
+
+	/**
+	 * Adds one life to the player.
+	 */
+	public final void gainLife() {
+		if (this.lives < this.maxLives) {
+			this.lives++;
+		}
 	}
 }
