@@ -1,36 +1,67 @@
+// src/engine/ScoreCalculator.java
 package engine;
-import java.util.HashMap;
-import java.util.Map;
-public class LevelScore {
-    private final Map<Integer, Integer> levelSTimes = new HashMap<>();
 
-    public LevelScore() {
-        // 조정가능
-        levelSTimes.put(1, 180);
-        levelSTimes.put(2, 150);
-        levelSTimes.put(3, 120);
-        levelSTimes.put(4, 100);
-        levelSTimes.put(5, 90);
-        levelSTimes.put(6, 85);
-        levelSTimes.put(7, 80);
-        levelSTimes.put(8, 75);
-        levelSTimes.put(9, 70);
-        levelSTimes.put(10, 65);
-    }
-    private int calculateTimeBonus(int level, int finishTimeInSeconds) {
-        Integer sTime = levelSTimes.get(level);
-        if (sTime == null) return 0;
-        if (finishTimeInSeconds <= sTime)
-            return 300;
-        if (finishTimeInSeconds <= sTime + 30)
-            return 200;
-        if (finishTimeInSeconds <= sTime + 60)
-            return 100;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Implements the logic for calculating scores, including time-based bonuses.
+ * * @author Nam
+ * */
+public class LevelScore {
+
+    /**
+     * Calculates the time bonus based on the level's scoring criteria and the
+     * time taken to finish.
+     *
+     * @param scoringCriteria
+     * A map containing the scoring rules, parsed from the level JSON.
+     * @param finishTimeInSeconds
+     * The time in seconds it took to complete the level.
+     * @return The calculated time bonus score.
+     */
+    @SuppressWarnings("unchecked")
+    public final int calculateTimeBonus(final Map<String, Object> scoringCriteria, final int finishTimeInSeconds) {
+        if (scoringCriteria == null || !scoringCriteria.containsKey("timeBonus")) {
+            return 0;
+        }
+
+        List<Map<String, Object>> timeBonusTiers = (List<Map<String, Object>>) scoringCriteria.get("timeBonus");
+
+        if (timeBonusTiers == null) {
+            return 0;
+        }
+
+        for (Map<String, Object> tier : timeBonusTiers) {
+            Object timeObj = tier.get("time");
+            Object bonusObj = tier.get("bonus");
+
+            if (timeObj instanceof Number && bonusObj instanceof Number) {
+                int timeThreshold = ((Number) timeObj).intValue();
+                int bonusValue = ((Number) bonusObj).intValue();
+
+                if (finishTimeInSeconds <= timeThreshold) {
+                    return bonusValue;
+                }
+            }
+        }
+
         return 0;
     }
 
-    public int calculateFinalScore(int baseScore, int level, int finishTimeInSeconds) {
-        int timeBonus = calculateTimeBonus(level, finishTimeInSeconds);
+    /**
+     * Calculates the final score by adding the time bonus to the base score.
+     *
+     * @param baseScore
+     * The player's score before the time bonus.
+     * @param scoringCriteria
+     * A map containing the scoring rules, parsed from the level JSON.
+     * @param finishTimeInSeconds
+     * The time in seconds it took to complete the level.
+     * @return The final total score.
+     */
+    public final int calculateFinalScore(final int baseScore, final Map<String, Object> scoringCriteria, final int finishTimeInSeconds) {
+        int timeBonus = calculateTimeBonus(scoringCriteria, finishTimeInSeconds);
         return baseScore + timeBonus;
     }
 }
