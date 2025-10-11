@@ -13,6 +13,8 @@ import screen.HighScoreScreen;
 import screen.ScoreScreen;
 import screen.Screen;
 import screen.TitleScreen;
+import audio.SoundManager;
+
 
 /**
  * Implements core game logic.
@@ -134,7 +136,10 @@ public final class Core {
 					boolean bonusLife = gameState.getLevel()
 							% EXTRA_LIFE_FRECUENCY == 0
 							&& gameState.getLivesRemaining() < MAX_LIVES;
-					
+
+					SoundManager.stopAll();
+					SoundManager.playLoop("sfx/level" + gameState.getLevel() + ".wav");
+
 					currentScreen = new GameScreen(gameState,
 							gameSettings.get(gameState.getLevel() - 1),
 							bonusLife, width, height, FPS);
