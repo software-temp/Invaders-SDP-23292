@@ -100,7 +100,7 @@ public final class Core {
 		}
 
 		//item test code
-		Shop_item.setSpreadShotLevel(0);
+		Shop_item.setMultiShotLevel(3);
 		Shop_item.setRapidFireLevel(5);
 		Shop_item.setPenetrationLevel(2);
 

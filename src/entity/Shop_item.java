@@ -7,24 +7,24 @@ package entity;
  * Currently implemented: Spread Shot
  *
  * Example usage:
- * Item.setSpreadShotLevel(2);  // Purchase level 2 in the shop
- * int bulletCount = Item.getSpreadShotBulletCount();  // Returns the number of bullets to fire
+ * Item.setMultiShotLevel(2);  // Purchase level 2 in the shop
+ * int bulletCount = Item.getMultiShotBulletCount();  // Returns the number of bullets to fire
  */
 public class Shop_item {
 
-    // ==================== Spread Shot Item ====================
+    // ==================== MultiShot Item ====================
 
-    /** Spread Shot level (0 = not purchased, 1-3 = enhancement levels) */
-    private static int spreadShotLevel = 0;
+    /** MultiShot level (0 = not purchased, 1-3 = enhancement levels) */
+    private static int multiShotLevel = 0;
 
-    /** Maximum Spread Shot level */
-    private static final int MAX_SPREAD_SHOT_LEVEL = 3;
+    /** Maximum MultiShot level */
+    private static final int MAX_MULTI_SHOT_LEVEL = 3;
 
     /** Number of bullets fired per level */
-    private static final int[] SPREAD_SHOT_BULLETS = {1, 2, 3, 4};
+    private static final int[] MULTI_SHOT_BULLETS = {1, 2, 3, 4};
 
     /** Spacing between bullets per level (in pixels) */
-    private static final int[] SPREAD_SHOT_SPACING = {0, 10, 8, 5};
+    private static final int[] MULTI_SHOT_SPACING = {0, 10, 8, 5};
 
 
     /**
@@ -61,56 +61,56 @@ public class Shop_item {
 
 
 
-    // ==================== Spread Shot Methods ====================
+    // ==================== MultiShot Methods ====================
 
     /**
-     * Sets the Spread Shot level (called upon purchase from a shop).
+     * Sets the MultiShot level (called upon purchase from a shop).
      *
      * @param level The level to set (0-3).
      * @return true if the level was set successfully, false otherwise.
      */
-    public static boolean setSpreadShotLevel(int level) {
-        if (level < 0 || level > MAX_SPREAD_SHOT_LEVEL) {
+    public static boolean setMultiShotLevel(int level) {
+        if (level < 0 || level > MAX_MULTI_SHOT_LEVEL) {
             return false;
         }
-        spreadShotLevel = level;
+        multiShotLevel = level;
         return true;
     }
 
     /**
-     * Returns the current Spread Shot level.
+     * Returns the current MultiShot level.
      *
      * @return The current level (0-3).
      */
-    public static int getSpreadShotLevel() {
-        return spreadShotLevel;
+    public static int getMultiShotLevel() {
+        return multiShotLevel;
     }
 
     /**
-     * Returns the number of bullets to fire for the Spread Shot.
+     * Returns the number of bullets to fire for the MultiShot.
      *
      * @return The number of bullets (1-4).
      */
-    public static int getSpreadShotBulletCount() {
-        return SPREAD_SHOT_BULLETS[spreadShotLevel];
+    public static int getMultiShotBulletCount() {
+        return MULTI_SHOT_BULLETS[multiShotLevel];
     }
 
     /**
-     * Returns the spacing for Spread Shot bullets.
+     * Returns the spacing for MultiShot bullets.
      *
      * @return The spacing between bullets in pixels.
      */
-    public static int getSpreadShotSpacing() {
-        return SPREAD_SHOT_SPACING[spreadShotLevel];
+    public static int getMultiShotSpacing() {
+        return MULTI_SHOT_SPACING[multiShotLevel];
     }
 
     /**
-     * Checks if the Spread Shot is active.
+     * Checks if the MultiShot is active.
      *
      * @return true if the level is 1 or higher, false otherwise.
      */
-    public static boolean isSpreadShotActive() {
-        return spreadShotLevel > 0;
+    public static boolean isMultiShotActive() {
+        return multiShotLevel > 0;
     }
 
     //==================== Rapid Fire Methods ====================
@@ -200,7 +200,7 @@ public class Shop_item {
      * Resets all items (for testing or game reset).
      */
     public static void resetAllItems() {
-        spreadShotLevel = 0;
+        multiShotLevel = 0;
         rapidFireLevel = 0;
         penetrationLevel = 0;
     }
@@ -213,9 +213,9 @@ public class Shop_item {
     public static String getItemStatus() {
         StringBuilder status = new StringBuilder();
         status.append("=== Item Status ===\n");
-        status.append("Spread Shot Level: ").append(spreadShotLevel)
-                .append(" (Bullets: ").append(getSpreadShotBulletCount())
-                .append(", Spacing: ").append(getSpreadShotSpacing())
+        status.append("MultiShot Level: ").append(multiShotLevel)
+                .append(" (Bullets: ").append(getMultiShotBulletCount())
+                .append(", Spacing: ").append(getMultiShotSpacing())
                 .append(")\n");
         status.append("Rapid Fire Level: ").append(rapidFireLevel)
                 .append(" (Interval: ").append(getShootingInterval())
@@ -230,7 +230,7 @@ public class Shop_item {
      * For testing - sets the Spread Shot to its maximum level.
      */
     public static void setMaxLevelForTesting() {
-        spreadShotLevel = MAX_SPREAD_SHOT_LEVEL;
+        multiShotLevel = MAX_MULTI_SHOT_LEVEL;
         rapidFireLevel = MAX_RAPID_FIRE_LEVEL;
         penetrationLevel = MAX_RAPID_FIRE_LEVEL;
     }
