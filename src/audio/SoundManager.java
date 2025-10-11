@@ -33,4 +33,23 @@ public class SoundManager {
             return null;
         }
     }
+    public static void playLoop(String resourcePath) {
+        try {
+            Clip c = CACHE.computeIfAbsent(resourcePath, SoundManager::loadClip);
+            if (c == null) return;
+            stopAll(); // Stoppe tout avant de jouer la nouvelle musique
+            c.setFramePosition(0);
+            c.loop(Clip.LOOP_CONTINUOUSLY);
+            c.start();
+        } catch (Exception e) {
+            System.err.println("[Sound] Loop failed: " + resourcePath + " -> " + e.getMessage());
+        }
+    }
+
+    public static void stopAll() {
+        for (Clip c : CACHE.values()) {
+            if (c.isRunning()) c.stop();
+        }
+    }
+
 }
