@@ -6,6 +6,7 @@ import engine.Core;
 import screen.GameScreen;
 
 import java.awt.*;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class FinalBoss extends Entity{
@@ -27,13 +28,15 @@ public class FinalBoss extends Entity{
     /** Shoot3's cool down */
     private Cooldown shootCooldown3;
     /** random x coordinate of Shoot2's bullet  */
-    private static int random_x;
+    private int random_x;
     /** Is the bullet on the screen erased */
     private boolean is_cleared = false;
-    private static Ship ship;
+    private Ship ship;
     private final GameScreen screen;
     /** basic attribute of final boss */
-    public FinalBoss(int positionX, int positionY, GameScreen screen, Ship ship){
+    private Set<BossBullet> bossBullets;
+    /** bossBullets carry bullets which Boss fires */
+    public FinalBoss(int positionX, int positionY, GameScreen screen, Ship ship, Set<BossBullet> bossBullets){
 
         super(positionX,positionY,100,80, Color.RED);
         this.screen = screen;
@@ -42,6 +45,7 @@ public class FinalBoss extends Entity{
         this.pointValue = 1000;
         this.spriteType = DrawManager.SpriteType.EnemyShipSpecial;
         this.isDestroyed = false;
+        this.bossBullets = bossBullets;
 
         this.ship = ship;
         this.animationCooldown = Core.getCooldown(500);
@@ -51,9 +55,10 @@ public class FinalBoss extends Entity{
 
     }
 
-    /** for vibrant moving with final boss */
-    /** final boss spritetype is the same with special enemy and enemyshipA, because final boss spritetype have not yet implemented */
-    /** becasue final boss is single object, moving and shooting pattern are included in update methods */
+    /** for vibrant moving with final boss
+     * final boss spritetype is the same with special enemy and enemyshipA, because final boss spritetype have not yet implemented
+     * becasue final boss is single object, moving and shooting pattern are included in update methods
+     */
     public void update(){
         if(this.animationCooldown.checkFinished()){
             this.animationCooldown.reset();
@@ -68,7 +73,7 @@ public class FinalBoss extends Entity{
 
     }
 
-    /** decrease boss' healpoint **/
+    /** decrease boss' healpoint */
     public void takeDamage(int damage){
         this.healPoint -= damage;
         if(this.healPoint <= 0){
@@ -83,20 +88,20 @@ public class FinalBoss extends Entity{
         return this.pointValue;
     }
 
-    /** movement pattern of final boss **/
+    /** movement pattern of final boss */
     public void movePattern(){
         if(this.healPoint > this.maxHp/2){
             this.move(0,0);
         }
         else if (this.healPoint > this.maxHp/4){
-            this.moveZigzag(3,2);
+            this.moveZigzag(4,3);
         }
         else {
-            this.moveZigzag(1,1);
+            this.moveZigzag(2,1);
         }
     }
 
-    /** move zigzag **/
+    /** move zigzag */
     public void moveZigzag(int zigSpeed, int vertSpeed){
         this.positionX += (this.zigDirection * zigSpeed);
         if(this.positionX <= 0 || this.positionX >= screen.getWidth()-this.width){
@@ -113,13 +118,13 @@ public class FinalBoss extends Entity{
         }
     }
 
-    /** move simple **/
+    /** move simple */
     public void move(int distanceX, int distanceY){
         this.positionX += distanceX;
         this.positionY += distanceY;
     }
 
-    /** shooting pattern of final boss **/
+    /** shooting pattern of final boss */
 
     public void boss_shoot(Logger logger){
         if(this.healPoint > this.maxHp/4) {
@@ -128,7 +133,7 @@ public class FinalBoss extends Entity{
         }
         else {
             if (!is_cleared){
-                BossBullet.getBossBullets().clear();
+                bossBullets.clear();
                 is_cleared = true;
                 logger.info("boss is angry");
             }
@@ -138,49 +143,52 @@ public class FinalBoss extends Entity{
             }
         }
     }
-    /** first shooting pattern of final boss **/
+    /** first shooting pattern of final boss */
     public void shoot1(){
         if(this.shootCooldown1.checkFinished()){
             this.shootCooldown1.reset();
             int arr[] = {0,1,-1,2,-2};
             for (int i : arr){
-                new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3,this.getPositionY() + this.getHeight(), i,4,6,10,Color.yellow);
+                BossBullet bullets = new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3,this.getPositionY() + this.getHeight(), i,4,6,10,Color.yellow);
+                bossBullets.add(bullets);
             }
         }
     }
-    /** second shooting pattern of final boss **/
+    /** second shooting pattern of final boss */
     public void shoot2() {
-        random_x = (int) (Math.random() * 450);
+        random_x = (int) (Math.random() * screen.getWidth());
         if (this.shootCooldown2.checkFinished()) {
             this.shootCooldown2.reset();
-            new BossBullet(random_x, 1, 0, 2,6,10,Color.yellow);
+            BossBullet bullets = new BossBullet(random_x, 1, 0, 2,6,10,Color.yellow);
 
-
+            bossBullets.add(bullets);
         }
     }
-    /** third shooting pattern of final boss **/
+    /** third shooting pattern of final boss */
     public void shoot3() {
         if (this.shootCooldown3.checkFinished()) {
             this.shootCooldown3.reset();
-            if (!(this.getPositionX() == 0 || this.getPositionX() == 400)){
-                new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3 + 70, this.positionY, 0, 5,6,10,Color.blue);
-                new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3 - 70, this.positionY, 0, 5,6,10,Color.blue);
-            }
+//            if (!(this.getPositionX() == 0 || this.getPositionX() == 400)){
+                BossBullet bullet1 = new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3 + 70, this.positionY, 0, 5,6,10,Color.blue);
+                BossBullet bullet2 = new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3 - 70, this.positionY, 0, 5,6,10,Color.blue);
+                bossBullets.add(bullet1);
+                bossBullets.add(bullet2);
+//            }
         }
     }
 
 
-    /** draw final boss bullet **/
+    /** draw final boss bullet */
     public void draw(DrawManager drawManager){
 
-        for (BossBullet bossBullet : BossBullet.getBossBullets()) {
+        for (BossBullet bossBullet : bossBullets) {
             drawManager.drawEntity(bossBullet, bossBullet.getPositionX(), bossBullet.getPositionY());
         }
         drawManager.drawEntity(this, this.getPositionX(), this.getPositionY());
 
     }
 
-    /** flag final boss' destroy **/
+    /** flag final boss' destroy */
     public void destroy(){
         if(!this.isDestroyed){
             this.isDestroyed = true;
@@ -188,7 +196,7 @@ public class FinalBoss extends Entity{
         }
     }
 
-    /** check final boss' destroy **/
+    /** check final boss' destroy */
     public boolean isDestroyed(){
         return this.isDestroyed;
     }

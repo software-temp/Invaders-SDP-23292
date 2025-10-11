@@ -3,8 +3,7 @@ package entity;
 import engine.DrawManager;
 
 import java.awt.*;
-import java.util.HashSet;
-import java.util.Set;
+
 
 public class BossBullet extends Entity{
     /** amount of horizontal change*/
@@ -12,7 +11,6 @@ public class BossBullet extends Entity{
     /** amount of vertical change*/
     private int dy;
     /** bossBullets carry bullets that the boss will shoot */
-    private static Set<BossBullet> bossBullets = new HashSet<>();
     /**
      * Constructor, establishes boss bullets.
      *
@@ -35,7 +33,6 @@ public class BossBullet extends Entity{
         super(x, y, width, height, color);
         this.dx = dx;
         this.dy = dy;
-        bossBullets.add(this);
         this.spriteType = DrawManager.SpriteType.EnemyBullet; // boss's bullet image = enemyBullet
     }
     /**
@@ -54,12 +51,8 @@ public class BossBullet extends Entity{
     }
 
 
-    /**
-     * get boss bullets
-     */
-    public static Set<BossBullet> getBossBullets() {
-        return bossBullets;
-    }
+
+
 
 
 }

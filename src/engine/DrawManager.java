@@ -13,9 +13,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import entity.FinalBoss;
+import entity.Ship;
 import screen.Screen;
 import entity.Entity;
-import entity.Ship;
 
 /**
  * Manages screen drawing.

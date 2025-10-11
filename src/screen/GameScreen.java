@@ -71,6 +71,8 @@ public class GameScreen extends Screen {
 	private boolean bonusLife;
 	/** Current coin. */
 	private int coin;
+	/** bossBullets carry bullets which Boss fires */
+	private Set<BossBullet> bossBullets;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -110,7 +112,9 @@ public class GameScreen extends Screen {
 	public final void initialize() {
 		super.initialize();
 		/** Initialize the bullet Boss fired */
-		BossBullet.getBossBullets().clear();
+		this.bossBullets = new HashSet<>();
+
+
 		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
 		enemyShipFormation.attach(this);
 		this.ship = new Ship(this.width / 2, this.height - 30);
@@ -152,17 +156,16 @@ public class GameScreen extends Screen {
 
 			/** spawn final boss to check object (for test) */
 			if(this.finalBoss == null){
-				this.finalBoss = new FinalBoss(this.width/2-50,50,this, ship);
+				this.finalBoss = new FinalBoss(this.width/2-50,50,this, ship, bossBullets);
 				this.logger.info("Final Boss created.");
 			}
 			if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
-				this.finalBoss.update();
 			/** called the boss shoot logic */
 				this.finalBoss.boss_shoot(logger);
 				/** bullets to erase */
 				Set<BossBullet> bulletsToRemove = new HashSet<>();
 
-				for (BossBullet b : BossBullet.getBossBullets()) {
+				for (BossBullet b : bossBullets) {
 					b.update();
 					/** If the bullet goes off the screen */
 					if (b.isOffScreen(width, height)) {
@@ -182,7 +185,7 @@ public class GameScreen extends Screen {
 					}
 				}
 				/** all bullets are removed */
-				BossBullet.getBossBullets().removeAll(bulletsToRemove);
+				bossBullets.removeAll(bulletsToRemove);
 			}
 
 			if (!this.ship.isDestroyed()) {
