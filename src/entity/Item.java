@@ -42,9 +42,9 @@ public class Item extends Entity {
         }
 
         /**
-         * 가중치에 기반하여 랜덤 ItemType을 반환합니다.
+         * Return random Itemtype based on weight
          *
-         * @return 가중치에 따라 선택된 ItemType
+         * @return ItemType selected based on weight
          */
 
         public static ItemType selectItemType() {
