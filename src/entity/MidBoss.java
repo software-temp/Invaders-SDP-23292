@@ -1,6 +1,6 @@
 package entity;
 
-import screen.GameScreen;
+import screen.Screen;
 
 import java.awt.*;
 import java.util.logging.Logger;
@@ -18,6 +18,7 @@ public abstract class MidBoss extends Entity implements BossEntity {
     protected int pointValue=500;
     protected boolean isDestroyed=false;
     protected int pattern=1;
+    protected Screen screen;
     protected Logger logger;
 
     /**public abstract class MidBoss extends Entity implements BossEntity
@@ -29,7 +30,7 @@ public abstract class MidBoss extends Entity implements BossEntity {
      * @param height    Height of the entity.
      * @param color     Color of the entity.
      */
-    public MidBoss(int positionX, int positionY, int width, int height, GameScreen screen, Color color) {
+    public MidBoss(int positionX, int positionY, int width, int height, Color color) {
         super(positionX, positionY, width, height, color);
     }
 
@@ -41,4 +42,14 @@ public abstract class MidBoss extends Entity implements BossEntity {
 
     @Override
     public boolean isDestroyed() { return this.isDestroyed; }
+
+    /**
+     * Associates the formation to a given screen.
+     *
+     * @param newScreen
+     *            Screen to attach.
+     */
+    public final void attach(final Screen newScreen) {
+        screen = newScreen;
+    }
 }

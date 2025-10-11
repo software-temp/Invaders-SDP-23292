@@ -4,31 +4,33 @@ import engine.DrawManager;
 import engine.Cooldown;
 import engine.Core;
 import java.awt.*;
-import screen.GameScreen;
 
 /**
  * Omega - Middle Boss
  */
 public class OmegaBoss extends MidBoss {
 
+    /** Initial position in the x-axis. */
+    private static final int INIT_POS_X = 224;
+    /** Initial position in the y-axis. */
+    private static final int INIT_POS_Y = 50;
+    /** Width of the Boss */
+    private static final int BOSS_WIDTH = 32;
+    /** Height of the Boss */
+    private static final int BOSS_HEIGHT = 14;
     /** for move pattern */
     private boolean isRight = true;
     /** for move pattern */
     private boolean isDown = true;
-    private final GameScreen screen;
+
     /**
      * public abstract class MidBoss extends Entity implements BossEntity
      * Constructor, establishes the boss entity's generic properties.
      *
-     * @param positionX Initial position of the boss entity in the X axis.
-     * @param positionY Initial position of the boss entity in the Y axis.
-     * @param width     Width of the boss entity.
-     * @param height    Height of the boss entity.
      * @param color     Color of the boss entity.
      */
-    public OmegaBoss(int positionX, int positionY, int width, int height, GameScreen screen, Color color) {
-        super(positionX, positionY, width, height, screen, color);
-        this.screen = screen;
+    public OmegaBoss(Color color) {
+        super(INIT_POS_X, INIT_POS_Y, BOSS_WIDTH, BOSS_HEIGHT, color);
         this.logger = Core.getLogger();
         this.healPoint=10;
         this.maxHp=healPoint;

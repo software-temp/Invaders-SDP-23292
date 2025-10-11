@@ -51,8 +51,8 @@ public class GameScreen extends Screen {
 	/** Time from finishing the level to screen change. */
 	private Cooldown screenFinishedCooldown;
 	/** OmegaBoss */
-	private OmegaBoss omegaBoss;
-	/** Set of all bullets fired by on screen ships. */
+	private MidBoss omegaBoss;
+	/** Set of all bullets fired by on-screen ships. */
 	private Set<Bullet> bullets;
 	/** Current score. */
 	private int score;
@@ -186,10 +186,11 @@ public class GameScreen extends Screen {
                     if (this.ship.shoot(this.bullets))
                         this.bulletsShot++;
 			}
-			if (this.omegaBoss == null) {
-				this.omegaBoss = new OmegaBoss(this.width/2-50,50,32,14, this, Color.yellow);
-			}
-			if (!this.omegaBoss.isDestroyed()){
+            if (this.omegaBoss == null){
+                this.omegaBoss = new OmegaBoss(Color.ORANGE);
+                omegaBoss.attach(this);
+            }
+			else if (!this.omegaBoss.isDestroyed()){
 				this.omegaBoss.update();
 			}
 			if (this.enemyShipSpecial != null) {
