@@ -5,6 +5,8 @@ import java.awt.event.KeyEvent;
 import engine.Cooldown;
 import engine.Core;
 
+import audio.SoundManager;
+
 /**
  * Implements the title screen.
  * 
@@ -18,6 +20,9 @@ public class TitleScreen extends Screen {
 	
 	/** Time between changes in user selection. */
 	private Cooldown selectionCooldown;
+
+    private static final String MENU_MUSIC = "sfx/menu_music.wav";
+    private boolean musicStarted = false;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -36,6 +41,8 @@ public class TitleScreen extends Screen {
 		this.returnCode = 2;
 		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
 		this.selectionCooldown.reset();
+
+        SoundManager.playLoop(MENU_MUSIC);
 	}
 
 	/**
@@ -44,8 +51,14 @@ public class TitleScreen extends Screen {
 	 * @return Next screen code.
 	 */
 	public final int run() {
+        if (!musicStarted) {
+            SoundManager.playLoop(MENU_MUSIC);
+            musicStarted = true;
+        }
+
 		super.run();
 
+        SoundManager.stop(MENU_MUSIC);
 		return this.returnCode;
 	}
 
