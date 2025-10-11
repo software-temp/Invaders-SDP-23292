@@ -59,6 +59,7 @@ public class OmegaBoss extends MidBoss {
     private void movePatterns(){
         if(this.pattern!=2 && this.healPoint < this.maxHp/2){
             this.pattern=2;
+            this.color=Color.magenta;
             logger.info("OMEGA : move using second pattern");
         }
 
@@ -132,11 +133,9 @@ public class OmegaBoss extends MidBoss {
     /** Marks the entity as destroyed and changes its sprite to an explosion. */
     @Override
     public void destroy() {
-        if(!this.isDestroyed){
-            this.isDestroyed = true;
-            this.spriteType = DrawManager.SpriteType.Explosion;
-            this.logger.info("OMEGA : Boss OMEGA destroyed!");
-        }
+        this.isDestroyed = true;
+        this.spriteType = DrawManager.SpriteType.Explosion;
+        this.logger.info("OMEGA : Boss OMEGA destroyed!");
     }
 
     /**
@@ -147,9 +146,9 @@ public class OmegaBoss extends MidBoss {
     @Override
     public void takeDamage(int damage) {
         this.healPoint -= damage;
-        if(this.healPoint <= 0 ){
-            this.destroy();
-        }
+	    if(this.healPoint <= 0 ){
+			isDestroyed = true;
+		}
     }
 
     /**

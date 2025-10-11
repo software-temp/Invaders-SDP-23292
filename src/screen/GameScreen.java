@@ -48,6 +48,8 @@ public class GameScreen extends Screen {
 	private Cooldown enemyShipSpecialCooldown;
 	/** Time until bonus ship explosion disappears. */
 	private Cooldown enemyShipSpecialExplosionCooldown;
+    /** Time until Boss explosion disappears. */
+    private Cooldown bossExplotionCooldown;
 	/** Time from finishing the level to screen change. */
 	private Cooldown screenFinishedCooldown;
 	/** OmegaBoss */
@@ -119,6 +121,8 @@ public class GameScreen extends Screen {
 		this.enemyShipSpecialCooldown.reset();
 		this.enemyShipSpecialExplosionCooldown = Core
 				.getCooldown(BONUS_SHIP_EXPLOSION);
+        this.bossExplotionCooldown = Core
+                .getCooldown(BONUS_SHIP_EXPLOSION);
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
 		this.bullets = new HashSet<Bullet>();
 
@@ -126,6 +130,10 @@ public class GameScreen extends Screen {
 		this.gameStartTime = System.currentTimeMillis();
 		this.inputDelay = Core.getCooldown(INPUT_DELAY);
 		this.inputDelay.reset();
+
+		// Initializing Middle Boss
+		this.omegaBoss = new OmegaBoss(Color.ORANGE);
+		omegaBoss.attach(this);
 	}
 
 	/**
@@ -186,19 +194,18 @@ public class GameScreen extends Screen {
                     if (this.ship.shoot(this.bullets))
                         this.bulletsShot++;
 			}
-            if (this.omegaBoss == null){
-                this.omegaBoss = new OmegaBoss(Color.ORANGE);
-                omegaBoss.attach(this);
-            }
-			else if (!this.omegaBoss.isDestroyed()){
-				this.omegaBoss.update();
+			if (this.omegaBoss != null){
+				if(!this.omegaBoss.isDestroyed()) {
+					this.omegaBoss.update();
+				}
+				else if (this.bossExplotionCooldown.checkFinished())
+					this.omegaBoss = null;
 			}
 			if (this.enemyShipSpecial != null) {
 				if (!this.enemyShipSpecial.isDestroyed())
 					this.enemyShipSpecial.move(2, 0);
 				else if (this.enemyShipSpecialExplosionCooldown.checkFinished())
 					this.enemyShipSpecial = null;
-
 			}
 			if (this.enemyShipSpecial == null
 					&& this.enemyShipSpecialCooldown.checkFinished()) {
@@ -246,7 +253,8 @@ public class GameScreen extends Screen {
 					this.enemyShipSpecial.getPositionY());
 
 		enemyShipFormation.draw();
-		if(this.omegaBoss != null && !this.omegaBoss.isDestroyed()) {
+
+		if(this.omegaBoss != null) {
 			this.omegaBoss.draw(drawManager);
 		}
 
@@ -327,12 +335,16 @@ public class GameScreen extends Screen {
 					this.enemyShipSpecialExplosionCooldown.reset();
 					recyclable.add(bullet);
 				}
-				if (this.omegaBoss != null && !this.omegaBoss.isDestroyed() && checkCollision(bullet, this.omegaBoss)) {
-					this.shipsDestroyed++;
+				if (this.omegaBoss != null
+                        && !this.omegaBoss.isDestroyed()
+                        && checkCollision(bullet, this.omegaBoss)) {
 					this.omegaBoss.takeDamage(2);
-					if(this.omegaBoss.isDestroyed()) {
+					if(omegaBoss.isDestroyed()) {
+						this.shipsDestroyed++;
 						this.score += this.omegaBoss.getPointValue();
 						this.coin += (this.omegaBoss.getPointValue()/10);
+                        this.omegaBoss.destroy();
+                        this.bossExplotionCooldown.reset();
 					}
 					recyclable.add(bullet);
 				}
