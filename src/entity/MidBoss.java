@@ -17,6 +17,7 @@ public abstract class MidBoss extends Entity implements BossEntity {
     protected int maxHp=healPoint;
     protected int pointValue=500;
     protected boolean isDestroyed=false;
+    protected int pattern=1;
     protected Logger logger;
 
     /**public abstract class MidBoss extends Entity implements BossEntity
@@ -30,7 +31,6 @@ public abstract class MidBoss extends Entity implements BossEntity {
      */
     public MidBoss(int positionX, int positionY, int width, int height, GameScreen screen, Color color) {
         super(positionX, positionY, width, height, color);
-
     }
 
     @Override

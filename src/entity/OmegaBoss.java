@@ -55,10 +55,18 @@ public class OmegaBoss extends MidBoss {
      * @see #patternSecond()
      */
     private void movePatterns(){
-        if(this.healPoint > this.maxHp/2){
-            this.patternFirst();
-        }else{
-            this.patternSecond();
+        if(this.pattern!=2 && this.healPoint < this.maxHp/2){
+            this.pattern=2;
+            logger.info("OMEGA : move using second pattern");
+        }
+
+        switch(pattern){
+            case 1:
+                this.patternFirst();
+                break;
+            case 2:
+                this.patternSecond();
+                break;
         }
     }
 
