@@ -7,17 +7,16 @@ import java.util.Random;
 
 public class Item extends Entity {
     public enum ItemType {
-        MultiShot,
-        Atkspeed,
-        Penetrate,
-        Explode,
-        Slow,
-        Stop,
-        Push,
         /** A shield that protects the player. */
         INVINCIBLE,
         /** An item that gives the player one extra life. */
         HEAL_PACK;
+
+        /**
+         *
+         * ADD Here ITEM TYPE what you made.
+         *
+         * */
 
         private static final ItemType[] VALUES = values();
         private static final int SIZE = VALUES.length;
@@ -42,31 +41,20 @@ public class Item extends Entity {
 
     public final void setSprite(){
         switch (this.itemType) {
-            case MultiShot:
-                this.spriteType = SpriteType.Item_MultiShot;
-                break;
-            case Atkspeed:
-                this.spriteType = SpriteType.Item_Atkspeed;
-                break;
-            case Penetrate:
-                this.spriteType = SpriteType.Item_Penetrate;
-                break;
-            case Explode:
-                this.spriteType = SpriteType.Item_Explode;
-                break;
-            case Slow:
-                this.spriteType = SpriteType.Item_Slow;
-                break;
-            case Stop:
-                this.spriteType = SpriteType.Item_Stop;
-                break;
-            case Push:
-                this.spriteType = SpriteType.Item_Push;
-                break;
-            case Shield:
+
+            /**
+             * Add ITEMTYPE what you made.
+             * EX)
+             *case MultiShot:
+             *     this.spriteType = SpriteType.Item_MultiShot;
+             *     break;
+             * case Atkspeed:
+             *     this.spriteType = SpriteType.Item_Atkspeed;
+             *     break; */
+            case INVINCIBLE:
                 this.spriteType = SpriteType.Item_Shield;
                 break;
-            case Heal:
+            case HEAL_PACK:
                 this.spriteType = SpriteType.Item_Heal;
                 break;
         }
@@ -106,29 +94,6 @@ public class Item extends Entity {
         }
         else {
             return null;
-        }
-    }
-
-    public void applyEffect(GameState gameState) {
-        switch (this.itemType) {
-            case MultiShot:
-                break;
-            case Atkspeed:
-                break;
-            case Penetrate:
-                break;
-            case Explode:
-                break;
-            case Slow:
-                break;
-            case Stop:
-                break;
-            case Push:
-                break;
-            case Shield:
-                break;
-            case Heal:
-                break;
         }
     }
 }

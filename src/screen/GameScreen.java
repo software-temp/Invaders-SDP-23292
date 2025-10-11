@@ -315,13 +315,13 @@ public class GameScreen extends Screen {
             if (bullet.getSpeed() > 0) {
                 if (checkCollision(bullet, this.ship) && !this.levelFinished) {
                     recyclable.add(bullet);
-                    if (!this.ship.isInvincible()){
-						if (!this.ship.isDestroyed()) {
-							this.ship.destroy();
-							this.lives--;
-							this.logger.info("Hit on player ship, " + this.lives
-									+ " lives remaining.");
-						}
+                    if (!this.ship.isInvincible()) {
+                        if (!this.ship.isDestroyed()) {
+                            this.ship.destroy();
+                            this.lives--;
+                            this.logger.info("Hit on player ship, " + this.lives
+                                    + " lives remaining.");
+                        }
                     }
                 }
             } else {
@@ -367,11 +367,18 @@ public class GameScreen extends Screen {
             for (Item item : this.items) {
 
                 if (checkCollision(this.ship, item)) {
-                    GameState currentGameState = this.getGameState();
-                    item.applyEffect(currentGameState);
-                    this.lives = currentGameState.getLivesRemaining();
-                    this.score = currentGameState.getScore();
                     this.logger.info("Player acquired item: " + item.getItemType());
+                    switch (item.getItemType()) {
+                        case HEAL_PACK:
+                            gainLife();
+                            break;
+                        case INVINCIBLE:
+                            ship.activateInvincibility(5000); // 5 seconds of invincibility
+                            break;
+                        default:
+                            // For other item types. Free to add!
+                            break;
+                    }
                     acquiredItems.add(item);
                 }
             }
