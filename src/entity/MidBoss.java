@@ -3,6 +3,7 @@ package entity;
 import screen.GameScreen;
 
 import java.awt.*;
+import java.util.logging.Logger;
 
 /**
  * Implements a game middle boss entity.
@@ -16,7 +17,7 @@ public abstract class MidBoss extends Entity implements BossEntity {
     protected int maxHp=healPoint;
     protected int pointValue=500;
     protected boolean isDestroyed=false;
-
+    protected Logger logger;
 
     /**public abstract class MidBoss extends Entity implements BossEntity
      * Constructor, establishes the boss entity's generic properties.

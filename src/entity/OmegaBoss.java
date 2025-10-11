@@ -5,6 +5,7 @@ import engine.Cooldown;
 import engine.Core;
 import java.awt.*;
 import screen.GameScreen;
+
 /**
  * Omega - Middle Boss
  */
@@ -28,10 +29,14 @@ public class OmegaBoss extends MidBoss {
     public OmegaBoss(int positionX, int positionY, int width, int height, GameScreen screen, Color color) {
         super(positionX, positionY, width, height, screen, color);
         this.screen = screen;
+        this.logger = Core.getLogger();
         this.healPoint=10;
         this.maxHp=healPoint;
         this.pointValue=500;
         this.spriteType= DrawManager.SpriteType.EnemyShipSpecial;
+
+        this.logger.info("OMEGA : Initializing Boss OMEGA");
+        this.logger.info("OMEGA : move using the default pattern");
     }
 
     /** move simple */
@@ -120,6 +125,7 @@ public class OmegaBoss extends MidBoss {
         if(!this.isDestroyed){
             this.isDestroyed = true;
             this.spriteType = DrawManager.SpriteType.Explosion;
+            this.logger.info("OMEGA : Boss OMEGA destroyed!");
         }
     }
 
