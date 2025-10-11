@@ -33,11 +33,12 @@ public class SoundManager {
             return null;
         }
     }
+
     public static void playLoop(String resourcePath) {
         try {
             Clip c = CACHE.computeIfAbsent(resourcePath, SoundManager::loadClip);
             if (c == null) return;
-            stopAll(); // Stoppe tout avant de jouer la nouvelle musique
+            stopAll();
             c.setFramePosition(0);
             c.loop(Clip.LOOP_CONTINUOUSLY);
             c.start();
@@ -46,10 +47,21 @@ public class SoundManager {
         }
     }
 
+    public static void stop(String resourcePath) {
+        try {
+            Clip c = CACHE.get(resourcePath);
+            if (c != null && c.isRunning()) {
+                c.stop();
+                c.setFramePosition(0);
+            }
+        } catch (Exception e) {
+            System.err.println("[Sound] Stop failed: " + resourcePath + " -> " + e.getMessage());
+        }
+    }
+
     public static void stopAll() {
         for (Clip c : CACHE.values()) {
             if (c.isRunning()) c.stop();
         }
     }
-
 }
