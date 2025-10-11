@@ -1,5 +1,7 @@
 package engine;
 
+import audio.SoundManager;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
@@ -145,6 +147,12 @@ public final class Core {
 
 					gameState = ((GameScreen) currentScreen).getGameState();
 
+
+                    if (gameState.getLivesRemaining() > 0) {
+                        // Le joueur est encore en vie → passage au niveau suivant
+                        SoundManager.play("sfx/levelup.wav");
+                    }
+
 					gameState = new GameState(gameState.getLevel() + 1,
 							gameState.getScore(),
 							gameState.getLivesRemaining(),
@@ -154,6 +162,11 @@ public final class Core {
 
 				} while (gameState.getLivesRemaining() > 0
 						&& gameState.getLevel() <= NUM_LEVELS);
+
+                if (gameState.getLivesRemaining() <= 0) {
+
+                    SoundManager.play("sfx/gameover.wav");
+                }
 
 				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
 						+ " score screen at " + FPS + " fps, with a score of "
