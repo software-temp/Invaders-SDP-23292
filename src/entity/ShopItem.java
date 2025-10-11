@@ -4,13 +4,13 @@ package entity;
  * Manages the in-game item (enhancement) system.
  * This is a temporary implementation focusing on functionality.
  *
- * Currently implemented: Spread Shot
+ * Currently implemented: Spread Shot, Bullet Speed, Bomb
  *
  * Example usage:
  * Item.setSpreadShotLevel(2);  // Purchase level 2 in the shop
  * int bulletCount = Item.getSpreadShotBulletCount();  // Returns the number of bullets to fire
  */
-public class Item {
+public class ShopItem {
 
     // ==================== Spread Shot Item ====================
 
@@ -41,7 +41,8 @@ public class Item {
      * Private constructor - this class should not be instantiated.
      * It is intended to be used only with static methods.
      */
-    private Item() {
+    private ShopItem() {
+
     }
 
 
