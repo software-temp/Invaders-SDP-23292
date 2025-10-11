@@ -26,6 +26,10 @@ public class Ship extends Entity {
 	private Cooldown shootingCooldown;
 	/** Time spent inactive between hits. */
 	private Cooldown destructionCooldown;
+	/** Cooldown for the invincibility shield. */
+	private Cooldown shieldCooldown;
+	/** Checks if the ship is invincible. */
+	private boolean isInvincible;
 
 	/**
 	 * Constructor, establishes the ship's properties.
@@ -37,9 +41,12 @@ public class Ship extends Entity {
 	 */
 	public Ship(final int positionX, final int positionY) {
 		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
+
 		this.spriteType = SpriteType.Ship;
 		this.shootingCooldown = Core.getCooldown(SHOOTING_INTERVAL);
 		this.destructionCooldown = Core.getCooldown(1000);
+		this.shieldCooldown = Core.getCooldown(0);
+		this.isInvincible = false;
 
 	}
 
@@ -79,34 +86,11 @@ public class Ship extends Entity {
 	 *            List of bullets on screen, to add the new bullet.
 	 * @return Checks if the bullet was shot correctly.
 	 */
-
 	public final boolean shoot(final Set<Bullet> bullets) {
 		if (this.shootingCooldown.checkFinished()) {
 			this.shootingCooldown.reset();
-
-			// Get Spread Shot information from the Item class
-			int bulletCount = Item.getSpreadShotBulletCount();
-			int spacing = Item.getSpreadShotSpacing();
-            int currentbulletSpead = Item.getBulletSpeed();
-			int centerX = positionX + this.width / 2;
-			int centerY = positionY;
-
-			if (bulletCount == 1) {
-				// Normal shot (when Spread Shot is not purchased)
-				bullets.add(BulletPool.getBullet(centerX, centerY, currentbulletSpead));
-			} else {
-				// Fire Spread Shot
-				int startOffset = -(bulletCount / 2) * spacing;
-
-				for (int i = 0; i < bulletCount; i++) {
-					int offsetX = startOffset + (i * spacing);
-					bullets.add(BulletPool.getBullet(
-							centerX + offsetX,
-							centerY,
-                            currentbulletSpead
-					));
-				}
-			}
+			bullets.add(BulletPool.getBullet(positionX + this.width / 2,
+					positionY, BULLET_SPEED));
 			return true;
 		}
 		return false;
