@@ -10,7 +10,7 @@ package entity;
  * Item.setSpreadShotLevel(2);  // Purchase level 2 in the shop
  * int bulletCount = Item.getSpreadShotBulletCount();  // Returns the number of bullets to fire
  */
-public class Item {
+public class Shop_item {
 
     // ==================== Spread Shot Item ====================
 
@@ -31,7 +31,7 @@ public class Item {
      * Private constructor - this class should not be instantiated.
      * It is intended to be used only with static methods.
      */
-    private Item() {
+    private Shop_item() {
     }
     //==================== Rapid Fire Item =======================
 
@@ -46,6 +46,18 @@ public class Item {
 
     /** Rapid Fire Reduction Per Level (%)*/
     private static final int[] RAPID_FIRE_REDUCTION ={0, 5, 10, 15, 20, 30};
+
+
+    //===================== penetration Item =====================
+
+    /** penetration levle (0 = not purchased, 1~5 = enhancement levels) */
+    private static int penetrationLevel = 0;
+
+    /** maximum penetration level */
+    private static final int MAX_PENETRATION_LEVEL = 2;
+
+    /** penetration count */
+    private static final int[] PENETRATION_COUNT = {0,1,2};
 
 
 
@@ -137,6 +149,49 @@ public class Item {
     }
 
 
+    //===================== Penetration Methods ================
+
+    /**
+     * Set Penetration Level
+     *
+     * @param level The level to set (0-2).
+     * @return True if the level was set successfully, false otherwise.
+     */
+    public static boolean setPenetrationLevel(int level) {
+        if (level < 0 || level > MAX_PENETRATION_LEVEL) {
+            return false;
+        }
+        penetrationLevel = level;
+        return true;
+    }
+
+
+    /**
+     * Returns the current rapid fire level.
+     *
+     * @return The current level (0-2).
+     */
+    public static int getPenetrationLevel() {
+        return penetrationLevel;
+    }
+
+    /**
+     * return Penetration count
+     *
+     * @return Penetration count (0 = cannot penetrate, 1~2 = can penetrate)
+     */
+    public static int getPenetrationCount() {
+        return PENETRATION_COUNT[penetrationLevel];
+    }
+
+    /**
+     * Checks if penetration is enabled.
+     *
+     * @return true if the level is 1 or higher, false otherwise.
+     */
+    public static boolean isPenetrationActive() {
+        return penetrationLevel > 0;
+    }
 
 
     // ==================== Utility Methods ====================
@@ -147,6 +202,7 @@ public class Item {
     public static void resetAllItems() {
         spreadShotLevel = 0;
         rapidFireLevel = 0;
+        penetrationLevel = 0;
     }
 
     /**
@@ -159,9 +215,14 @@ public class Item {
         status.append("=== Item Status ===\n");
         status.append("Spread Shot Level: ").append(spreadShotLevel)
                 .append(" (Bullets: ").append(getSpreadShotBulletCount())
-                .append(", Spacing: ").append(getSpreadShotSpacing());
+                .append(", Spacing: ").append(getSpreadShotSpacing())
+                .append(")\n");
         status.append("Rapid Fire Level: ").append(rapidFireLevel)
-                .append(" (Interval: ").append(getShootingInterval());
+                .append(" (Interval: ").append(getShootingInterval())
+                .append(")\n");
+        status.append("Penetration Level: ").append(penetrationLevel)
+                .append(" (Max Penetration Count: ").append(getPenetrationCount())
+                .append(")\n");
         return status.toString();
     }
 
@@ -171,5 +232,6 @@ public class Item {
     public static void setMaxLevelForTesting() {
         spreadShotLevel = MAX_SPREAD_SHOT_LEVEL;
         rapidFireLevel = MAX_RAPID_FIRE_LEVEL;
+        penetrationLevel = MAX_RAPID_FIRE_LEVEL;
     }
 }

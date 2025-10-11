@@ -14,7 +14,6 @@ import entity.EnemyShip;
 import entity.EnemyShipFormation;
 import entity.Entity;
 import entity.Ship;
-import entity.Item;
 
 /**
  * Implements the game screen, where the action happens.
@@ -304,6 +303,7 @@ public class GameScreen extends Screen {
 					}
 				}
 			} else {
+
 				for (EnemyShip enemyShip : this.enemyShipFormation)
 					if (!enemyShip.isDestroyed()
 							&& checkCollision(bullet, enemyShip)) {
@@ -311,7 +311,10 @@ public class GameScreen extends Screen {
                         this.coin += (enemyShip.getPointValue()/10);
 						this.shipsDestroyed++;
 						this.enemyShipFormation.destroy(enemyShip);
-						recyclable.add(bullet);
+						if (!bullet.penetration()) {
+							recyclable.add(bullet);
+							break;
+						}
 					}
 				if (this.enemyShipSpecial != null
 						&& !this.enemyShipSpecial.isDestroyed()
@@ -321,7 +324,10 @@ public class GameScreen extends Screen {
 					this.shipsDestroyed++;
 					this.enemyShipSpecial.destroy();
 					this.enemyShipSpecialExplosionCooldown.reset();
-					recyclable.add(bullet);
+					if (!bullet.penetration()) {
+						recyclable.add(bullet);
+						break;
+					}
 				}
 			}
 		this.bullets.removeAll(recyclable);
