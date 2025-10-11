@@ -1,116 +1,96 @@
 package entity;
+import java.awt.Color;
 
-/**
- * Manages the in-game item (enhancement) system.
- * This is a temporary implementation focusing on functionality.
- *
- * Currently implemented: Spread Shot
- *
- * Example usage:
- * Item.setSpreadShotLevel(2);  // Purchase level 2 in the shop
- * int bulletCount = Item.getSpreadShotBulletCount();  // Returns the number of bullets to fire
- */
-public class Item {
+import engine.GameState;
+import engine.DrawManager.SpriteType;
+import java.util.Random;
 
-    // ==================== Spread Shot Item ====================
+public class Item extends Entity {
+    public enum ItemType {
+        /** A shield that protects the player. */
+        INVINCIBLE,
+        /** An item that gives the player one extra life. */
+        HEAL_PACK;
 
-    /** Spread Shot level (0 = not purchased, 1-3 = enhancement levels) */
-    private static int spreadShotLevel = 0;
+        /**
+         *
+         * ADD Here ITEM TYPE what you made.
+         *
+         * */
 
-    /** Maximum Spread Shot level */
-    private static final int MAX_SPREAD_SHOT_LEVEL = 3;
+        private static final ItemType[] VALUES = values();
+        private static final int SIZE = VALUES.length;
+        private static final Random RANDOM = new Random();
 
-    /** Number of bullets fired per level */
-    private static final int[] SPREAD_SHOT_BULLETS = {1, 2, 3, 4};
-
-    /** Spacing between bullets per level (in pixels) */
-    private static final int[] SPREAD_SHOT_SPACING = {0, 10, 8, 5};
-
-
-    /**
-     * Private constructor - this class should not be instantiated.
-     * It is intended to be used only with static methods.
-     */
-    private Item() {
-    }
-
-
-    // ==================== Spread Shot Methods ====================
-
-    /**
-     * Sets the Spread Shot level (called upon purchase from a shop).
-     *
-     * @param level The level to set (0-3).
-     * @return true if the level was set successfully, false otherwise.
-     */
-    public static boolean setSpreadShotLevel(int level) {
-        if (level < 0 || level > MAX_SPREAD_SHOT_LEVEL) {
-            return false;
+        public static ItemType selectItemType() {
+            return VALUES[RANDOM.nextInt(SIZE)];
         }
-        spreadShotLevel = level;
-        return true;
+    }
+
+    /** Speed of the item, positive is down. */
+    private int speed;
+    /** Type of the item. */
+    private ItemType itemType;
+    public Item(final int positionX, final int positionY, final int speed, final ItemType itemType) {
+        super(positionX, positionY, 5 * 5, 5 * 5, Color.WHITE);
+        this.speed = speed;
+        this.itemType = itemType;
+
+        setSprite();
+    }
+
+    public final void setSprite(){
+        switch (this.itemType) {
+
+            /**
+             * Add ITEMTYPE what you made.
+             * EX)
+             *case MultiShot:
+             *     this.spriteType = SpriteType.Item_MultiShot;
+             *     break;
+             * case Atkspeed:
+             *     this.spriteType = SpriteType.Item_Atkspeed;
+             *     break; */
+            case INVINCIBLE:
+                this.spriteType = SpriteType.Item_Shield;
+                break;
+            case HEAL_PACK:
+                this.spriteType = SpriteType.Item_Heal;
+                break;
+        }
     }
 
     /**
-     * Returns the current Spread Shot level.
+     * Updates the item's position.
+     */
+    public final void update() {
+        this.positionY += this.speed;
+    }
+
+    public final void setSpeed(final int speed) {
+        this.speed = speed;
+    }
+
+    public final int getSpeed() {
+        return this.speed;
+    }
+
+    /**
+     * Getter for the item's type.
      *
-     * @return The current level (0-3).
+     * @return Type of the item.
      */
-    public static int getSpreadShotLevel() {
-        return spreadShotLevel;
+    public final ItemType getItemType() {
+        return this.itemType;
     }
 
-    /**
-     * Returns the number of bullets to fire for the Spread Shot.
-     *
-     * @return The number of bullets (1-4).
-     */
-    public static int getSpreadShotBulletCount() {
-        return SPREAD_SHOT_BULLETS[spreadShotLevel];
+    public final void setItemType(final ItemType itemType) {
+        this.itemType = itemType;
+        this.setSprite();
     }
-
-    /**
-     * Returns the spacing for Spread Shot bullets.
-     *
-     * @return The spacing between bullets in pixels.
-     */
-    public static int getSpreadShotSpacing() {
-        return SPREAD_SHOT_SPACING[spreadShotLevel];
-    }
-
-    /**
-     * Checks if the Spread Shot is active.
-     *
-     * @return true if the level is 1 or higher, false otherwise.
-     */
-    public static boolean isSpreadShotActive() {
-        return spreadShotLevel > 0;
-    }
-
-
-    // ==================== Utility Methods ====================
-
-    /**
-     * Resets all items (for testing or game reset).
-     */
-    public static void resetAllItems() {
-        spreadShotLevel = 0;
-    }
-
-    /**
-     * Returns the current status of items (for debugging purposes).
-     *
-     * @return A string representing the item status.
-     */
-    public static String getItemStatus() {
-        StringBuilder status = new StringBuilder();
-        status.append("=== Item Status ===\n");
-        status.append("Spread Shot Level: ").append(spreadShotLevel)
-                .append(" (Bullets: ").append(getSpreadShotBulletCount())
-                .append(", Spacing: ").append(getSpreadShotSpacing())
-                .append("px)\n");
-        return status.toString();
-    }
+    public static ItemType getRandomItemType(final double proba) {
+        if (Math.random() < proba){
+            return ItemType.selectItemType();
 
     /**
      * Check getting a slowdown item.
@@ -122,13 +102,8 @@ public class Item {
         if(getItemStatus().equals("Slowdown")){ // if user get a slowdown item, change isSlowDown to True.
             return !isSlowDown;
         }
-        return isSlowDown;
-    }
-
-    /**
-     * For testing - sets the Spread Shot to its maximum level.
-     */
-    public static void setMaxLevelForTesting() {
-        spreadShotLevel = MAX_SPREAD_SHOT_LEVEL;
+        else {
+            return null;
+        }
     }
 }

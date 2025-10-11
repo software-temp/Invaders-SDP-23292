@@ -26,6 +26,10 @@ public class Ship extends Entity {
 	private Cooldown shootingCooldown;
 	/** Time spent inactive between hits. */
 	private Cooldown destructionCooldown;
+	/** Cooldown for the invincibility shield. */
+	private Cooldown shieldCooldown;
+	/** Checks if the ship is invincible. */
+	private boolean isInvincible;
 
 	/**
 	 * Constructor, establishes the ship's properties.
@@ -37,10 +41,12 @@ public class Ship extends Entity {
 	 */
 	public Ship(final int positionX, final int positionY) {
 		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
+
 		this.spriteType = SpriteType.Ship;
 		this.shootingCooldown = Core.getCooldown(SHOOTING_INTERVAL);
 		this.destructionCooldown = Core.getCooldown(1000);
-
+		this.shieldCooldown = Core.getCooldown(0);
+		this.isInvincible = false;
 	}
 
 	/**
@@ -79,7 +85,6 @@ public class Ship extends Entity {
 	 *            List of bullets on screen, to add the new bullet.
 	 * @return Checks if the bullet was shot correctly.
 	 */
-
 	public final boolean shoot(final Set<Bullet> bullets) {
 		if (this.shootingCooldown.checkFinished()) {
 			this.shootingCooldown.reset();
@@ -116,6 +121,11 @@ public class Ship extends Entity {
 	 * Updates status of the ship.
 	 */
 	public final void update() {
+		if (this.isInvincible && this.shieldCooldown.checkFinished()) {
+			this.isInvincible = false;
+			this.setColor(Color.GREEN);
+		}
+
 		if (!this.destructionCooldown.checkFinished())
 			this.spriteType = SpriteType.ShipDestroyed;
 		else
@@ -126,7 +136,8 @@ public class Ship extends Entity {
 	 * Switches the ship to its destroyed state.
 	 */
 	public final void destroy() {
-		this.destructionCooldown.reset();
+		if (!this.isInvincible)
+			this.destructionCooldown.reset();
 	}
 
 	/**
@@ -145,5 +156,27 @@ public class Ship extends Entity {
 	 */
 	public final int getSpeed() {
 		return SPEED;
+	}
+
+	/**
+	 * Getter for the ship's invincibility state.
+	 *
+	 * @return True if the ship is currently invincible.
+	 */
+	public final boolean isInvincible() {
+		return this.isInvincible;
+	}
+
+	/**
+	 * Activates the ship's invincibility shield for a given duration.
+	 *
+	 * @param duration
+	 *            Duration of the invincibility in milliseconds.
+	 */
+	public final void activateInvincibility(final int duration) {
+		this.isInvincible = true;
+		this.shieldCooldown.setMilliseconds(duration);
+		this.shieldCooldown.reset();
+		this.setColor(Color.BLUE);
 	}
 }
