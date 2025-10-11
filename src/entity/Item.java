@@ -18,6 +18,13 @@ public class Item {
      */
     private static final int MAX_SPREAD_SHOT_LEVEL = 3;
 
+
+
+    private static int SHIPSPEEDLEVEL = 0;
+
+
+    private static final int MAX_SHIP_SPEED_LEVEL = 6;
+
     /**
      * Number of bullets fired per level
      */
@@ -28,14 +35,15 @@ public class Item {
      */
     private static final int[] SPREAD_SHOT_SPACING = {0, 10, 8, 5};
 
+    /**
+     * Ship speed increase rate per level
+     */
+    private static final int[] SHIP_SPEED = {0, 5, 10, 15, 20, 25};
 
     /**
      * Private constructor - this class should not be instantiated.
      * It is intended to be used only with static methods.
      */
-    private Item() {
-    }
-
 
     // ==================== Spread Shot Methods ====================
 
@@ -121,6 +129,11 @@ public class Item {
         spreadShotLevel = MAX_SPREAD_SHOT_LEVEL;
     }
 
+    /**
+     * enemy push
+     * @param enemyShipFormation
+     * @param distanceY
+     */
     public static void PushbackItem(EnemyShipFormation enemyShipFormation, int distanceY) {
         if (enemyShipFormation == null) {
             return;
@@ -136,7 +149,7 @@ public class Item {
     }
 
     /**
-     * 타임프리즈 아이템: 모든 적 함선을 일정 시간 동안 일시정지 시킵니다
+     * Freeze Item : all enemy ship never move except special enemy.
      *
      * @param durationMillis 정지 지속 시간 (밀리초)
      */
@@ -146,18 +159,30 @@ public class Item {
     }
 
     /**
-     * 현재 타임프리즈가 활성화되어 있는지 확인
+     * check If Freeze item is activated
      *
-     * @return true면 타임프리즈 활성화 중 (적들이 움직이면 안됨)
+     * @return If returning true, don't move all enemy ship except special enemy
      */
     public static boolean isTimeFreezeActive() {
         if (freezeEndTime > 0 && System.currentTimeMillis() < freezeEndTime) {
-            return true;  // 아직 정지 시간이 남음
+            return true;
         }
         if (freezeEndTime > 0 && System.currentTimeMillis() >= freezeEndTime) {
-            freezeEndTime = 0;  // 시간 끝남, 리셋
+            freezeEndTime = 0;
         }
-        return false;  // 정지 아님
+        return false;
+    }
+
+    public static boolean setSHIPSPEED(int level){
+        if (level < 0 || level > MAX_SHIP_SPEED_LEVEL) {
+            return false;
+        }
+        SHIPSPEEDLEVEL = level;
+        return true;
+    }
+
+    public static int getSHIPSpeedCOUNT() {
+        return SHIP_SPEED[SHIPSPEEDLEVEL];
     }
 }
 /**

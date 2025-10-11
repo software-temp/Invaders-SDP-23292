@@ -193,19 +193,18 @@ public class GameScreen extends Screen {
 
 				// ===== 여기에 테스트 코드 추가 =====
 
-				// P키: 푸시백 아이템 (적을 4픽셀 뒤로 밀기)
+				// testing code(pushitem)
 				if (inputManager.isKeyDown(KeyEvent.VK_P)) {
 					Item.PushbackItem(this.enemyShipFormation, 4);
 					this.logger.info("Pushback item activated!");
 				}
 
-				// T키: 타임프리즈 아이템 (3초 동안 적 정지)
+				// testing code(Freezeitem)
 				if (inputManager.isKeyDown(KeyEvent.VK_T)) {
 					Item.applyTimeFreezeItem(3000);  // 3000밀리초 = 3초
 					this.logger.info("Time freeze activated for 3 seconds!");
 				}
 
-				// ===== 테스트 코드 끝 =====
 			}
 
 			if (this.enemyShipSpecial != null) {

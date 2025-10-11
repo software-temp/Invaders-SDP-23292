@@ -102,6 +102,8 @@ public final class Core {
 		//아이템 임시 테스트
 		Item.setSpreadShotLevel(3);      // 확산탄 3레벨
 
+		Item.setSHIPSPEED(3);
+
 		// 아이템 상태 출력
 		System.out.println(Item.getItemStatus());
 		// =============================
