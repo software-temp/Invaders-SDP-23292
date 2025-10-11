@@ -8,6 +8,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import entity.ShopItem;
 import entity.Item;
 import screen.GameScreen;
 import screen.HighScoreScreen;
@@ -100,12 +101,12 @@ public final class Core {
 		}
 
 		//아이템 임시 테스트
-		Item.setSpreadShotLevel(3);      // 확산탄 3레벨
+		ShopItem.setSpreadShotLevel(3);      // 확산탄 3레벨
 
-		Item.setSHIPSPEED(3);
+		ShopItem.setSHIPSPEED(5);
 
 		// 아이템 상태 출력
-		System.out.println(Item.getItemStatus());
+		System.out.println(ShopItem.getItemStatus());
 		// =============================
 
 		frame = new Frame(WIDTH, HEIGHT);

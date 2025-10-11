@@ -48,7 +48,7 @@ public class Ship extends Entity {
 	 * reached.
 	 */
 	public final void moveRight() {
-		int shipspeed = Item.getSHIPSpeedCOUNT();
+		int shipspeed = ShopItem.getSHIPSpeedCOUNT();
 		this.positionX += SPEED*(1+shipspeed/10);
 	}
 
@@ -57,7 +57,7 @@ public class Ship extends Entity {
 	 * reached.
 	 */
 	public final void moveLeft() {
-		int shipspeed = Item.getSHIPSpeedCOUNT();
+		int shipspeed = ShopItem.getSHIPSpeedCOUNT();
 		this.positionX -= SPEED*(1+shipspeed/10);
 	}
     /**
@@ -65,7 +65,7 @@ public class Ship extends Entity {
      * reached.
      */
     public final void moveUp() {
-		int shipspeed = Item.getSHIPSpeedCOUNT();
+		int shipspeed = ShopItem.getSHIPSpeedCOUNT();
 		this.positionY -= SPEED*(1+shipspeed/10);
     }
     /**
@@ -73,7 +73,7 @@ public class Ship extends Entity {
      * reached.
      */
     public final void moveDown() {
-		int shipspeed = Item.getSHIPSpeedCOUNT();
+		int shipspeed = ShopItem.getSHIPSpeedCOUNT();
 		this.positionY += SPEED*(1+shipspeed/10);
     }
     /**
@@ -92,8 +92,8 @@ public class Ship extends Entity {
 			this.shootingCooldown.reset();
 
 			// Get Spread Shot information from the Item class
-			int bulletCount = Item.getSpreadShotBulletCount();
-			int spacing = Item.getSpreadShotSpacing();
+			int bulletCount = ShopItem.getSpreadShotBulletCount();
+			int spacing = ShopItem.getSpreadShotSpacing();
 
 			int centerX = positionX + this.width / 2;
 			int centerY = positionY;
