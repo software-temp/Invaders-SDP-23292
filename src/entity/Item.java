@@ -10,9 +10,7 @@ public class Item extends Entity {
         /** A shield that protects the player. */
         INVINCIBLE,
         /** An item that gives the player one extra life. */
-        HEAL_PACK,
-        /** An item that destroys all enemies on screen. */
-        EXPLODE;
+        HEAL_PACK;
 
         /**
          *
@@ -44,14 +42,20 @@ public class Item extends Entity {
     public final void setSprite(){
         switch (this.itemType) {
 
+            /**
+             * Add ITEMTYPE what you made.
+             * EX)
+             *case MultiShot:
+             *     this.spriteType = SpriteType.Item_MultiShot;
+             *     break;
+             * case Atkspeed:
+             *     this.spriteType = SpriteType.Item_Atkspeed;
+             *     break; */
             case INVINCIBLE:
                 this.spriteType = SpriteType.Item_Shield;
                 break;
             case HEAL_PACK:
                 this.spriteType = SpriteType.Item_Heal;
-                break;
-            case EXPLODE:
-                this.spriteType = SpriteType.Item_Explode;
                 break;
         }
     }
