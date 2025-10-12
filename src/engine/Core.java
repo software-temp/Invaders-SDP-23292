@@ -103,7 +103,7 @@ public final class Core {
 		//아이템 임시 테스트
 		ShopItem.setSpreadShotLevel(3);      // 확산탄 3레벨
 
-		ShopItem.setSHIPSPEED(5);
+		ShopItem.setSHIPSPEED(3);
 
 		// 아이템 상태 출력
 		System.out.println(ShopItem.getItemStatus());
@@ -148,7 +148,7 @@ public final class Core {
 					
 					currentScreen = new GameScreen(gameState,
 							gameSettings.get(gameState.getLevel() - 1),
-							bonusLife, width, height, FPS);
+							bonusLife, MAX_LIVES, width, height, FPS);
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
 							+ " game screen at " + FPS + " fps.");
 					frame.setScreen(currentScreen);
