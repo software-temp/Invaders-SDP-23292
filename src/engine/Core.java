@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import entity.ShopItem;
-import entity.Item;
 import screen.GameScreen;
 import screen.HighScoreScreen;
 import screen.ScoreScreen;
@@ -100,7 +99,7 @@ public final class Core {
 			e.printStackTrace();
 		}
 
-		//아이템 임시 테스트
+		//item test code
 		ShopItem.setSpreadShotLevel(3);      // 확산탄 3레벨
 
 		ShopItem.setSHIPSPEED(3);
