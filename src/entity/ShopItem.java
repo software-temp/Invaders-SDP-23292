@@ -133,24 +133,6 @@ public class ShopItem {
         return BULLET_SPEED_VALUES[bulletSpeedLevel];
     }
 
-    // ==================== Bomb Item Methods ====================
-
-    /**
-     * Destroy all enemies on the screen.
-     *
-     * @param Current enemy ship formation.
-     * @return The number of destroyed enemies.
-     *
-     */
-
-    public static int Bomb(final EnemyShipFormation formation) {
-        if (formation != null) {
-            return formation.destroyAll(); // To add the score or coin, declare as an int method.
-        }
-        return 0;
-    }
-
-
     // ==================== Utility Methods ====================
 
     /**

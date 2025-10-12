@@ -428,7 +428,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
         int destroyed = 0;
         for (List<EnemyShip> column : this.enemyShips) {
             for (EnemyShip enemyShip : column) {
-                if (enemyShip.isDestroyed()) {
+                if (!enemyShip.isDestroyed()) {
                     enemyShip.destroy();
                     destroyed++;
                 }

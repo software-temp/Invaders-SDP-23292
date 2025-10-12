@@ -375,6 +375,10 @@ public class GameScreen extends Screen {
                         case INVINCIBLE:
                             ship.activateInvincibility(5000); // 5 seconds of invincibility
                             break;
+                        case EXPLODE:
+                            int destroyedEnemy = this.enemyShipFormation.destroyAll();
+                            this.score += destroyedEnemy * 5;
+                            break;
                         default:
                             // For other item types. Free to add!
                             break;
