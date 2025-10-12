@@ -322,7 +322,7 @@ public class GameScreen extends Screen {
 						&& !this.omegaBoss.isDestroyed()
 						&& checkCollision(bullet, this.omegaBoss)) {
 					this.omegaBoss.takeDamage(2);
-					if(omegaBoss.isDestroyed()) {
+					if(this.omegaBoss.getHealPoint() <= 0) {
 						this.shipsDestroyed++;
 						this.score += this.omegaBoss.getPointValue();
 						this.coin += (this.omegaBoss.getPointValue()/10);

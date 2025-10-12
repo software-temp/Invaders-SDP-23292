@@ -146,9 +146,6 @@ public class OmegaBoss extends MidBoss {
 	@Override
 	public void takeDamage(int damage) {
 		this.healPoint -= damage;
-		if(this.healPoint <= 0 ){
-			isDestroyed = true;
-		}
 	}
 
 	/**
