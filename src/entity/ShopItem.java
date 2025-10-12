@@ -58,22 +58,6 @@ public class ShopItem {
     /** penetration count */
     private static final int[] PENETRATION_COUNT = {0,1,2};
 
-    // ==================== Bullet Speed Item ====================
-
-    /** Bullet Speed level (0 = not purchased, 1-3 = enhancement levels) */
-    private static int bulletSpeedLevel = 0;
-
-    /** Maximum Bullet Speed level */
-    private static final int MAX_BULLET_SPEED_LEVEL = 3;
-
-    /** Bullet speed value per level */
-    private static final int[] BULLET_SPEED_VALUES = {-6, -8, -10, -12};
-
-    /**
-     * Private constructor - this class should not be instantiated.
-     * It is intended to be used only with static methods.
-     */
-
 
 
     // ==================== MultiShot Methods ====================
@@ -127,7 +111,6 @@ public class ShopItem {
     public static boolean isMultiShotActive() {
         return multiShotLevel > 0;
     }
-
 
     //==================== Rapid Fire Methods ====================
 
@@ -209,41 +192,6 @@ public class ShopItem {
         return penetrationLevel > 0;
     }
 
-    // ==================== Bullet Speed Methods ====================
-
-    /**
-     * Sets the Bullet Speed level (called upon purchase from a shop).
-     *
-     * @param level The level to set (0-3).
-     * @return true if the level was set successfully, false otherwise.
-     */
-    public static boolean setBulletSpeedLevel(int level) {
-        if (level < 0 || level > MAX_BULLET_SPEED_LEVEL) {
-            return false;
-        }
-        bulletSpeedLevel = level;
-        return true;
-    }
-
-    /**
-     * Returns the current Bullet Speed level.
-     *
-     * @return The current level (0-3).
-     */
-    //
-    public static int getBulletSpeedLevel() {
-        return bulletSpeedLevel;
-    }
-
-    /**
-     * Returns the bullet speed for the current enhancement level.
-     *
-     * @return The bullet speed.
-     */
-    public static int getBulletSpeed() {
-        return BULLET_SPEED_VALUES[bulletSpeedLevel];
-    }
-
 
     // ==================== Utility Methods ====================
 
@@ -254,7 +202,6 @@ public class ShopItem {
         multiShotLevel = 0;
         rapidFireLevel = 0;
         penetrationLevel = 0;
-        bulletSpeedLevel = 0;
     }
 
     /**
@@ -275,9 +222,6 @@ public class ShopItem {
         status.append("Penetration Level: ").append(penetrationLevel)
                 .append(" (Max Penetration Count: ").append(getPenetrationCount())
                 .append(")\n");
-        status.append("Bullet Speed Level: ").append(bulletSpeedLevel)
-                .append(" (Speed: ").append(getBulletSpeed())
-                .append(")\n");
         return status.toString();
     }
 
@@ -288,6 +232,5 @@ public class ShopItem {
         multiShotLevel = MAX_MULTI_SHOT_LEVEL;
         rapidFireLevel = MAX_RAPID_FIRE_LEVEL;
         penetrationLevel = MAX_RAPID_FIRE_LEVEL;
-        bulletSpeedLevel = MAX_BULLET_SPEED_LEVEL;
     }
 }
