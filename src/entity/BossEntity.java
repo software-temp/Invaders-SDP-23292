@@ -8,56 +8,55 @@ import engine.DrawManager;
 public interface BossEntity {
 
 	/**
-	 * Getter for the current healPoint of the boss.
+	 * Gets the current health points of the boss.
 	 *
-	 * @return Value of the healPoint
+	 * @return the current health points of the boss
 	 */
 	int getHealPoint();
 
 	/**
-	 * Getter for the score bonus if this ship is destroyed.
+	 * Gets the score value awarded when this boss is destroyed.
 	 *
-	 * @return Value of the ship.
+	 * @return the score value of the boss
 	 */
 	int getPointValue();
 
 	/**
-	 * Moves the ship the specified distance.
+	 * Moves the boss by the specified distances along the X and Y axes.
 	 *
-	 * @param distanceX
-	 *            Distance to move in the X axis.
-	 * @param distanceY
-	 *            Distance to move in the Y axis.
+	 * @param distanceX distance to move along the X axis
+	 * @param distanceY distance to move along the Y axis
 	 */
 	void move(int distanceX, int distanceY);
 
 	/**
-	 * Handles cleanup logic when the boss is destroyed.
+	 * Handles any cleanup or final logic when the boss is destroyed.
 	 */
 	void destroy();
 
 	/**
-	 * Checks if the boss has been destroyed.
+	 * Checks whether the boss has been destroyed.
 	 *
-	 * @return if the boss is destroyed
+	 * @return {@code true} if the boss is destroyed; {@code false} otherwise
 	 */
 	boolean isDestroyed();
 
 	/**
-	 * Handles the logic when the boss takes damage.
+	 * Applies the given amount of damage to the boss.
 	 *
-	 * @param damage
-	 *          Damage the boss gets.
+	 * @param damage the amount of damage dealt to the boss
 	 */
 	void takeDamage(int damage);
 
 	/**
-	 * Updates attributes, mainly used for animation purposes.
+	 * Updates the boss's state, typically used for animation or behavior changes.
 	 */
 	void update();
 
 	/**
-	 * Draws the boss on the screen.
+	 * Draws the boss entity on the screen.
+	 *
+	 * @param drawManager the {@link DrawManager} responsible for rendering the boss
 	 */
 	void draw(DrawManager drawManager);
 }
