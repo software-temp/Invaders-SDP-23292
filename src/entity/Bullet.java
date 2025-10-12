@@ -40,7 +40,7 @@ public class Bullet extends Entity {
 
 		this.speed = speed;
 		this.penetrationCount = 0;
-		this.maxPenetration = Shop_item.getPenetrationCount();
+		this.maxPenetration = ShopItem.getPenetrationCount();
 
 		setSprite();
 	}
@@ -104,7 +104,7 @@ public class Bullet extends Entity {
 	 */
 	public final void resetPenetration() {
 		this.penetrationCount = 0;
-		this.maxPenetration = Shop_item.getPenetrationCount();
+		this.maxPenetration = ShopItem.getPenetrationCount();
 	}
 
 }

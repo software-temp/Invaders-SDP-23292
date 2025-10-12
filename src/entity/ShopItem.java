@@ -10,7 +10,7 @@ package entity;
  * Item.setMultiShotLevel(2);  // Purchase level 2 in the shop
  * int bulletCount = Item.getMultiShotBulletCount();  // Returns the number of bullets to fire
  */
-public class Shop_item {
+public class ShopItem {
 
     // ==================== MultiShot Item ====================
 
@@ -31,7 +31,7 @@ public class Shop_item {
      * Private constructor - this class should not be instantiated.
      * It is intended to be used only with static methods.
      */
-    private Shop_item() {
+    private ShopItem() {
     }
     //==================== Rapid Fire Item =======================
 
