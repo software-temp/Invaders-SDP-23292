@@ -18,13 +18,12 @@ public class OmegaBoss extends MidBoss {
 	private static final int BOSS_WIDTH = 32;
 	/** Height of the Boss */
 	private static final int BOSS_HEIGHT = 14;
-	/** for move pattern */
+	/** Current horizontal movement direction. true for right, false for left. */
 	private boolean isRight = true;
-	/** for move pattern */
+	/** Current vertical movement direction. true for down, false for up. */
 	private boolean isDown = true;
 
 	/**
-	 * public abstract class MidBoss extends Entity implements BossEntity
 	 * Constructor, establishes the boss entity's generic properties.
 	 *
 	 * @param color     Color of the boss entity.
