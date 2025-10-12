@@ -78,19 +78,13 @@ public class OmegaBoss extends MidBoss {
 	 * @see #move(int, int)
 	 */
 	private void patternFirst(){
-		if(this.isRight){
-			if(this.positionX + 1 >= screen.getWidth() - this.width){
-				this.isRight = false;
-			}else{
-				this.move(1,0);
-			}
-		}else{
-			if(this.positionX - 1 <= 0){
-				this.isRight = true;
-				this.move(1,0);
-			}else {
-				this.move(-1,0);
-			}
+		int dx = this.isRight ? 1 : -1;
+		this.move(dx, 0);
+
+		if (this.positionX <= 0) {
+			this.isRight = true;
+		} else if (this.positionX + this.width >= screen.getWidth()) {
+			this.isRight = false;
 		}
 	}
 
@@ -100,33 +94,25 @@ public class OmegaBoss extends MidBoss {
 	 * @see #move(int, int)
 	 */
 	private void patternSecond(){
-		if(this.isRight){
-			if(this.positionX + 3 >= screen.getWidth() - this.width){
-				this.isRight = false;
-			}else{
-				this.move(3,0);
-			}
-		}else{
-			if(this.positionX - 3 <= 0){
-				this.isRight = true;
-				this.move(3,0);
-			}else {
-				this.move(-3,0);
-			}
+		int dx = this.isRight ? 3 : -3;
+		int dy = this.isDown ? 1 : -1;
+
+		this.move(dx, dy);
+
+		if (this.positionX <= 0) {
+			this.positionX = 0;
+			this.isRight = true;
+		} else if (this.positionX + this.width >= screen.getWidth()) {
+			this.positionX = screen.getWidth() - this.width;
+			this.isRight = false;
 		}
-		if(this.isDown){
-			if(this.positionY + 1 >= screen.getHeight() - this.height){
-				this.isDown = false;
-				this.move(0,-1);
-			}else{
-				this.move(0,1);
-			}
-		}else{
-			if(this.positionY - 1 <= 50){
-				this.isDown = true;
-			}else{
-				this.move(0,-1);
-			}
+
+		if (this.positionY <= 50) {
+			this.positionY = 50;
+			this.isDown = true;
+		} else if (this.positionY + this.height >= screen.getHeight()) {
+			this.positionY = screen.getHeight() - this.height;
+			this.isDown = false;
 		}
 	}
 
