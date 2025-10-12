@@ -4,11 +4,10 @@ package entity;
  * Manages the in-game item (enhancement) system.
  * This is a temporary implementation focusing on functionality.
  *
- * Currently implemented: Spread Shot
+ * Currently implemented: MultiShot, Rapid Fire, Penetration
  *
  * Example usage:
  * Item.setMultiShotLevel(2);  // Purchase level 2 in the shop
- * int bulletCount = Item.getMultiShotBulletCount();  // Returns the number of bullets to fire
  */
 public class ShopItem {
 
@@ -50,7 +49,7 @@ public class ShopItem {
 
     //===================== penetration Item =====================
 
-    /** penetration levle (0 = not purchased, 1~5 = enhancement levels) */
+    /** penetration level (0 = not purchased, 1~2 = enhancement levels) */
     private static int penetrationLevel = 0;
 
     /** maximum penetration level */
