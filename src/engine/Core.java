@@ -8,6 +8,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import entity.ShopItem;
 import screen.GameScreen;
 import screen.HighScoreScreen;
 import screen.ScoreScreen;
@@ -97,6 +98,16 @@ public final class Core {
 			// TODO handle exception
 			e.printStackTrace();
 		}
+
+		//item test code
+		ShopItem.setMultiShotLevel(3);
+		ShopItem.setRapidFireLevel(5);
+		ShopItem.setPenetrationLevel(2);
+
+
+		// print item status
+		System.out.println(ShopItem.getItemStatus());
+		// =============================
 
 		frame = new Frame(WIDTH, HEIGHT);
 		DrawManager.getInstance().setFrame(frame);

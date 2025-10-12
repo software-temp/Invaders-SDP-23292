@@ -128,9 +128,11 @@ public final class DrawManager {
 			fontBig = fileManager.loadFont(24f);
 			logger.info("Finished loading the fonts.");
 
+
 		} catch (IOException e) {
 			logger.warning("Loading failed.");
-		} catch (FontFormatException e) {
+		}
+		catch (FontFormatException e) {
 			logger.warning("Font formating failed.");
 		}
 	}
