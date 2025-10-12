@@ -22,7 +22,6 @@ public abstract class MidBoss extends Entity implements BossEntity {
 	protected Logger logger;
 
 	/**
-	 * public abstract class MidBoss extends Entity implements BossEntity
 	 * Constructor, establishes the boss entity's generic properties.
 	 *
 	 * @param positionX Initial position of the entity in the X axis.
