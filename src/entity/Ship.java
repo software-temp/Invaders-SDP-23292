@@ -41,9 +41,8 @@ public class Ship extends Entity {
 	 */
 	public Ship(final int positionX, final int positionY) {
 		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
-
 		this.spriteType = SpriteType.Ship;
-		this.shootingCooldown = Core.getCooldown(SHOOTING_INTERVAL);
+		this.shootingCooldown = Core.getCooldown(ShopItem.getShootingInterval());
 		this.destructionCooldown = Core.getCooldown(1000);
 		this.shieldCooldown = Core.getCooldown(0);
 		this.isInvincible = false;
@@ -86,11 +85,34 @@ public class Ship extends Entity {
 	 *            List of bullets on screen, to add the new bullet.
 	 * @return Checks if the bullet was shot correctly.
 	 */
+
 	public final boolean shoot(final Set<Bullet> bullets) {
 		if (this.shootingCooldown.checkFinished()) {
 			this.shootingCooldown.reset();
-			bullets.add(BulletPool.getBullet(positionX + this.width / 2,
-					positionY, BULLET_SPEED));
+
+			// Get Spread Shot information from the Item class
+			int bulletCount = ShopItem.getMultiShotBulletCount();
+			int spacing = ShopItem.getMultiShotSpacing();
+
+			int centerX = positionX + this.width / 2;
+			int centerY = positionY;
+
+			if (bulletCount == 1) {
+				// Normal shot (when Spread Shot is not purchased)
+				bullets.add(BulletPool.getBullet(centerX, centerY, BULLET_SPEED));
+			} else {
+				// Fire Spread Shot
+				int startOffset = -(bulletCount / 2) * spacing;
+
+				for (int i = 0; i < bulletCount; i++) {
+					int offsetX = startOffset + (i * spacing);
+					bullets.add(BulletPool.getBullet(
+							centerX + offsetX,
+							centerY,
+							BULLET_SPEED
+					));
+				}
+			}
 			return true;
 		}
 		return false;
