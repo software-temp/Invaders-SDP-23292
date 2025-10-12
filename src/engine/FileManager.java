@@ -71,7 +71,7 @@ public final class FileManager {
 
 		try {
 			inputStream = DrawManager.class.getClassLoader()
-                    .getResourceAsStream("graphics");
+                    .getResourceAsStream("res/graphics");
             char c;
 
 			// Sprite loading.
@@ -117,7 +117,7 @@ public final class FileManager {
 		try {
 			// Font loading.
 			inputStream = FileManager.class.getClassLoader()
-					.getResourceAsStream("font.ttf");
+					.getResourceAsStream("res/font.ttf");
 			font = Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(
 					size);
 		} finally {
@@ -143,7 +143,7 @@ public final class FileManager {
 
 		try {
 			inputStream = FileManager.class.getClassLoader()
-					.getResourceAsStream("scores");
+					.getResourceAsStream("res/scores");
 			reader = new BufferedReader(new InputStreamReader(inputStream));
 
 			Score highScore = null;
@@ -185,7 +185,7 @@ public final class FileManager {
 
 			String scoresPath = new File(jarPath).getParent();
 			scoresPath += File.separator;
-			scoresPath += "scores";
+			scoresPath += "res/scores";
 
 			File scoresFile = new File(scoresPath);
 			inputStream = new FileInputStream(scoresFile);
@@ -238,7 +238,7 @@ public final class FileManager {
 
 			String scoresPath = new File(jarPath).getParent();
 			scoresPath += File.separator;
-			scoresPath += "scores";
+			scoresPath += "res/scores";
 
 			File scoresFile = new File(scoresPath);
 

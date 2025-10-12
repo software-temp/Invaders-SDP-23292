@@ -406,8 +406,12 @@ public class GameScreen extends Screen {
 							item.applyTimeFreezeItem(3000);
 							break;
 						case PUSH:
-							item.PushbackItem(this.enemyShipFormation,10);
+							item.PushbackItem(this.enemyShipFormation,20);
 							break;
+                        case EXPLODE:
+                            int destroyedEnemy = this.enemyShipFormation.destroyAll();
+                            this.score += destroyedEnemy * 5;
+                            break;
                         default:
                             // For other item types. Free to add!
                             break;

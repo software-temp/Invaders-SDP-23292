@@ -15,7 +15,9 @@ public class Item extends Entity {
         /** An item that gives the player one extra life. */
         HEAL_PACK,
         PUSH,
-        STOP;
+        STOP,
+        /** An item that destroys all enemies on screen. */
+        EXPLODE;
 
         /**
          *
@@ -67,6 +69,9 @@ public class Item extends Entity {
                 break;
             case HEAL_PACK:
                 this.spriteType = SpriteType.Item_Heal;
+                break;
+            case EXPLODE:
+                this.spriteType = SpriteType.Item_Explode;
                 break;
         }
     }
