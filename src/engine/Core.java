@@ -99,14 +99,6 @@ public final class Core {
 			e.printStackTrace();
 		}
 
-		// Test item
-		Item.setSpreadShotLevel(3);
-        Item.setBulletSpeedLevel(3);
-
-		// Print current item status
-		System.out.println(Item.getItemStatus());
-		// =============================
-
 		frame = new Frame(WIDTH, HEIGHT);
 		DrawManager.getInstance().setFrame(frame);
 		int width = frame.getWidth();

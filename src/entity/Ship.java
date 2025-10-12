@@ -130,4 +130,26 @@ public class Ship extends Entity {
 	public final int getSpeed() {
 		return SPEED;
 	}
+
+    /**
+     * Getter for the ship's invincibility state.
+     *
+     * @return True if the ship is currently invincible.
+     */
+    public final boolean isInvincible() {
+        return this.isInvincible;
+    }
+
+    /**
+     * Activates the ship's invincibility shield for a given duration.
+     *
+     * @param duration
+     *            Duration of the invincibility in milliseconds.
+     */
+    public final void activateInvincibility(final int duration) {
+        this.isInvincible = true;
+        this.shieldCooldown.setMilliseconds(duration);
+        this.shieldCooldown.reset();
+        this.setColor(Color.BLUE);
+    }
 }
