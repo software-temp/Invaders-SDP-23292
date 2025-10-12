@@ -40,6 +40,8 @@ public class GameScreen extends Screen {
 	private int level;
 	/** Formation of enemy ships. */
 	private EnemyShipFormation enemyShipFormation;
+	/** Formation of special enemy ships. */
+	private EnemyShipSpecialFormation enemyShipSpecialFormation;
 	/** Player's ship. */
 	private Ship ship;
 	/** Bonus enemy ship that appears sometimes. */
@@ -72,7 +74,6 @@ public class GameScreen extends Screen {
 	private boolean bonusLife;
 	/** Current coin. */
 	private int coin;
-
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -115,12 +116,11 @@ public class GameScreen extends Screen {
 		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
 		enemyShipFormation.attach(this);
 		this.ship = new Ship(this.width / 2, this.height - 30);
-		// Appears each 10-30 seconds.
-		this.enemyShipSpecialCooldown = Core.getVariableCooldown(
-				BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE);
-		this.enemyShipSpecialCooldown.reset();
-		this.enemyShipSpecialExplosionCooldown = Core
-				.getCooldown(BONUS_SHIP_EXPLOSION);
+		// special enemy initial
+		enemyShipSpecialFormation = new EnemyShipSpecialFormation(this.gameSettings,
+				Core.getVariableCooldown(BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE),
+				Core.getCooldown(BONUS_SHIP_EXPLOSION));
+		enemyShipSpecialFormation.attach(this);
 		this.bossExplotionCooldown = Core
 				.getCooldown(BONUS_SHIP_EXPLOSION);
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
@@ -201,27 +201,11 @@ public class GameScreen extends Screen {
 				else if (this.bossExplotionCooldown.checkFinished())
 					this.omegaBoss = null;
 			}
-			if (this.enemyShipSpecial != null) {
-				if (!this.enemyShipSpecial.isDestroyed())
-					this.enemyShipSpecial.move(2, 0);
-				else if (this.enemyShipSpecialExplosionCooldown.checkFinished())
-					this.enemyShipSpecial = null;
-			}
-			if (this.enemyShipSpecial == null
-					&& this.enemyShipSpecialCooldown.checkFinished()) {
-				this.enemyShipSpecial = new EnemyShip();
-				this.enemyShipSpecialCooldown.reset();
-				this.logger.info("A special ship appears");
-			}
-			if (this.enemyShipSpecial != null
-					&& this.enemyShipSpecial.getPositionX() > this.width) {
-				this.enemyShipSpecial = null;
-				this.logger.info("The special ship has escaped");
-			}
-
 			this.ship.update();
 			this.enemyShipFormation.update();
 			this.enemyShipFormation.shoot(this.bullets);
+			// special enemy update
+			this.enemyShipSpecialFormation.update();
 		}
 
 		manageCollisions();
@@ -247,10 +231,8 @@ public class GameScreen extends Screen {
 
 		drawManager.drawEntity(this.ship, this.ship.getPositionX(),
 				this.ship.getPositionY());
-		if (this.enemyShipSpecial != null)
-			drawManager.drawEntity(this.enemyShipSpecial,
-					this.enemyShipSpecial.getPositionX(),
-					this.enemyShipSpecial.getPositionY());
+		// special enemy draw
+		enemyShipSpecialFormation.draw();
 
 		enemyShipFormation.draw();
 
@@ -325,15 +307,16 @@ public class GameScreen extends Screen {
 						this.enemyShipFormation.destroy(enemyShip);
 						recyclable.add(bullet);
 					}
-				if (this.enemyShipSpecial != null
-						&& !this.enemyShipSpecial.isDestroyed()
-						&& checkCollision(bullet, this.enemyShipSpecial)) {
-					this.score += this.enemyShipSpecial.getPointValue();
-					this.coin += (this.enemyShipSpecial.getPointValue()/10);
-					this.shipsDestroyed++;
-					this.enemyShipSpecial.destroy();
-					this.enemyShipSpecialExplosionCooldown.reset();
-					recyclable.add(bullet);
+
+				// special enemy bullet event
+				for (EnemyShip enemyShipSpecial : this.enemyShipSpecialFormation)
+					if (enemyShipSpecial != null && !enemyShipSpecial.isDestroyed()
+							&& checkCollision(bullet, enemyShipSpecial)) {
+						this.score += enemyShipSpecial.getPointValue();
+						this.coin += (enemyShipSpecial.getPointValue()/10);
+						this.shipsDestroyed++;
+						this.enemyShipSpecialFormation.destroy(enemyShipSpecial);
+						recyclable.add(bullet);
 				}
 				if (this.omegaBoss != null
 						&& !this.omegaBoss.isDestroyed()
