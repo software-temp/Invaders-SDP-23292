@@ -24,7 +24,6 @@ public class OmegaBoss extends MidBoss {
 	private boolean isDown = true;
 
 	/**
-	 * public abstract class MidBoss extends Entity implements BossEntity
 	 * Constructor, establishes the boss entity's generic properties.
 	 *
 	 * @param color     Color of the boss entity.
