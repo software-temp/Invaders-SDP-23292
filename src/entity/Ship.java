@@ -42,7 +42,7 @@ public class Ship extends Entity {
 	public Ship(final int positionX, final int positionY) {
 		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
 		this.spriteType = SpriteType.Ship;
-		this.shootingCooldown = Core.getCooldown(SHOOTING_INTERVAL);
+		this.shootingCooldown = Core.getCooldown(ShopItem.getShootingInterval());
 		this.destructionCooldown = Core.getCooldown(1000);
 		this.shieldCooldown = Core.getCooldown(0);
 		this.isInvincible = false;
@@ -97,8 +97,8 @@ public class Ship extends Entity {
 			this.shootingCooldown.reset();
 
 			// Get Spread Shot information from the Item class
-			int bulletCount = ShopItem.getSpreadShotBulletCount();
-			int spacing = ShopItem.getSpreadShotSpacing();
+			int bulletCount = ShopItem.getMultiShotBulletCount();
+			int spacing = ShopItem.getMultiShotSpacing();
 
 			int centerX = positionX + this.width / 2;
 			int centerY = positionY;

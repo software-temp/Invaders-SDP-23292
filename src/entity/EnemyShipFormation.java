@@ -105,6 +105,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 		DOWN
 	};
 
+
 	/**
 	 * Constructor, sets the initial conditions.
 	 * 

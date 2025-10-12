@@ -100,11 +100,12 @@ public final class Core {
 		}
 
 		//item test code
-		ShopItem.setSpreadShotLevel(3);      // 확산탄 3레벨
-
+		ShopItem.setMultiShotLevel(3);
+		ShopItem.setRapidFireLevel(5);
+		ShopItem.setPenetrationLevel(2);
 		ShopItem.setSHIPSPEED(3);
 
-		// 아이템 상태 출력
+		// print item status
 		System.out.println(ShopItem.getItemStatus());
 		// =============================
 
