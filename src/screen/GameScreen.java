@@ -349,7 +349,7 @@ public class GameScreen extends Screen {
                             this.items.add(newItem);
                             this.logger.info("An item (" + droppedType + ") dropped");
                         }
-                        this.enemyShipFormation.destroy(enemyShip);
+
 						if (!bullet.penetration()) {
 							recyclable.add(bullet);
 							break;
