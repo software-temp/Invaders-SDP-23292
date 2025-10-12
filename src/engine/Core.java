@@ -8,7 +8,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import entity.Item;
+import entity.ShopItem;
 import screen.GameScreen;
 import screen.HighScoreScreen;
 import screen.ScoreScreen;
@@ -99,11 +99,14 @@ public final class Core {
 			e.printStackTrace();
 		}
 
-		//아이템 임시 테스트
-		Item.setSpreadShotLevel(3);      // 확산탄 3레벨
+		//item test code
+		ShopItem.setMultiShotLevel(3);
+		ShopItem.setRapidFireLevel(5);
+		ShopItem.setPenetrationLevel(2);
 
-		// 아이템 상태 출력
-		System.out.println(Item.getItemStatus());
+
+		// print item status
+		System.out.println(ShopItem.getItemStatus());
 		// =============================
 
 		frame = new Frame(WIDTH, HEIGHT);
