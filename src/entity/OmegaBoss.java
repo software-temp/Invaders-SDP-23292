@@ -1,8 +1,6 @@
 package entity;
 
 import engine.DrawManager;
-import engine.Cooldown;
-import engine.Core;
 import java.awt.*;
 
 /**
@@ -14,10 +12,22 @@ public class OmegaBoss extends MidBoss {
 	private static final int INIT_POS_X = 224;
 	/** Initial position in the y-axis. */
 	private static final int INIT_POS_Y = 50;
-	/** Width of the Boss */
-	private static final int BOSS_WIDTH = 32;
-	/** Height of the Boss */
-	private static final int BOSS_HEIGHT = 14;
+	/** Width of Omega */
+	private static final int OMEGA_WIDTH = 32;
+	/** Height of Omega */
+	private static final int OMEGA_HEIGHT = 14;
+	/** Current Health of Omega */
+	private static final int OMEGA_HEALTH = 10;
+	/** Point of Omega when destroyed */
+	private static final int OMEGA_POINT_VALUE = 500;
+	/** Speed of x in pattern 1 */
+	private static final int PATTERN_1_X_SPEED = 1;
+	/** Speed of x in pattern 2 */
+	private static final int PATTERN_2_X_SPEED = 3;
+	/** Speed of y in pattern 2 */
+	private static final int PATTERN_2_Y_SPEED = 1;
+	/** Color of pattern 2 */
+	private static final Color PATTERN_2_COLOR = Color.MAGENTA;
 	/** Current horizontal movement direction. true for right, false for left. */
 	private boolean isRight = true;
 	/** Current vertical movement direction. true for down, false for up. */
@@ -29,13 +39,8 @@ public class OmegaBoss extends MidBoss {
 	 * @param color     Color of the boss entity.
 	 */
 	public OmegaBoss(Color color) {
-		super(INIT_POS_X, INIT_POS_Y, BOSS_WIDTH, BOSS_HEIGHT, color);
-		this.logger = Core.getLogger();
-		this.healPoint=10;
-		this.maxHp=healPoint;
-		this.pointValue=500;
+		super(INIT_POS_X, INIT_POS_Y, OMEGA_WIDTH, OMEGA_HEIGHT, OMEGA_HEALTH, OMEGA_POINT_VALUE, color);
 		this.spriteType= DrawManager.SpriteType.EnemyShipSpecial;
-
 		this.logger.info("OMEGA : Initializing Boss OMEGA");
 		this.logger.info("OMEGA : move using the default pattern");
 	}
@@ -58,7 +63,7 @@ public class OmegaBoss extends MidBoss {
 	private void movePatterns(){
 		if(this.pattern!=2 && this.healPoint < this.maxHp/2){
 			this.pattern=2;
-			this.color=Color.magenta;
+			this.color=PATTERN_2_COLOR;
 			logger.info("OMEGA : move using second pattern");
 		}
 
@@ -77,7 +82,7 @@ public class OmegaBoss extends MidBoss {
 	 * @see #move(int, int)
 	 */
 	private void patternFirst(){
-		int dx = this.isRight ? 1 : -1;
+		int dx = this.isRight ? PATTERN_1_X_SPEED : -PATTERN_1_X_SPEED;
 		this.move(dx, 0);
 
 		if (this.positionX <= 0) {
@@ -93,8 +98,8 @@ public class OmegaBoss extends MidBoss {
 	 * @see #move(int, int)
 	 */
 	private void patternSecond(){
-		int dx = this.isRight ? 3 : -3;
-		int dy = this.isDown ? 1 : -1;
+		int dx = this.isRight ? PATTERN_2_X_SPEED : -PATTERN_2_X_SPEED;
+		int dy = this.isDown ? PATTERN_2_Y_SPEED : -PATTERN_2_Y_SPEED;
 
 		this.move(dx, dy);
 

@@ -1,5 +1,6 @@
 package entity;
 
+import engine.Core;
 import screen.Screen;
 
 import java.awt.*;
@@ -28,10 +29,16 @@ public abstract class MidBoss extends Entity implements BossEntity {
 	 * @param positionY Initial position of the entity in the Y axis.
 	 * @param width     Width of the entity.
 	 * @param height    Height of the entity.
+	 * @param healPoint    HP of the entity.
+	 * @param pointValue    point of the entity.
 	 * @param color     Color of the entity.
 	 */
-	public MidBoss(int positionX, int positionY, int width, int height, Color color) {
+	public MidBoss(int positionX, int positionY, int width, int height, int healPoint, int pointValue, Color color) {
 		super(positionX, positionY, width, height, color);
+		this.healPoint=healPoint;
+		this.maxHp=healPoint;
+		this.pointValue=pointValue;
+		this.logger = Core.getLogger();
 	}
 
 	@Override

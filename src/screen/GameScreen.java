@@ -29,6 +29,8 @@ public class GameScreen extends Screen {
 	private static final int BONUS_SHIP_VARIANCE = 10000;
 	/** Time until bonus ship explosion disappears. */
 	private static final int BONUS_SHIP_EXPLOSION = 500;
+	/** Time until bonus ship explosion disappears. */
+	private static final int BOSS_EXPLOSION = 600;
 	/** Time from finishing the level to screen change. */
 	private static final int SCREEN_CHANGE_INTERVAL = 1500;
 	/** Height of the interface separation line. */
@@ -122,7 +124,7 @@ public class GameScreen extends Screen {
 				Core.getCooldown(BONUS_SHIP_EXPLOSION));
 		enemyShipSpecialFormation.attach(this);
 		this.bossExplosionCooldown = Core
-				.getCooldown(BONUS_SHIP_EXPLOSION);
+				.getCooldown(BOSS_EXPLOSION);
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
 		this.bullets = new HashSet<Bullet>();
 
@@ -198,8 +200,9 @@ public class GameScreen extends Screen {
 				if(!this.omegaBoss.isDestroyed()) {
 					this.omegaBoss.update();
 				}
-				else if (this.bossExplosionCooldown.checkFinished())
+				else if (this.bossExplosionCooldown.checkFinished()) {
 					this.omegaBoss = null;
+				}
 			}
 			this.ship.update();
 			this.enemyShipFormation.update();
