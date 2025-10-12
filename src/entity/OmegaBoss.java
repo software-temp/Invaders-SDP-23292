@@ -107,8 +107,8 @@ public class OmegaBoss extends MidBoss {
 			this.isRight = false;
 		}
 
-		if (this.positionY <= 50) {
-			this.positionY = 50;
+		if (this.positionY <= INIT_POS_Y) {
+			this.positionY = INIT_POS_Y;
 			this.isDown = true;
 		} else if (this.positionY + this.height >= screen.getHeight()) {
 			this.positionY = screen.getHeight() - this.height;
