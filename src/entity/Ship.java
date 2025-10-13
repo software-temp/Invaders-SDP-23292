@@ -54,7 +54,8 @@ public class Ship extends Entity {
 	 * reached.
 	 */
 	public final void moveRight() {
-		this.positionX += SPEED;
+		int shipspeed = ShopItem.getSHIPSpeedCOUNT();
+		this.positionX += SPEED*(1+shipspeed/10);
 	}
 
 	/**
@@ -62,21 +63,24 @@ public class Ship extends Entity {
 	 * reached.
 	 */
 	public final void moveLeft() {
-		this.positionX -= SPEED;
+		int shipspeed = ShopItem.getSHIPSpeedCOUNT();
+		this.positionX -= SPEED*(1+shipspeed/10);
 	}
     /**
      * Moves the ship speed units up, or until the SEPARATION_LINE_HEIGHT is
      * reached.
      */
     public final void moveUp() {
-        this.positionY -= SPEED;
+		int shipspeed = ShopItem.getSHIPSpeedCOUNT();
+		this.positionY -= SPEED*(1+shipspeed/10);
     }
     /**
      * Moves the ship speed units down, or until the down screen border is
      * reached.
      */
     public final void moveDown() {
-        this.positionY += SPEED;
+		int shipspeed = ShopItem.getSHIPSpeedCOUNT();
+		this.positionY += SPEED*(1+shipspeed/10);
     }
     /**
 	 * Shoots a bullet upwards.

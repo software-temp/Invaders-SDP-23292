@@ -11,6 +11,8 @@ public class Item extends Entity {
         INVINCIBLE,
         /** An item that gives the player one extra life. */
         HEAL_PACK,
+        PUSH,
+        STOP,
         /** An item that destroys all enemies on screen. */
         EXPLODE;
 
@@ -44,6 +46,21 @@ public class Item extends Entity {
     public final void setSprite(){
         switch (this.itemType) {
 
+            /**
+             * Add ITEMTYPE what you made.
+             * EX)
+             *case MultiShot:
+             *     this.spriteType = SpriteType.Item_MultiShot;
+             *     break;
+             * case Atkspeed:
+             *     this.spriteType = SpriteType.Item_Atkspeed;
+             *     break; */
+            case STOP:
+                this.spriteType = SpriteType.Item_Stop;
+                break;
+            case PUSH:
+                this.spriteType = SpriteType.Item_Push;
+                break;
             case INVINCIBLE:
                 this.spriteType = SpriteType.Item_Shield;
                 break;
@@ -56,7 +73,62 @@ public class Item extends Entity {
         }
     }
 
+    private static long freezeEndTime = 0;
+
     /**
+     * enemy push
+     * @param enemyShipFormation
+     * @param distanceY
+     */
+    public static void PushbackItem(EnemyShipFormation enemyShipFormation, int distanceY) {
+        if (enemyShipFormation == null) {
+            return;
+        }
+
+        // All enemyship push
+        for (EnemyShip enemy : enemyShipFormation) {
+            if (enemy != null && !enemy.isDestroyed()) {
+                enemy.move(0, -distanceY);
+            }
+        }
+    }
+
+    /**
+     * Freeze Item : all enemy ship never move except special enemy.
+     *
+     * @param durationMillis
+     *                  Freeze duration Time
+     */
+    public static void applyTimeFreezeItem(int durationMillis) {
+        // current Time + duration Time = End Time
+        freezeEndTime = System.currentTimeMillis() + durationMillis;
+    }
+
+    /**
+     * check If Freeze item is activated
+     *
+     * @return If returning true, don't move all enemy ship except special enemy
+     */
+    public static boolean isTimeFreezeActive() {
+        if (freezeEndTime > 0 && System.currentTimeMillis() < freezeEndTime) {
+            return true;
+        }
+        if (freezeEndTime > 0 && System.currentTimeMillis() >= freezeEndTime) {
+            freezeEndTime = 0;
+        }
+        return false;
+    }
+/**
+ * Manages the in-game item (enhancement) system.
+ * This is a temporary implementation focusing on functionality.
+ *
+ * Currently implemented: Spread Shot
+ *
+ * Example usage:
+ * Item.setSpreadShotLevel(2);  // Purchase level 2 in the shop
+ * int bulletCount = Item.getSpreadShotBulletCount();  // Returns the number of bullets to fire
+ */
+/**
      * Updates the item's position.
      */
     public final void update() {

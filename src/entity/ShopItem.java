@@ -58,6 +58,15 @@ public class ShopItem {
     /** penetration count */
     private static final int[] PENETRATION_COUNT = {0,1,2};
 
+    //===================== ShipSpeed Item =====================
+
+    private static final int MAX_SHIP_SPEED_LEVEL = 5;
+
+    /** Ship speed per level */
+    private static final int[] SHIP_SPEED = {0, 5, 10, 15, 20, 25};
+
+    /** Ship Speed Increase Per Level (%)*/
+    private static int SHIPSPEEDLEVEL = 0;
     // ==================== Bullet Speed Item ====================
 
     /** Bullet Speed level (0 = not purchased, 1-3 = enhancement levels) */
@@ -230,7 +239,19 @@ public class ShopItem {
      *
      * @return The current level (0-3).
      */
-    //
+    //===================== ShipSpeed Methods ================
+    public static boolean setSHIPSPEED(int level){
+        if (level < 0 || level > MAX_SHIP_SPEED_LEVEL) {
+            return false;
+        }
+        SHIPSPEEDLEVEL = level;
+        return true;
+    }
+
+    public static int getSHIPSpeedCOUNT() {
+        return SHIP_SPEED[SHIPSPEEDLEVEL];
+    }
+
     public static int getBulletSpeedLevel() {
         return bulletSpeedLevel;
     }
@@ -255,6 +276,7 @@ public class ShopItem {
         rapidFireLevel = 0;
         penetrationLevel = 0;
         bulletSpeedLevel = 0;
+        SHIPSPEEDLEVEL = 0;
     }
 
     /**
@@ -278,6 +300,8 @@ public class ShopItem {
         status.append("Bullet Speed Level: ").append(bulletSpeedLevel)
                 .append(" (Speed: ").append(getBulletSpeed())
                 .append(")\n");
+        status.append("Ship Speed Level: ").append(SHIPSPEEDLEVEL)
+                .append(" (Speed: ").append(getSHIPSpeedCOUNT());
         return status.toString();
     }
 
@@ -289,5 +313,6 @@ public class ShopItem {
         rapidFireLevel = MAX_RAPID_FIRE_LEVEL;
         penetrationLevel = MAX_RAPID_FIRE_LEVEL;
         bulletSpeedLevel = MAX_BULLET_SPEED_LEVEL;
+        SHIPSPEEDLEVEL = MAX_SHIP_SPEED_LEVEL;
     }
 }

@@ -214,8 +214,10 @@ public class GameScreen extends Screen {
 			}
 
 			this.ship.update();
-			this.enemyShipFormation.update();
-			this.enemyShipFormation.shoot(this.bullets);
+			if (!Item.isTimeFreezeActive()) {
+				this.enemyShipFormation.update();
+				this.enemyShipFormation.shoot(this.bullets);
+			}
 		}
 
         cleanItems();
@@ -387,6 +389,12 @@ public class GameScreen extends Screen {
                         case INVINCIBLE:
                             ship.activateInvincibility(5000); // 5 seconds of invincibility
                             break;
+						case STOP:
+							item.applyTimeFreezeItem(3000);
+							break;
+						case PUSH:
+							item.PushbackItem(this.enemyShipFormation,20);
+							break;
                         case EXPLODE:
                             int destroyedEnemy = this.enemyShipFormation.destroyAll();
                             this.score += destroyedEnemy * 5;
