@@ -243,6 +243,25 @@ public final class DrawManager {
 		backBufferGraphics.drawString(scoreString, screen.getWidth() - 120, 25);
 	}
 
+	/**
+     * Draws the elapsed time on screen.
+     *
+     * @param screen
+     * 				Screen to draw on.
+     * @param milliseconds
+     * 				Elapsed time in milliseconds.
+     */
+    public void drawTime(final Screen screen, final long milliseconds) {
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.setColor(Color.WHITE);
+        long seconds = milliseconds / 1000;
+        long minutes = seconds / 60;
+        seconds %= 60;
+        String timeString = String.format("Time: %02d:%02d", minutes, seconds);
+        backBufferGraphics.drawString(timeString, screen.getWidth() / 2 - fontRegularMetrics.stringWidth(timeString) / 2, 25);
+    }
+
+
     /**
      * Draws current score on screen.
      *
