@@ -1,4 +1,4 @@
- package engine;
+package engine;
 
 public class Coin {
     /** Player's name. */

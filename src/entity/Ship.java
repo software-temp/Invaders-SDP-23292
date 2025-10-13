@@ -90,9 +90,6 @@ public class Ship extends Entity {
 	 * @return Checks if the bullet was shot correctly.
 	 */
 
-	/**
-	 * Updates status of the ship.
-	 */
 	public final boolean shoot(final Set<Bullet> bullets) {
 		if (this.shootingCooldown.checkFinished()) {
 			this.shootingCooldown.reset();

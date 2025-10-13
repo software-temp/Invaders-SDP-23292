@@ -103,11 +103,8 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 		LEFT,
 		/** Movement to the bottom of the screen. */
 		DOWN
-	}
-
-	;
-
-
+	};
+	
 	/**
 	 * Constructor, sets the initial conditions.
 	 *
@@ -193,7 +190,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	 * Updates the position of the ships.
 	 */
 	public final void update() {
-		if (this.shootingCooldown == null) {
+		if(this.shootingCooldown == null) {
 			this.shootingCooldown = Core.getVariableCooldown(shootingInterval,
 					shootingVariance);
 			this.shootingCooldown.reset();

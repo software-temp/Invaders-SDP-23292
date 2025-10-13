@@ -279,7 +279,6 @@ public class ShopItem {
         SHIPSPEEDLEVEL = 0;
     }
 
-
     /**
      * Returns the current status of items (for debugging purposes).
      *
