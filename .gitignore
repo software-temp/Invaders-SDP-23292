@@ -167,7 +167,7 @@ pip-log.txt
 #################
 .idea
 *.iml
-out
+/out/
 
 #############
 ## Custom

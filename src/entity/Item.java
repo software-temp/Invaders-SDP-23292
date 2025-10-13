@@ -7,11 +7,13 @@ import java.util.Random;
 
 public class Item extends Entity {
     public enum ItemType {
+
+        /** An item that makes enemy to slow down. */
+        SLOWDOWN,
         /** A shield that protects the player. */
         INVINCIBLE,
         /** An item that gives the player one extra life. */
         HEAL_PACK;
-
         /**
          *
          * ADD Here ITEM TYPE what you made.
@@ -51,6 +53,9 @@ public class Item extends Entity {
              * case Atkspeed:
              *     this.spriteType = SpriteType.Item_Atkspeed;
              *     break; */
+            case SLOWDOWN:
+                this.spriteType = SpriteType.Item_Slow;
+                break;
             case INVINCIBLE:
                 this.spriteType = SpriteType.Item_Shield;
                 break;
@@ -89,18 +94,8 @@ public class Item extends Entity {
         this.setSprite();
     }
     public static ItemType getRandomItemType(final double proba) {
-        if (Math.random() < proba){
+        if (Math.random() < proba) {
             return ItemType.selectItemType();
-
-    /**
-     * Check getting a slowdown item.
-     *
-     * @return if a slowdown item has been gotten.
-     */
-    public static boolean isGetSlowDown(){
-        boolean isSlowDown = false;
-        if(getItemStatus().equals("Slowdown")){ // if user get a slowdown item, change isSlowDown to True.
-            return !isSlowDown;
         }
         else {
             return null;

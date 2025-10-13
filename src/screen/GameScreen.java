@@ -384,6 +384,10 @@ public class GameScreen extends Screen {
                         case INVINCIBLE:
                             ship.activateInvincibility(5000); // 5 seconds of invincibility
                             break;
+                        case SLOWDOWN:
+                            enemyShipFormation.activateSlowdown();
+                            this.logger.info("Enemy formation slowed down!");
+                            break;
                         default:
                             // For other item types. Free to add!
                             break;

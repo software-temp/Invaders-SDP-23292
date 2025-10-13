@@ -13,7 +13,6 @@ import engine.Core;
 import engine.DrawManager;
 import engine.DrawManager.SpriteType;
 import engine.GameSettings;
-import entity.Item;
 
 /**
  * Groups enemy ships into a formation that moves together.
@@ -97,6 +96,14 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	private int shipCount;
     /** Number of slowdown movement */
     private int slowDownCount;
+    /** Flag to check if slowdown is active */
+    private boolean isSlowedDown;
+    /** Original X_SPEED value */
+    private static final int ORIGINAL_X_SPEED = 8;
+    /** Slowed down X_SPEED value */
+    private static final int SLOWED_X_SPEED = 4;
+    /** Duration of slowdown effect (in movement cycles) */
+    private static final int SLOWDOWN_DURATION = 6;
 
 	/** Directions the formation can move. */
 	private enum Direction {
@@ -131,6 +138,8 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 		this.positionY = INIT_POS_Y;
 		this.shooters = new ArrayList<EnemyShip>();
 		SpriteType spriteType;
+        this.slowDownCount = 0;
+        this.isSlowedDown = false;
 
 		this.logger.info("Initializing " + nShipsWide + "x" + nShipsHigh
 				+ " ship formation in (" + positionX + "," + positionY + ")");
@@ -213,6 +222,8 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 		if (movementInterval >= this.movementSpeed) {
 			movementInterval = 0;
 
+            updateSlowdown();
+
 			boolean isAtBottom = positionY
 					+ this.height > screen.getHeight() - BOTTOM_MARGIN;
 			boolean isAtRightSide = positionX
@@ -258,17 +269,16 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 			else
 				movementY = Y_SPEED;
 
-            // If get a slowdown item, activate this.
-            if(Item.isGetSlowDown()){
-                if(slowDownCount <= 6) { // The speed is slow in half.
-                    movementX = 4;       // At least, have to use this function 6 times.
-                    slowDownCount++;
-                }
-                else slowDownCount = 0;
-            }
-
 			positionX += movementX;
 			positionY += movementY;
+
+            int currentXSpeed = getCurrentXSpeed();
+            if (currentDirection == Direction.RIGHT)
+                movementX = currentXSpeed;
+            else if (currentDirection == Direction.LEFT)
+                movementX = -currentXSpeed;
+            else
+                movementY = Y_SPEED;
 
 			// Cleans explosions.
 			List<EnemyShip> destroyed;
@@ -438,4 +448,54 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	public final boolean isEmpty() {
 		return this.shipCount <= 0;
 	}
+
+    /**
+     * Activates slowdown effect on the formation.
+     */
+    public void activateSlowdown() {
+        this.isSlowedDown = true;
+        this.slowDownCount = 0;
+        this.logger.info("Enemy formation slowed down!");
+    }
+
+    /**
+     * Gets the current movement speed based on slowdown status.
+     *
+     * @return Current X_SPEED value
+     */
+    private int getCurrentXSpeed() {
+        if (isSlowedDown) {
+            return SLOWED_X_SPEED;
+        }
+        return ORIGINAL_X_SPEED;
+    }
+
+    /**
+     * Updates slowdown counter and checks if effect should end.
+     * Call this in the update() method when formation moves.
+     */
+    private void updateSlowdown() {
+        if (isSlowedDown) {
+            slowDownCount++;
+            if (slowDownCount >= SLOWDOWN_DURATION) {
+                isSlowedDown = false;
+                slowDownCount = 0;
+                this.logger.info("Slowdown effect ended.");
+            }
+        }
+    }
+
+    // If get a slowdown item, activate this.
+    public int setSlowdown(int moveSpeed){
+        if(slowDownCount <= 6) { // The speed is slow in half.
+            moveSpeed = 4;       // At least, have to use this function 6 times.
+            slowDownCount++;
+            return moveSpeed;
+        }
+        else {
+            slowDownCount = 0;
+            moveSpeed = 8;
+            return moveSpeed;
+        }
+    }
 }
