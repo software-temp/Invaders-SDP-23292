@@ -505,18 +505,4 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
             }
         }
     }
-
-    // If get a slowdown item, activate this.
-    public int setSlowdown(int moveSpeed){
-        if(slowDownCount <= 6) { // The speed is slow in half.
-            moveSpeed = 4;       // At least, have to use this function 6 times.
-            slowDownCount++;
-            return moveSpeed;
-        }
-        else {
-            slowDownCount = 0;
-            moveSpeed = 8;
-            return moveSpeed;
-        }
-    }
 }
