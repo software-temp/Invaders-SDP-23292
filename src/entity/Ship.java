@@ -97,7 +97,7 @@ public class Ship extends Entity {
 		if (this.shootingCooldown.checkFinished()) {
 			this.shootingCooldown.reset();
 
-			// Get Spread Shot information from the Item class
+			// Get Spread Shot information from the DropItem class
 			int bulletCount = ShopItem.getMultiShotBulletCount();
 			int spacing = ShopItem.getMultiShotSpacing();
 

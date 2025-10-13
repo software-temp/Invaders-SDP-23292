@@ -70,8 +70,8 @@ Functionalities:
 
 - HUD for Items
   - Purpose: Display the player’s inventory and active items on the HUD. 
-  - Dependency: Items Team to provide real-time data (item list, active/inactive status, icons, quantities...). 
-  - Coordination: Requires a stable API or event system; communicate any item changes; regularly test integration.
+  - Dependency: Items Team to provide real-time data (dropItem list, active/inactive status, icons, quantities...). 
+  - Coordination: Requires a stable API or event system; communicate any dropItem changes; regularly test integration.
   
 
 - Display Currency

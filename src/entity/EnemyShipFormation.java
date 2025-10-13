@@ -32,8 +32,6 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	private static final double PROPORTION_C = 0.2;
 	/** Proportion of B-type ships. */
 	private static final double PROPORTION_B = 0.4;
-	/** Lateral speed of the formation. */
-	private static final int X_SPEED = 8;
 	/** Downwards speed of the formation. */
 	private static final int Y_SPEED = 4;
 	/** Speed of the bullets shot by the members. */
@@ -103,7 +101,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
     /** Slowed down X_SPEED value */
     private static final int SLOWED_X_SPEED = 4;
     /** Duration of slowdown effect (in movement cycles) */
-    private static final int SLOWDOWN_DURATION = 6;
+    private static final int SLOWDOWN_DURATION = 18;
 
     /** Directions the formation can move. */
     private enum Direction {
@@ -278,30 +276,23 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
                 }
             }
 
+            int currentXSpeed = getCurrentXSpeed();
             if (currentDirection == Direction.DOWN_RIGHT) {
-                movementX = X_SPEED;   // right
+                movementX = currentXSpeed;   // right
                 movementY = Y_SPEED;   // down
             } else if (currentDirection == Direction.DOWN_LEFT) {
-                movementX = -X_SPEED;  // left
+                movementX = -currentXSpeed;  // left
                 movementY = Y_SPEED;   // down
             } else if (currentDirection == Direction.UP_RIGHT) {
-                movementX = X_SPEED;   // right
+                movementX = currentXSpeed;   // right
                 movementY = -Y_SPEED;  // up
             } else if (currentDirection == Direction.UP_LEFT) {
-                movementX = -X_SPEED;  // left
+                movementX = -currentXSpeed;  // left
                 movementY = -Y_SPEED;  // up
             }
 
 			positionX += movementX;
 			positionY += movementY;
-
-            int currentXSpeed = getCurrentXSpeed();
-            if (currentDirection == Direction.RIGHT)
-                movementX = currentXSpeed;
-            else if (currentDirection == Direction.LEFT)
-                movementX = -currentXSpeed;
-            else
-                movementY = Y_SPEED;
 
 			// Cleans explosions.
 			List<EnemyShip> destroyed;

@@ -7,11 +7,11 @@ package entity;
  * Currently implemented: MultiShot, Rapid Fire, Penetration
  *
  * Example usage:
- * Item.setMultiShotLevel(2);  // Purchase level 2 in the shop
+ * DropItem.setMultiShotLevel(2);  // Purchase level 2 in the shop
  */
 public class ShopItem {
 
-    // ==================== MultiShot Item ====================
+    // ==================== MultiShot DropItem ====================
 
     /** MultiShot level (0 = not purchased, 1-3 = enhancement levels) */
     private static int multiShotLevel = 0;
@@ -32,7 +32,7 @@ public class ShopItem {
      */
     private ShopItem() {
     }
-    //==================== Rapid Fire Item =======================
+    //==================== Rapid Fire DropItem =======================
 
     /** Rapid Fire lever (0 = not purchased, 1~5 = enhancement levels)*/
     private static int rapidFireLevel = 0;
@@ -47,7 +47,7 @@ public class ShopItem {
     private static final int[] RAPID_FIRE_REDUCTION ={0, 5, 10, 15, 20, 30};
 
 
-    //===================== penetration Item =====================
+    //===================== penetration DropItem =====================
 
     /** penetration level (0 = not purchased, 1~2 = enhancement levels) */
     private static int penetrationLevel = 0;
@@ -58,7 +58,7 @@ public class ShopItem {
     /** penetration count */
     private static final int[] PENETRATION_COUNT = {0,1,2};
 
-    //===================== ShipSpeed Item =====================
+    //===================== ShipSpeed DropItem =====================
 
     private static final int MAX_SHIP_SPEED_LEVEL = 5;
 
@@ -67,7 +67,7 @@ public class ShopItem {
 
     /** Ship Speed Increase Per Level (%)*/
     private static int SHIPSPEEDLEVEL = 0;
-    // ==================== Bullet Speed Item ====================
+    // ==================== Bullet Speed DropItem ====================
 
     /** Bullet Speed level (0 = not purchased, 1-3 = enhancement levels) */
     private static int bulletSpeedLevel = 0;
@@ -286,7 +286,7 @@ public class ShopItem {
      */
     public static String getItemStatus() {
         StringBuilder status = new StringBuilder();
-        status.append("=== Item Status ===\n");
+        status.append("=== DropItem Status ===\n");
         status.append("MultiShot Level: ").append(multiShotLevel)
                 .append(" (Bullets: ").append(getMultiShotBulletCount())
                 .append(", Spacing: ").append(getMultiShotSpacing())
