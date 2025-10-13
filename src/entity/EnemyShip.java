@@ -64,6 +64,7 @@ public class EnemyShip extends Entity {
 
 		this.spriteType = spriteType;
 		this.animationCooldown = Core.getCooldown(500);
+        this.explosionCooldown = Core.getCooldown(500);
 		this.isDestroyed = false;
 
 		switch (this.spriteType) {
@@ -97,6 +98,7 @@ public class EnemyShip extends Entity {
 		this.spriteType = SpriteType.EnemyShipSpecial;
 		this.isDestroyed = false;
 		this.pointValue = BONUS_TYPE_POINTS;
+        this.explosionCooldown = Core.getCooldown(500);
 	}
 
 	/**
