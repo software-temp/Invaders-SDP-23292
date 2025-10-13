@@ -79,18 +79,16 @@ public class GameScreen extends Screen {
 	private Set<BossBullet> bossBullets;
 	/** Is the bullet on the screen erased */
 	private boolean is_cleared = false;
-  /** Current coin. */
-  private int coin;
-	/** Timer to track elapsed time. */
-  private GameTimer gameTimer;
-  /** Elapsed time since the game started. */
-  private long elapsedTime;
-  // Achievement popup
-  private String achievementText;
-  private Cooldown achievementPopupCooldown;
-  /** Health change popup. */
-  private String healthPopupText;
-  private Cooldown healthPopupCooldown;
+    /** Timer to track elapsed time. */
+    private GameTimer gameTimer;
+    /** Elapsed time since the game started. */
+    private long elapsedTime;
+    // Achievement popup
+    private String achievementText;
+    private Cooldown achievementPopupCooldown;
+    /** Health change popup. */
+    private String healthPopupText;
+    private Cooldown healthPopupCooldown;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
