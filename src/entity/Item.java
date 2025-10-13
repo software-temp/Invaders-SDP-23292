@@ -7,30 +7,55 @@ import java.util.Random;
 
 public class Item extends Entity {
     public enum ItemType {
+        Explode(2),
+        Slow(10),
+        Stop(10),
+        Push(5),
+        Shield(5),
+        Heal(5);
 
-        /** An item that makes enemy to slow down. */
-        SLOWDOWN,
-        /** A shield that protects the player. */
-        INVINCIBLE,
-        /** An item that gives the player one extra life. */
-        HEAL_PACK,
-        PUSH,
-        STOP,
-        /** An item that destroys all enemies on screen. */
-        EXPLODE;
+        private final int weight;
 
-        /**
-         *
-         * ADD Here ITEM TYPE what you made.
-         *
-         * */
+        ItemType(final int weight) {
+            this.weight = weight;
+        }
+
+        public int getWeight() {
+            return this.weight;
+        }
 
         private static final ItemType[] VALUES = values();
         private static final int SIZE = VALUES.length;
         private static final Random RANDOM = new Random();
 
+        private static final int TOTAL_WEIGHT;
+
+        static {
+            int sum = 0;
+            for (ItemType type : VALUES) {
+                sum += type.weight;
+            }
+            TOTAL_WEIGHT = sum;
+        }
+
+        /**
+         * Return random Itemtype based on weight
+         *
+         * @return ItemType selected based on weight
+         */
+
         public static ItemType selectItemType() {
-            return VALUES[RANDOM.nextInt(SIZE)];
+            int randomWeight = RANDOM.nextInt(TOTAL_WEIGHT);
+            int cumulativeWeight = 0;
+
+            for (ItemType type : VALUES) {
+                cumulativeWeight += type.weight;
+
+                if (randomWeight < cumulativeWeight) {
+                    return type;
+                }
+            }
+            return VALUES[0];
         }
     }
 
@@ -39,42 +64,38 @@ public class Item extends Entity {
     /** Type of the item. */
     private ItemType itemType;
     public Item(final int positionX, final int positionY, final int speed, final ItemType itemType) {
-        super(positionX, positionY, 5 * 5, 5 * 5, Color.WHITE);
+        super(positionX, positionY, 5 * 2, 5 * 2, Color.WHITE);
         this.speed = speed;
         this.itemType = itemType;
-
+        this.color = Color.WHITE;
         setSprite();
     }
 
     public final void setSprite(){
         switch (this.itemType) {
-
-            /**
-             * Add ITEMTYPE what you made.
-             * EX)
-             *case MultiShot:
-             *     this.spriteType = SpriteType.Item_MultiShot;
-             *     break;
-             * case Atkspeed:
-             *     this.spriteType = SpriteType.Item_Atkspeed;
-             *     break; */
-            case STOP:
-                this.spriteType = SpriteType.Item_Stop;
+            case Explode:
+                this.color = Color.RED;
+                this.spriteType = SpriteType.Item_Explode;
                 break;
-            case PUSH:
-                this.spriteType = SpriteType.Item_Push;
-                break;
-            case SLOWDOWN:
+            case Slow:
+                this.color = Color.BLUE;
                 this.spriteType = SpriteType.Item_Slow;
                 break;
-            case INVINCIBLE:
+            case Stop:
+                this.color = Color.BLUE;
+                this.spriteType = SpriteType.Item_Stop;
+                break;
+            case Push:
+                this.color = Color.BLUE;
+                this.spriteType = SpriteType.Item_Push;
+                break;
+            case Shield:
+                this.color = Color.CYAN;
                 this.spriteType = SpriteType.Item_Shield;
                 break;
-            case HEAL_PACK:
+            case Heal:
+                this.color = Color.GREEN;
                 this.spriteType = SpriteType.Item_Heal;
-                break;
-            case EXPLODE:
-                this.spriteType = SpriteType.Item_Explode;
                 break;
         }
     }
@@ -149,11 +170,6 @@ public class Item extends Entity {
         return this.speed;
     }
 
-    /**
-     * Getter for the item's type.
-     *
-     * @return Type of the item.
-     */
     public final ItemType getItemType() {
         return this.itemType;
     }
