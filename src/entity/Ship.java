@@ -47,6 +47,7 @@ public class Ship extends Entity {
 		this.destructionCooldown = Core.getCooldown(1000);
 		this.shieldCooldown = Core.getCooldown(0);
 		this.isInvincible = false;
+
 	}
 
 	/**
@@ -54,7 +55,8 @@ public class Ship extends Entity {
 	 * reached.
 	 */
 	public final void moveRight() {
-		this.positionX += SPEED;
+		int shipspeed = ShopItem.getSHIPSpeedCOUNT();
+		this.positionX += SPEED*(1+shipspeed/10);
 	}
 
 	/**
@@ -62,21 +64,24 @@ public class Ship extends Entity {
 	 * reached.
 	 */
 	public final void moveLeft() {
-		this.positionX -= SPEED;
+		int shipspeed = ShopItem.getSHIPSpeedCOUNT();
+		this.positionX -= SPEED*(1+shipspeed/10);
 	}
     /**
      * Moves the ship speed units up, or until the SEPARATION_LINE_HEIGHT is
      * reached.
      */
     public final void moveUp() {
-        this.positionY -= SPEED;
+		int shipspeed = ShopItem.getSHIPSpeedCOUNT();
+		this.positionY -= SPEED*(1+shipspeed/10);
     }
     /**
      * Moves the ship speed units down, or until the down screen border is
      * reached.
      */
     public final void moveDown() {
-        this.positionY += SPEED;
+		int shipspeed = ShopItem.getSHIPSpeedCOUNT();
+		this.positionY += SPEED*(1+shipspeed/10);
     }
     /**
 	 * Shoots a bullet upwards.
@@ -121,23 +126,23 @@ public class Ship extends Entity {
 	 * Updates status of the ship.
 	 */
 	public final void update() {
-		if (this.isInvincible && this.shieldCooldown.checkFinished()) {
-			this.isInvincible = false;
-			this.setColor(Color.GREEN);
-		}
+        if (this.isInvincible && this.shieldCooldown.checkFinished()) {
+            this.isInvincible = false;
+            this.setColor(Color.GREEN);
+        }
 
-		if (!this.destructionCooldown.checkFinished())
-			this.spriteType = SpriteType.ShipDestroyed;
-		else
-			this.spriteType = SpriteType.Ship;
+        if (!this.destructionCooldown.checkFinished())
+            this.spriteType = SpriteType.ShipDestroyed;
+        else
+            this.spriteType = SpriteType.Ship;
 	}
 
 	/**
 	 * Switches the ship to its destroyed state.
 	 */
 	public final void destroy() {
-		if (!this.isInvincible)
-			this.destructionCooldown.reset();
+        if (!this.isInvincible)
+            this.destructionCooldown.reset();
 	}
 
 	/**
@@ -158,25 +163,25 @@ public class Ship extends Entity {
 		return SPEED;
 	}
 
-	/**
-	 * Getter for the ship's invincibility state.
-	 *
-	 * @return True if the ship is currently invincible.
-	 */
-	public final boolean isInvincible() {
-		return this.isInvincible;
-	}
+    /**
+     * Getter for the ship's invincibility state.
+     *
+     * @return True if the ship is currently invincible.
+     */
+    public final boolean isInvincible() {
+        return this.isInvincible;
+    }
 
-	/**
-	 * Activates the ship's invincibility shield for a given duration.
-	 *
-	 * @param duration
-	 *            Duration of the invincibility in milliseconds.
-	 */
-	public final void activateInvincibility(final int duration) {
-		this.isInvincible = true;
-		this.shieldCooldown.setMilliseconds(duration);
-		this.shieldCooldown.reset();
-		this.setColor(Color.BLUE);
-	}
+    /**
+     * Activates the ship's invincibility shield for a given duration.
+     *
+     * @param duration
+     *            Duration of the invincibility in milliseconds.
+     */
+    public final void activateInvincibility(final int duration) {
+        this.isInvincible = true;
+        this.shieldCooldown.setMilliseconds(duration);
+        this.shieldCooldown.reset();
+        this.setColor(Color.BLUE);
+    }
 }

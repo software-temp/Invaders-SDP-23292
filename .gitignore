@@ -165,14 +165,16 @@ pip-log.txt
 #################
 ## INTELLIJ IDEA
 #################
-.idea
+.idea/
 *.iml
-/out/
+out/
 
 #############
 ## Custom
 #############
-
+*.log
+log*/
 log*
 *.ttf
 .checkstyle
+production
