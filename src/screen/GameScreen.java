@@ -8,6 +8,7 @@ import engine.Cooldown;
 import engine.Core;
 import engine.GameSettings;
 import engine.GameState;
+import engine.GameTimer;
 import entity.Bullet;
 import entity.BulletPool;
 import entity.EnemyShip;
@@ -70,14 +71,18 @@ public class GameScreen extends Screen {
 	private boolean levelFinished;
 	/** Checks if a bonus life is received. */
 	private boolean bonusLife;
-    /** Current coin. */
-    private int coin;
-    // Achievement popup
-    private String achievementText;
-    private Cooldown achievementPopupCooldown;
-    /** Health change popup. */
-    private String healthPopupText;
-    private Cooldown healthPopupCooldown;
+  /** Current coin. */
+  private int coin;
+	/** Timer to track elapsed time. */
+  private GameTimer gameTimer;
+  /** Elapsed time since the game started. */
+  private long elapsedTime;
+  // Achievement popup
+  private String achievementText;
+  private Cooldown achievementPopupCooldown;
+  /** Health change popup. */
+  private String healthPopupText;
+  private Cooldown healthPopupCooldown;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -133,6 +138,9 @@ public class GameScreen extends Screen {
 		this.gameStartTime = System.currentTimeMillis();
 		this.inputDelay = Core.getCooldown(INPUT_DELAY);
 		this.inputDelay.reset();
+
+		this.gameTimer = new GameTimer();
+        this.elapsedTime = 0;
 	}
 
 	/**
@@ -156,7 +164,9 @@ public class GameScreen extends Screen {
 		super.update();
 
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
-
+			if (!this.gameTimer.isRunning()) {
+                this.gameTimer.start();
+            }
 			if (!this.ship.isDestroyed()) {
 				boolean moveRight = inputManager.isKeyDown(KeyEvent.VK_RIGHT)
 						|| inputManager.isKeyDown(KeyEvent.VK_D);
@@ -217,7 +227,9 @@ public class GameScreen extends Screen {
 			this.enemyShipFormation.update();
 			this.enemyShipFormation.shoot(this.bullets);
 		}
-
+		if (this.gameTimer.isRunning()) {
+            this.elapsedTime = this.gameTimer.getElapsedTime();
+        }
 		manageCollisions();
 		cleanBullets();
 		draw();
@@ -226,6 +238,9 @@ public class GameScreen extends Screen {
 				&& !this.levelFinished) {
 			this.levelFinished = true;
 			this.screenFinishedCooldown.reset();
+			if (this.gameTimer.isRunning()) {
+                this.gameTimer.stop();
+            }
 		}
 
 		if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
@@ -256,6 +271,7 @@ public class GameScreen extends Screen {
 		drawManager.drawScore(this, this.score);
         drawManager.drawCoin(this,this.coin);
 		drawManager.drawLives(this, this.lives);
+		drawManager.drawTime(this, this.elapsedTime); 
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 
         if (this.achievementText != null && !this.achievementPopupCooldown.checkFinished()) {
