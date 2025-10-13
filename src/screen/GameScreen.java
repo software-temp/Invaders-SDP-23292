@@ -383,23 +383,23 @@ public class GameScreen extends Screen {
                 if (checkCollision(this.ship, item)) {
                     this.logger.info("Player acquired item: " + item.getItemType());
                     switch (item.getItemType()) {
-                        case HEAL_PACK:
+                        case Heal:
                             gainLife();
                             break;
-                        case INVINCIBLE:
+                        case Shield:
                             ship.activateInvincibility(5000); // 5 seconds of invincibility
                             break;
-						case STOP:
+						case Stop:
 							item.applyTimeFreezeItem(3000);
 							break;
-						case PUSH:
+						case Push:
 							item.PushbackItem(this.enemyShipFormation,20);
 							break;
-                        case EXPLODE:
+                        case Explode:
                             int destroyedEnemy = this.enemyShipFormation.destroyAll();
                             this.score += destroyedEnemy * 5;
                             break;
-                        case SLOWDOWN:
+                        case Slow:
                             enemyShipFormation.activateSlowdown();
                             this.logger.info("Enemy formation slowed down!");
                             break;
