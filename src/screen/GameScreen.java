@@ -8,6 +8,7 @@ import engine.Cooldown;
 import engine.Core;
 import engine.GameSettings;
 import engine.GameState;
+import engine.GameTimer;
 import entity.*;
 
 /**
