@@ -149,7 +149,7 @@ public class GameScreen extends Screen {
 
 	/**
 	 * Starts the action.
-	 *
+	 * 
 	 * @return Next screen code.
 	 */
 	public final int run() {
