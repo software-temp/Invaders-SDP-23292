@@ -6,6 +6,7 @@ import engine.Core;
 import screen.GameScreen;
 
 import java.awt.*;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -27,27 +28,26 @@ public class FinalBoss extends Entity{
     private Cooldown shootCooldown2;
     /** Shoot3's cool down */
     private Cooldown shootCooldown3;
+    private int screenWidth;
+    private int screenHeight;
     /** random x coordinate of Shoot2's bullet  */
     private int random_x;
-    /** Is the bullet on the screen erased */
-    private boolean is_cleared = false;
-    private Ship ship;
-    private final GameScreen screen;
+
+
     /** basic attribute of final boss */
-    private Set<BossBullet> bossBullets;
-    /** bossBullets carry bullets which Boss fires */
-    public FinalBoss(int positionX, int positionY, GameScreen screen, Ship ship, Set<BossBullet> bossBullets){
+
+    public FinalBoss(int positionX, int positionY, int screenWidth, int screenHeight){
 
         super(positionX,positionY,100,80, Color.RED);
-        this.screen = screen;
         this.healPoint = 20;
         this.maxHp = healPoint;
         this.pointValue = 1000;
         this.spriteType = DrawManager.SpriteType.EnemyShipSpecial;
         this.isDestroyed = false;
-        this.bossBullets = bossBullets;
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
 
-        this.ship = ship;
+
         this.animationCooldown = Core.getCooldown(500);
         this.shootCooldown1 = Core.getCooldown(5000);
         this.shootCooldown2 = Core.getCooldown(400);
@@ -84,6 +84,10 @@ public class FinalBoss extends Entity{
     public int getHealPoint(){
         return this.healPoint;
     }
+
+    public int getMaxHp(){
+        return  this.maxHp;
+    }
     public int getPointValue(){
         return this.pointValue;
     }
@@ -104,13 +108,13 @@ public class FinalBoss extends Entity{
     /** move zigzag */
     public void moveZigzag(int zigSpeed, int vertSpeed){
         this.positionX += (this.zigDirection * zigSpeed);
-        if(this.positionX <= 0 || this.positionX >= screen.getWidth()-this.width){
+        if(this.positionX <= 0 || this.positionX >= this.screenWidth-this.width){
             this.zigDirection *= -1;
         }
 
         if(goingDown) {
             this.positionY += vertSpeed;
-            if (this.positionY >= screen.getHeight()/2 - this.height) goingDown = false;
+            if (this.positionY >= screenHeight/2 - this.height) goingDown = false;
         }
         else {
             this.positionY -= vertSpeed;
@@ -126,67 +130,49 @@ public class FinalBoss extends Entity{
 
     /** shooting pattern of final boss */
 
-    public void boss_shoot(Logger logger){
-        if(this.healPoint > this.maxHp/4) {
-            this.shoot1();
-            this.shoot2();
-        }
-        else {
-            if (!is_cleared){
-                bossBullets.clear();
-                is_cleared = true;
-                logger.info("boss is angry");
-            }
-            else {
 
-                this.shoot3();
-            }
-        }
-    }
     /** first shooting pattern of final boss */
-    public void shoot1(){
+    public Set<BossBullet> shoot1(){
+        Set<BossBullet> bullets = new HashSet<>();
         if(this.shootCooldown1.checkFinished()){
             this.shootCooldown1.reset();
             int arr[] = {0,1,-1,2,-2};
             for (int i : arr){
-                BossBullet bullets = new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3,this.getPositionY() + this.getHeight(), i,4,6,10,Color.yellow);
-                bossBullets.add(bullets);
+                BossBullet bullet = new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3,this.getPositionY() + this.getHeight(), i,4,6,10,Color.yellow);
+                bullets.add(bullet);
             }
         }
+        return bullets;
     }
     /** second shooting pattern of final boss */
-    public void shoot2() {
-        random_x = (int) (Math.random() * screen.getWidth());
+    public Set<BossBullet> shoot2() {
+        Set<BossBullet> bullets = new HashSet<>();
+        random_x = (int) (Math.random() * screenWidth);
         if (this.shootCooldown2.checkFinished()) {
             this.shootCooldown2.reset();
-            BossBullet bullets = new BossBullet(random_x, 1, 0, 2,6,10,Color.yellow);
-
-            bossBullets.add(bullets);
+            BossBullet bullet = new BossBullet(random_x, 1, 0, 2,6,10,Color.yellow);
+            bullets.add(bullet);
         }
+        return bullets;
     }
     /** third shooting pattern of final boss */
-    public void shoot3() {
+    public Set<BossBullet> shoot3() {
+        Set<BossBullet> bullets = new HashSet<>();
         if (this.shootCooldown3.checkFinished()) {
             this.shootCooldown3.reset();
 //            if (!(this.getPositionX() == 0 || this.getPositionX() == 400)){
                 BossBullet bullet1 = new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3 + 70, this.positionY, 0, 5,6,10,Color.blue);
                 BossBullet bullet2 = new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3 - 70, this.positionY, 0, 5,6,10,Color.blue);
-                bossBullets.add(bullet1);
-                bossBullets.add(bullet2);
+                bullets.add(bullet1);
+                bullets.add(bullet2);
 //            }
         }
+        return bullets;
     }
 
 
-    /** draw final boss bullet */
-    public void draw(DrawManager drawManager){
 
-        for (BossBullet bossBullet : bossBullets) {
-            drawManager.drawEntity(bossBullet, bossBullet.getPositionX(), bossBullet.getPositionY());
-        }
-        drawManager.drawEntity(this, this.getPositionX(), this.getPositionY());
 
-    }
 
     /** flag final boss' destroy */
     public void destroy(){

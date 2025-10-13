@@ -3,6 +3,7 @@ package screen;
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import engine.Cooldown;
 import engine.Core;
@@ -73,6 +74,8 @@ public class GameScreen extends Screen {
 	private int coin;
 	/** bossBullets carry bullets which Boss fires */
 	private Set<BossBullet> bossBullets;
+	/** Is the bullet on the screen erased */
+	private boolean is_cleared = false;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -156,12 +159,29 @@ public class GameScreen extends Screen {
 
 			/** spawn final boss to check object (for test) */
 			if(this.finalBoss == null){
-				this.finalBoss = new FinalBoss(this.width/2-50,50,this, ship, bossBullets);
+				this.finalBoss = new FinalBoss(this.width/2-50,50,this.width,this.height);
 				this.logger.info("Final Boss created.");
 			}
 			if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
 			/** called the boss shoot logic */
-				this.finalBoss.boss_shoot(logger);
+					if(this.finalBoss.getHealPoint() > this.finalBoss.getMaxHp() / 4) {
+						bossBullets.addAll(this.finalBoss.shoot1());
+						bossBullets.addAll(this.finalBoss.shoot2());
+
+					}
+					/** Is the bullet on the screen erased */
+					else {
+						if (!is_cleared){
+							bossBullets.clear();
+							is_cleared = true;
+							logger.info("boss is angry");
+						}
+						else {
+
+							bossBullets.addAll(this.finalBoss.shoot3());
+						}
+					}
+
 				/** bullets to erase */
 				Set<BossBullet> bulletsToRemove = new HashSet<>();
 
@@ -285,7 +305,10 @@ public class GameScreen extends Screen {
 		/** draw final boss at the field */
 		/** draw final boss bullets */
 		if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
-			finalBoss.draw(drawManager);
+			for (BossBullet bossBullet : bossBullets) {
+				drawManager.drawEntity(bossBullet, bossBullet.getPositionX(), bossBullet.getPositionY());
+			}
+			drawManager.drawEntity(finalBoss, finalBoss.getPositionX(), finalBoss.getPositionY());
 		}
 
 		enemyShipFormation.draw();
