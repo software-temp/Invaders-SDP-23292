@@ -71,12 +71,18 @@ public class GameScreen extends Screen {
 	private boolean levelFinished;
 	/** Checks if a bonus life is received. */
 	private boolean bonusLife;
-    /** Current coin. */
-    private int coin;
+  /** Current coin. */
+  private int coin;
 	/** Timer to track elapsed time. */
-    private GameTimer gameTimer;
-    /** Elapsed time since the game started. */
-    private long elapsedTime;
+  private GameTimer gameTimer;
+  /** Elapsed time since the game started. */
+  private long elapsedTime;
+  // Achievement popup
+  private String achievementText;
+  private Cooldown achievementPopupCooldown;
+  /** Health change popup. */
+  private String healthPopupText;
+  private Cooldown healthPopupCooldown;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -268,7 +274,21 @@ public class GameScreen extends Screen {
 		drawManager.drawTime(this, this.elapsedTime); 
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 
-		// Countdown to game start.
+        if (this.achievementText != null && !this.achievementPopupCooldown.checkFinished()) {
+            drawManager.drawAchievementPopup(this, this.achievementText);
+        } else {
+            this.achievementText = null; // clear once expired
+        }
+
+
+        // Health notification popup
+        if(this.healthPopupText != null && !this.healthPopupCooldown.checkFinished()) {
+            drawManager.drawHealthPopup(this, this.healthPopupText);
+        } else {
+            this.healthPopupText = null;
+        }
+
+        // Countdown to game start.
 		if (!this.inputDelay.checkFinished()) {
 			int countdown = (int) ((INPUT_DELAY
 					- (System.currentTimeMillis()
@@ -311,6 +331,7 @@ public class GameScreen extends Screen {
 					if (!this.ship.isDestroyed()) {
 						this.ship.destroy();
 						this.lives--;
+                        showHealthPopup("-1 Health");
 						this.logger.info("Hit on player ship, " + this.lives
 								+ " lives remaining.");
 					}
@@ -365,7 +386,32 @@ public class GameScreen extends Screen {
 		return distanceX < maxDistanceX && distanceY < maxDistanceY;
 	}
 
-	/**
+    /**
+     * Shows an achievement popup message on the HUD.
+     *
+     * @param message
+     *      Text to display in the popup.
+     */
+    public void showAchievement(String message) {
+        this.achievementText = message;
+        this.achievementPopupCooldown = Core.getCooldown(2500); // Show for 2.5 seconds
+        this.achievementPopupCooldown.reset();
+    }
+
+    /**
+     * Displays a notification popup when the player gains or loses health
+     *
+     * @param message
+     *          Text to display in the popup
+     */
+
+    public void showHealthPopup(String message) {
+        this.healthPopupText = message;
+        this.healthPopupCooldown = Core.getCooldown(500);
+        this.healthPopupCooldown.reset();
+    }
+
+    /**
 	 * Returns a GameState object representing the status of the game.
 	 * 
 	 * @return Current game state.

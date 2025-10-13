@@ -294,6 +294,59 @@ public final class DrawManager {
 			drawEntity(dummyShip, 40 + 35 * i, 10);
 	}
 
+    /**
+     * Draws an achievement pop-up message on the screen.
+     *
+     * @param screen Screen where the pop-up will be drawn.
+     *
+     * @param text   The achievement message to display.
+     */
+    public void drawAchievementPopup(final Screen screen, final String text) {
+        int popupWidth = 250;
+        int popupHeight = 50;
+        int x = screen.getWidth() / 2 - popupWidth / 2;
+        int y = 80;
+
+        backBufferGraphics.setColor(new Color(0, 0, 0, 200));
+        backBufferGraphics.fillRoundRect(x, y, popupWidth, popupHeight, 15, 15);
+
+        backBufferGraphics.setColor(Color.YELLOW);
+        backBufferGraphics.drawRoundRect(x, y, popupWidth, popupHeight, 15, 15);
+
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.setColor(Color.WHITE);
+        drawCenteredRegularString(screen, text, y + popupHeight / 2 + 5);
+    }
+
+    /**
+     * Draws a notification popup for changes in health
+     *
+     * @param screen
+     *          Screen to draw on.
+     * @param text
+     *          Text to display change in health (+1 Health / -1 Health).
+     */
+    public void drawHealthPopup(final Screen screen, final String text) {
+        int popupWidth = 250;
+        int popupHeight = 40;
+        int x = screen.getWidth() / 2 - popupWidth / 2;
+        int y = 100;
+
+        backBufferGraphics.setColor(new Color(0, 0, 0, 200));
+        backBufferGraphics.fillRoundRect(x, y, popupWidth, popupHeight, 15, 15);
+
+        Color textColor;
+        if (text.startsWith("+")) {
+            textColor = new Color(50, 255, 50);
+        } else {
+            textColor = new Color(255, 50, 50);
+        }
+
+        backBufferGraphics.setColor(textColor);
+        drawCenteredBigString(screen, text, y + popupHeight / 2 + 5);
+    }
+
+
 	/**
 	 * Draws a thick line from side to side of the screen.
 	 * 
@@ -339,6 +392,7 @@ public final class DrawManager {
 	public void drawMenu(final Screen screen, final int option) {
 		String playString = "Play";
 		String highScoresString = "High scores";
+		String shopString = "shop";
 		String exitString = "exit";
 
 		if (option == 2)
@@ -353,12 +407,18 @@ public final class DrawManager {
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, highScoresString, screen.getHeight()
 				/ 3 * 2 + fontRegularMetrics.getHeight() * 2);
+		if (option == 4)
+			backBufferGraphics.setColor(Color.GREEN);
+		else
+			backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredRegularString(screen, shopString, screen.getHeight()
+				/ 3 * 2 + fontRegularMetrics.getHeight() * 4);
 		if (option == 0)
 			backBufferGraphics.setColor(Color.GREEN);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, exitString, screen.getHeight() / 3
-				* 2 + fontRegularMetrics.getHeight() * 4);
+				* 2 + fontRegularMetrics.getHeight() * 6);
 	}
 
 	/**
