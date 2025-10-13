@@ -7,6 +7,9 @@ import java.util.Random;
 
 public class Item extends Entity {
     public enum ItemType {
+
+        /** An item that makes enemy to slow down. */
+        SLOWDOWN,
         /** A shield that protects the player. */
         INVINCIBLE,
         /** An item that gives the player one extra life. */
@@ -60,6 +63,9 @@ public class Item extends Entity {
                 break;
             case PUSH:
                 this.spriteType = SpriteType.Item_Push;
+                break;
+            case SLOWDOWN:
+                this.spriteType = SpriteType.Item_Slow;
                 break;
             case INVINCIBLE:
                 this.spriteType = SpriteType.Item_Shield;

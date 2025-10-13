@@ -399,6 +399,10 @@ public class GameScreen extends Screen {
                             int destroyedEnemy = this.enemyShipFormation.destroyAll();
                             this.score += destroyedEnemy * 5;
                             break;
+                        case SLOWDOWN:
+                            enemyShipFormation.activateSlowdown();
+                            this.logger.info("Enemy formation slowed down!");
+                            break;
                         default:
                             // For other item types. Free to add!
                             break;
