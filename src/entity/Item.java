@@ -7,9 +7,6 @@ import java.util.Random;
 
 public class Item extends Entity {
     public enum ItemType {
-        MultiShot(0),
-        Atkspeed(0),
-        Penetrate(0),
         Explode(2),
         Slow(10),
         Stop(10),
@@ -62,7 +59,9 @@ public class Item extends Entity {
         }
     }
 
+    /** Speed of the item, positive is down. */
     private int speed;
+    /** Type of the item. */
     private ItemType itemType;
     public Item(final int positionX, final int positionY, final int speed, final ItemType itemType) {
         super(positionX, positionY, 5 * 2, 5 * 2, Color.WHITE);
@@ -72,18 +71,8 @@ public class Item extends Entity {
         setSprite();
     }
 
-
-    public final void setSprite(){ 
+    public final void setSprite(){
         switch (this.itemType) {
-            case MultiShot:
-                this.spriteType = SpriteType.Item_MultiShot;
-                break;
-            case Atkspeed:
-                this.spriteType = SpriteType.Item_Atkspeed;
-                break;
-            case Penetrate:
-                this.spriteType = SpriteType.Item_Penetrate;
-                break;
             case Explode:
                 this.color = Color.RED;
                 this.spriteType = SpriteType.Item_Explode;
@@ -111,7 +100,65 @@ public class Item extends Entity {
         }
     }
 
-    public final void update(){
+    private static long freezeEndTime = 0;
+
+    /**
+     * enemy push
+     * @param enemyShipFormation
+     * @param distanceY
+     */
+    public static void PushbackItem(EnemyShipFormation enemyShipFormation, int distanceY) {
+        if (enemyShipFormation == null) {
+            return;
+        }
+
+        // All enemyship push
+        for (EnemyShip enemy : enemyShipFormation) {
+            if (enemy != null && !enemy.isDestroyed()) {
+                enemy.move(0, -distanceY);
+            }
+        }
+    }
+
+    /**
+     * Freeze Item : all enemy ship never move except special enemy.
+     *
+     * @param durationMillis
+     *                  Freeze duration Time
+     */
+    public static void applyTimeFreezeItem(int durationMillis) {
+        // current Time + duration Time = End Time
+        freezeEndTime = System.currentTimeMillis() + durationMillis;
+    }
+
+    /**
+     * check If Freeze item is activated
+     *
+     * @return If returning true, don't move all enemy ship except special enemy
+     */
+    public static boolean isTimeFreezeActive() {
+        if (freezeEndTime > 0 && System.currentTimeMillis() < freezeEndTime) {
+            return true;
+        }
+        if (freezeEndTime > 0 && System.currentTimeMillis() >= freezeEndTime) {
+            freezeEndTime = 0;
+        }
+        return false;
+    }
+/**
+ * Manages the in-game item (enhancement) system.
+ * This is a temporary implementation focusing on functionality.
+ *
+ * Currently implemented: Spread Shot
+ *
+ * Example usage:
+ * Item.setSpreadShotLevel(2);  // Purchase level 2 in the shop
+ * int bulletCount = Item.getSpreadShotBulletCount();  // Returns the number of bullets to fire
+ */
+/**
+     * Updates the item's position.
+     */
+    public final void update() {
         this.positionY += this.speed;
     }
 
@@ -137,29 +184,6 @@ public class Item extends Entity {
         }
         else {
             return null;
-        }
-    }
-
-    public void applyEffect(GameState gameState) {
-        switch (this.itemType) {
-            case MultiShot:
-                break;
-            case Atkspeed:
-                break;
-            case Penetrate:
-                break;
-            case Explode:
-                break;
-            case Slow:
-                break;
-            case Stop:
-                break;
-            case Push:
-                break;
-            case Shield:
-                break;
-            case Heal:
-                break;
         }
     }
 }

@@ -94,6 +94,16 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	private List<EnemyShip> shooters;
 	/** Number of not destroyed ships. */
 	private int shipCount;
+    /** Number of slowdown movement */
+    private int slowDownCount;
+    /** Flag to check if slowdown is active */
+    private boolean isSlowedDown;
+    /** Original X_SPEED value */
+    private static final int ORIGINAL_X_SPEED = 8;
+    /** Slowed down X_SPEED value */
+    private static final int SLOWED_X_SPEED = 4;
+    /** Duration of slowdown effect (in movement cycles) */
+    private static final int SLOWDOWN_DURATION = 6;
 
 	/** Directions the formation can move. */
 	private enum Direction {
@@ -104,10 +114,10 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 		/** Movement to the bottom of the screen. */
 		DOWN
 	};
-
+	
 	/**
 	 * Constructor, sets the initial conditions.
-	 * 
+	 *
 	 * @param gameSettings
 	 *            Current game settings.
 	 */
@@ -128,6 +138,8 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 		this.positionY = INIT_POS_Y;
 		this.shooters = new ArrayList<EnemyShip>();
 		SpriteType spriteType;
+        this.slowDownCount = 0;
+        this.isSlowedDown = false;
 
 		this.logger.info("Initializing " + nShipsWide + "x" + nShipsHigh
 				+ " ship formation in (" + positionX + "," + positionY + ")");
@@ -146,7 +158,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 				else
 					spriteType = SpriteType.EnemyShipA1;
 
-				column.add(new EnemyShip((SEPARATION_DISTANCE 
+				column.add(new EnemyShip((SEPARATION_DISTANCE
 						* this.enemyShips.indexOf(column))
 								+ positionX, (SEPARATION_DISTANCE * i)
 								+ positionY, spriteType));
@@ -168,7 +180,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 	/**
 	 * Associates the formation to a given screen.
-	 * 
+	 *
 	 * @param newScreen
 	 *            Screen to attach.
 	 */
@@ -195,7 +207,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 					shootingVariance);
 			this.shootingCooldown.reset();
 		}
-		
+
 		cleanUp();
 
 		int movementX = 0;
@@ -205,10 +217,12 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 		this.movementSpeed = (int) (Math.pow(remainingProportion, 2)
 				* this.baseSpeed);
 		this.movementSpeed += MINIMUM_SPEED;
-		
+
 		movementInterval++;
 		if (movementInterval >= this.movementSpeed) {
 			movementInterval = 0;
+
+            updateSlowdown();
 
 			boolean isAtBottom = positionY
 					+ this.height > screen.getHeight() - BOTTOM_MARGIN;
@@ -258,18 +272,27 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 			positionX += movementX;
 			positionY += movementY;
 
+            int currentXSpeed = getCurrentXSpeed();
+            if (currentDirection == Direction.RIGHT)
+                movementX = currentXSpeed;
+            else if (currentDirection == Direction.LEFT)
+                movementX = -currentXSpeed;
+            else
+                movementY = Y_SPEED;
+
 			// Cleans explosions.
 			List<EnemyShip> destroyed;
 			for (List<EnemyShip> column : this.enemyShips) {
 				destroyed = new ArrayList<EnemyShip>();
 				for (EnemyShip ship : column) {
-					if (ship != null && ship.isDestroyed()) {
+					if (ship != null && ship.isExplosionFinished()) {
 						destroyed.add(ship);
 						this.logger.info("Removed enemy "
 								+ column.indexOf(ship) + " from column "
 								+ this.enemyShips.indexOf(column));
 					}
 				}
+
 				column.removeAll(destroyed);
 			}
 
@@ -308,7 +331,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 		int leftMostPoint = 0;
 		int rightMostPoint = 0;
-		
+
 		for (List<EnemyShip> column : this.enemyShips) {
 			if (!column.isEmpty()) {
 				if (leftMostPoint == 0)
@@ -326,7 +349,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 	/**
 	 * Shoots a bullet downwards.
-	 * 
+	 *
 	 * @param bullets
 	 *            Bullets set to add the bullet being shot.
 	 */
@@ -344,7 +367,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 	/**
 	 * Destroys a ship.
-	 * 
+	 *
 	 * @param destroyedShip
 	 *            Ship to be destroyed.
 	 */
@@ -385,7 +408,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 	/**
 	 * Gets the ship on a given column that will be in charge of shooting.
-	 * 
+	 *
 	 * @param column
 	 *            Column to search.
 	 * @return New shooter ship.
@@ -404,7 +427,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 	/**
 	 * Returns an iterator over the ships in the formation.
-	 * 
+	 *
 	 * @return Iterator over the enemy ships.
 	 */
 	@Override
@@ -419,11 +442,67 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	}
 
 	/**
+	 * Destroy all ships in the formation.
+	 *
+	 * @return The number of destroyed ships.
+	 */
+
+	public final int destroyAll() {
+		int destroyed = 0;
+		for (List<EnemyShip> column : this.enemyShips) {
+			for (EnemyShip enemyShip : column) {
+				if (!enemyShip.isDestroyed()) {
+					enemyShip.destroy();
+					destroyed++;
+				}
+			}
+		}
+		this.shipCount = 0;
+		return destroyed;
+	}
+
+	/**
 	 * Checks if there are any ships remaining.
-	 * 
+	 *
 	 * @return True when all ships have been destroyed.
 	 */
 	public final boolean isEmpty() {
 		return this.shipCount <= 0;
 	}
+
+    /**
+     * Activates slowdown effect on the formation.
+     */
+    public void activateSlowdown() {
+        this.isSlowedDown = true;
+        this.slowDownCount = 0;
+        this.logger.info("Enemy formation slowed down!");
+    }
+
+    /**
+     * Gets the current movement speed based on slowdown status.
+     *
+     * @return Current X_SPEED value
+     */
+    private int getCurrentXSpeed() {
+        if (isSlowedDown) {
+            return SLOWED_X_SPEED;
+        }
+        return ORIGINAL_X_SPEED;
+    }
+
+    /**
+     * Updates slowdown counter and checks if effect should end.
+     * Call this in the update() method when formation moves.
+     */
+    private void updateSlowdown() {
+        if (isSlowedDown) {
+            slowDownCount++;
+            if (slowDownCount >= SLOWDOWN_DURATION) {
+                isSlowedDown = false;
+                slowDownCount = 0;
+                this.logger.info("Slowdown effect ended.");
+            }
+        }
+    }
 }

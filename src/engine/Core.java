@@ -8,6 +8,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import entity.ShopItem;
 import screen.GameScreen;
 import screen.HighScoreScreen;
 import screen.ScoreScreen;
@@ -98,6 +99,16 @@ public final class Core {
 			e.printStackTrace();
 		}
 
+		//item test code
+		ShopItem.setMultiShotLevel(1);
+		ShopItem.setRapidFireLevel(5);
+		ShopItem.setPenetrationLevel(2);
+		ShopItem.setSHIPSPEED(3);
+
+		// print item status
+		System.out.println(ShopItem.getItemStatus());
+		// =============================
+
 		frame = new Frame(WIDTH, HEIGHT);
 		DrawManager.getInstance().setFrame(frame);
 		int width = frame.getWidth();
@@ -137,7 +148,7 @@ public final class Core {
 					
 					currentScreen = new GameScreen(gameState,
 							gameSettings.get(gameState.getLevel() - 1),
-							bonusLife, width, height, FPS);
+							bonusLife, MAX_LIVES, width, height, FPS);
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
 							+ " game screen at " + FPS + " fps.");
 					frame.setScreen(currentScreen);
