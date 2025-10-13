@@ -1,5 +1,14 @@
 package entity;
 
+/**
+ * Manages the in-game item (enhancement) system.
+ * This is a temporary implementation focusing on functionality.
+ *
+ * Currently implemented: MultiShot, Rapid Fire, Penetration
+ *
+ * Example usage:
+ * Item.setMultiShotLevel(2);  // Purchase level 2 in the shop
+ */
 public class ShopItem {
 
     // ==================== MultiShot Item ====================
@@ -21,11 +30,6 @@ public class ShopItem {
      * Private constructor - this class should not be instantiated.
      * It is intended to be used only with static methods.
      */
-    // ==================== Spread Shot Methods ====================
-
-    /**
-     * Sets the Spread Shot level (called upon purchase from a shop).
-=======
     private ShopItem() {
     }
     //==================== Rapid Fire Item =======================
@@ -85,12 +89,10 @@ public class ShopItem {
 
     /**
      * Sets the MultiShot level (called upon purchase from a shop).
->>>>>>> lieutenant
      *
      * @param level The level to set (0-3).
      * @return true if the level was set successfully, false otherwise.
      */
-
     public static boolean setMultiShotLevel(int level) {
         if (level < 0 || level > MAX_MULTI_SHOT_LEVEL) {
             return false;
@@ -99,6 +101,14 @@ public class ShopItem {
         return true;
     }
 
+    /**
+     * Returns the current MultiShot level.
+     *
+     * @return The current level (0-3).
+     */
+    public static int getMultiShotLevel() {
+        return multiShotLevel;
+    }
 
     /**
      * Returns the number of bullets to fire for the MultiShot.
@@ -208,7 +218,6 @@ public class ShopItem {
         return penetrationLevel > 0;
     }
 
-
     // ==================== Bullet Speed Methods ====================
 
     /**
@@ -297,7 +306,9 @@ public class ShopItem {
         return status.toString();
     }
 
-
+    /**
+     * For testing - sets the Spread Shot to its maximum level.
+     */
     public static void setMaxLevelForTesting() {
         multiShotLevel = MAX_MULTI_SHOT_LEVEL;
         rapidFireLevel = MAX_RAPID_FIRE_LEVEL;
@@ -305,5 +316,4 @@ public class ShopItem {
         bulletSpeedLevel = MAX_BULLET_SPEED_LEVEL;
         SHIPSPEEDLEVEL = MAX_SHIP_SPEED_LEVEL;
     }
-
 }

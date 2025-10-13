@@ -1,11 +1,8 @@
 package entity;
-
 import java.awt.Color;
 
 import engine.GameState;
 import engine.DrawManager.SpriteType;
-import screen.GameScreen;
-
 import java.util.Random;
 
 public class Item extends Entity {
@@ -88,7 +85,7 @@ public class Item extends Entity {
             return;
         }
 
-        // 편대 내 모든 적 함선을 일제히 뒤로 밀어냄
+        // All enemyship push
         for (EnemyShip enemy : enemyShipFormation) {
             if (enemy != null && !enemy.isDestroyed()) {
                 enemy.move(0, -distanceY);
@@ -99,10 +96,11 @@ public class Item extends Entity {
     /**
      * Freeze Item : all enemy ship never move except special enemy.
      *
-     * @param durationMillis 정지 지속 시간 (밀리초)
+     * @param durationMillis
+     *                  Freeze duration Time
      */
     public static void applyTimeFreezeItem(int durationMillis) {
-        // 현재 시간 + 지속시간 = 종료 시간
+        // current Time + duration Time = End Time
         freezeEndTime = System.currentTimeMillis() + durationMillis;
     }
 

@@ -8,14 +8,6 @@ import engine.Cooldown;
 import engine.Core;
 import engine.GameSettings;
 import engine.GameState;
-import entity.Bullet;
-import entity.BulletPool;
-import entity.EnemyShip;
-import entity.EnemyShipFormation;
-import entity.Entity;
-import entity.Ship;
-import entity.Item;
-import entity.ShopItem;
 import entity.*;
 
 /**
@@ -80,7 +72,6 @@ public class GameScreen extends Screen {
 	/** Maximum number of lives. */
 	private int maxLives;
 
-
 	/**
 	 * Constructor, establishes the properties of the screen.
 	 *
@@ -144,7 +135,6 @@ public class GameScreen extends Screen {
 		this.inputDelay.reset();
 	}
 
-
 	/**
 	 * Starts the action.
 	 *
@@ -186,7 +176,6 @@ public class GameScreen extends Screen {
                 boolean isDownBorder = this.ship.getPositionY()
                         + this.ship.getHeight() + this.ship.getSpeed() > this.height - 1;
 
-
 				if (moveRight && !isRightBorder) {
 					this.ship.moveRight();
 				}
@@ -203,7 +192,6 @@ public class GameScreen extends Screen {
 				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
                     if (this.ship.shoot(this.bullets))
                         this.bulletsShot++;
-
 			}
 
 			if (this.enemyShipSpecial != null) {
@@ -226,7 +214,6 @@ public class GameScreen extends Screen {
 			}
 
 			this.ship.update();
-			/**여기 부분 추가 (TimeFreeze)**/
 			if (!Item.isTimeFreezeActive()) {
 				this.enemyShipFormation.update();
 				this.enemyShipFormation.shoot(this.bullets);

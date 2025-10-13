@@ -124,6 +124,10 @@ public class Ship extends Entity {
 		}
 		return false;
 	}
+
+	/**
+	 * Updates status of the ship.
+	 */
 	public final void update() {
         if (this.isInvincible && this.shieldCooldown.checkFinished()) {
             this.isInvincible = false;
