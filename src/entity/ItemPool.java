@@ -2,7 +2,7 @@ package entity;
 
 import java.util.HashSet;
 import java.util.Set;
-import entity.Item.ItemType;
+import entity.DropItem.ItemType;
 
 /**
  * Implements a pool of recyclable items.
@@ -13,7 +13,7 @@ import entity.Item.ItemType;
 public final class ItemPool {
 
     /** Set of already created items. */
-    private static Set<Item> pool = new HashSet<Item>();
+    private static Set<DropItem> pool = new HashSet<DropItem>();
 
     /**
      * Constructor, not called.
@@ -37,30 +37,30 @@ public final class ItemPool {
      *      * Requested item type.
      * @return Requested item.
      */
-    public static Item getItem(final int positionX,
-                               final int positionY, final int speed, final ItemType itemType) {
-        Item item;
+    public static DropItem getItem(final int positionX,
+                                   final int positionY, final int speed, final ItemType itemType) {
+        DropItem dropItem;
         if (!pool.isEmpty()) {
-            item = pool.iterator().next();
-            pool.remove(item);
-            item.setPositionX(positionX - item.getWidth() / 2);
-            item.setPositionY(positionY);
-            item.setSpeed(speed);
-            item.setItemType(itemType);
+            dropItem = pool.iterator().next();
+            pool.remove(dropItem);
+            dropItem.setPositionX(positionX - dropItem.getWidth() / 2);
+            dropItem.setPositionY(positionY);
+            dropItem.setSpeed(speed);
+            dropItem.setItemType(itemType);
         } else {
-            item = new Item(positionX, positionY, speed, itemType);
-            item.setPositionX(positionX - item.getWidth() / 2);
+            dropItem = new DropItem(positionX, positionY, speed, itemType);
+            dropItem.setPositionX(positionX - dropItem.getWidth() / 2);
         }
-        return item;
+        return dropItem;
     }
 
     /**
      * Adds one or more items to the list of available ones.
      *
-     * @param item
+     * @param dropItem
      *            items to recycle.
      */
-    public static void recycle(final Set<Item> item) {
-        pool.addAll(item);
+    public static void recycle(final Set<DropItem> dropItem) {
+        pool.addAll(dropItem);
     }
 }

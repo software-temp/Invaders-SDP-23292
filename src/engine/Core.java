@@ -99,16 +99,6 @@ public final class Core {
 			e.printStackTrace();
 		}
 
-		//item test code
-		ShopItem.setMultiShotLevel(1);
-		ShopItem.setRapidFireLevel(5);
-		ShopItem.setPenetrationLevel(2);
-		ShopItem.setSHIPSPEED(3);
-
-		// print item status
-		System.out.println(ShopItem.getItemStatus());
-		// =============================
-
 		frame = new Frame(WIDTH, HEIGHT);
 		DrawManager.getInstance().setFrame(frame);
 		int width = frame.getWidth();
