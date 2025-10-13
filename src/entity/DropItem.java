@@ -1,11 +1,10 @@
 package entity;
 import java.awt.Color;
 
-import engine.GameState;
 import engine.DrawManager.SpriteType;
 import java.util.Random;
 
-public class Item extends Entity {
+public class DropItem extends Entity {
     public enum ItemType {
         Explode(2),
         Slow(10),
@@ -20,14 +19,8 @@ public class Item extends Entity {
             this.weight = weight;
         }
 
-        public int getWeight() {
-            return this.weight;
-        }
-
         private static final ItemType[] VALUES = values();
-        private static final int SIZE = VALUES.length;
         private static final Random RANDOM = new Random();
-
         private static final int TOTAL_WEIGHT;
 
         static {
@@ -63,7 +56,7 @@ public class Item extends Entity {
     private int speed;
     /** Type of the item. */
     private ItemType itemType;
-    public Item(final int positionX, final int positionY, final int speed, final ItemType itemType) {
+    public DropItem(final int positionX, final int positionY, final int speed, final ItemType itemType) {
         super(positionX, positionY, 5 * 2, 5 * 2, Color.WHITE);
         this.speed = speed;
         this.itemType = itemType;
@@ -121,7 +114,7 @@ public class Item extends Entity {
     }
 
     /**
-     * Freeze Item : all enemy ship never move except special enemy.
+     * Freeze DropItem : all enemy ship never move except special enemy.
      *
      * @param durationMillis
      *                  Freeze duration Time
@@ -152,8 +145,8 @@ public class Item extends Entity {
  * Currently implemented: Spread Shot
  *
  * Example usage:
- * Item.setSpreadShotLevel(2);  // Purchase level 2 in the shop
- * int bulletCount = Item.getSpreadShotBulletCount();  // Returns the number of bullets to fire
+ * DropItem.setSpreadShotLevel(2);  // Purchase level 2 in the shop
+ * int bulletCount = DropItem.getSpreadShotBulletCount();  // Returns the number of bullets to fire
  */
 /**
      * Updates the item's position.

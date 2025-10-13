@@ -101,7 +101,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
     /** Slowed down X_SPEED value */
     private static final int SLOWED_X_SPEED = 4;
     /** Duration of slowdown effect (in movement cycles) */
-    private static final int SLOWDOWN_DURATION = 6;
+    private static final int SLOWDOWN_DURATION = 18;
 
     /** Directions the formation can move. */
     private enum Direction {
