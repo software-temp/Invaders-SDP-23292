@@ -12,9 +12,9 @@ import entity.*;
 
 /**
  * Implements the game screen, where the action happens.
- *
+ * 
  * @author <a href="mailto:RobertoIA1987@gmail.com">Roberto Izquierdo Amo</a>
- *
+ * 
  */
 public class GameScreen extends Screen {
 
@@ -39,6 +39,8 @@ public class GameScreen extends Screen {
 	private int level;
 	/** Formation of enemy ships. */
 	private EnemyShipFormation enemyShipFormation;
+	/** Formation of special enemy ships. */
+	private EnemyShipSpecialFormation enemyShipSpecialFormation;
 	/** Player's ship. */
 	private Ship ship;
 	/** Bonus enemy ship that appears sometimes. */
@@ -67,14 +69,24 @@ public class GameScreen extends Screen {
 	private boolean levelFinished;
 	/** Checks if a bonus life is received. */
 	private boolean bonusLife;
-    /** Current coin. */
-    private int coin;
 	/** Maximum number of lives. */
 	private int maxLives;
+  /** Current coin. */
+  private int coin;
+	/** Timer to track elapsed time. */
+  private GameTimer gameTimer;
+  /** Elapsed time since the game started. */
+  private long elapsedTime;
+  // Achievement popup
+  private String achievementText;
+  private Cooldown achievementPopupCooldown;
+  /** Health change popup. */
+  private String healthPopupText;
+  private Cooldown healthPopupCooldown;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
-	 *
+	 * 
 	 * @param gameState
 	 *            Current game state.
 	 * @param gameSettings
@@ -103,9 +115,6 @@ public class GameScreen extends Screen {
 		this.lives = gameState.getLivesRemaining();
 		if (this.bonusLife)
 			this.lives++;
-
-
-
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
 	}
@@ -119,12 +128,11 @@ public class GameScreen extends Screen {
 		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
 		enemyShipFormation.attach(this);
 		this.ship = new Ship(this.width / 2, this.height - 30);
-		// Appears each 10-30 seconds.
-		this.enemyShipSpecialCooldown = Core.getVariableCooldown(
-				BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE);
-		this.enemyShipSpecialCooldown.reset();
-		this.enemyShipSpecialExplosionCooldown = Core
-				.getCooldown(BONUS_SHIP_EXPLOSION);
+		// special enemy initial
+		enemyShipSpecialFormation = new EnemyShipSpecialFormation(this.gameSettings,
+				Core.getVariableCooldown(BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE),
+				Core.getCooldown(BONUS_SHIP_EXPLOSION));
+		enemyShipSpecialFormation.attach(this);
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
 		this.bullets = new HashSet<Bullet>();
         this.items = new HashSet<Item>();
@@ -133,6 +141,9 @@ public class GameScreen extends Screen {
 		this.gameStartTime = System.currentTimeMillis();
 		this.inputDelay = Core.getCooldown(INPUT_DELAY);
 		this.inputDelay.reset();
+
+		this.gameTimer = new GameTimer();
+        this.elapsedTime = 0;
 	}
 
 	/**
@@ -156,16 +167,18 @@ public class GameScreen extends Screen {
 		super.update();
 
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
-
+			if (!this.gameTimer.isRunning()) {
+                this.gameTimer.start();
+            }
 			if (!this.ship.isDestroyed()) {
 				boolean moveRight = inputManager.isKeyDown(KeyEvent.VK_RIGHT)
 						|| inputManager.isKeyDown(KeyEvent.VK_D);
 				boolean moveLeft = inputManager.isKeyDown(KeyEvent.VK_LEFT)
 						|| inputManager.isKeyDown(KeyEvent.VK_A);
-                boolean moveUp = inputManager.isKeyDown(KeyEvent.VK_UP)
-                        || inputManager.isKeyDown(KeyEvent.VK_W);
-                boolean moveDown = inputManager.isKeyDown(KeyEvent.VK_DOWN)
-                        || inputManager.isKeyDown(KeyEvent.VK_S);
+				boolean moveUp = inputManager.isKeyDown(KeyEvent.VK_UP)
+						|| inputManager.isKeyDown(KeyEvent.VK_W);
+				boolean moveDown = inputManager.isKeyDown(KeyEvent.VK_DOWN)
+						|| inputManager.isKeyDown(KeyEvent.VK_S);
 
 				boolean isRightBorder = this.ship.getPositionX()
 						+ this.ship.getWidth() + this.ship.getSpeed() > this.width - 1;
@@ -193,33 +206,17 @@ public class GameScreen extends Screen {
                     if (this.ship.shoot(this.bullets))
                         this.bulletsShot++;
 			}
-
-			if (this.enemyShipSpecial != null) {
-				if (!this.enemyShipSpecial.isDestroyed())
-					this.enemyShipSpecial.move(2, 0);
-				else if (this.enemyShipSpecialExplosionCooldown.checkFinished())
-					this.enemyShipSpecial = null;
-
-			}
-			if (this.enemyShipSpecial == null
-					&& this.enemyShipSpecialCooldown.checkFinished()) {
-				this.enemyShipSpecial = new EnemyShip();
-				this.enemyShipSpecialCooldown.reset();
-				this.logger.info("A special ship appears");
-			}
-			if (this.enemyShipSpecial != null
-					&& this.enemyShipSpecial.getPositionX() > this.width) {
-				this.enemyShipSpecial = null;
-				this.logger.info("The special ship has escaped");
-			}
-
 			this.ship.update();
 			if (!Item.isTimeFreezeActive()) {
 				this.enemyShipFormation.update();
 				this.enemyShipFormation.shoot(this.bullets);
 			}
+			// special enemy update
+			this.enemyShipSpecialFormation.update();
 		}
-
+		if (this.gameTimer.isRunning()) {
+            this.elapsedTime = this.gameTimer.getElapsedTime();
+        }
         cleanItems();
 		manageCollisions();
 		cleanBullets();
@@ -229,6 +226,9 @@ public class GameScreen extends Screen {
 				&& !this.levelFinished) {
 			this.levelFinished = true;
 			this.screenFinishedCooldown.reset();
+			if (this.gameTimer.isRunning()) {
+                this.gameTimer.stop();
+            }
 		}
 
 		if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
@@ -244,10 +244,8 @@ public class GameScreen extends Screen {
 
 		drawManager.drawEntity(this.ship, this.ship.getPositionX(),
 				this.ship.getPositionY());
-		if (this.enemyShipSpecial != null)
-			drawManager.drawEntity(this.enemyShipSpecial,
-					this.enemyShipSpecial.getPositionX(),
-					this.enemyShipSpecial.getPositionY());
+		// special enemy draw
+		enemyShipSpecialFormation.draw();
 
 		enemyShipFormation.draw();
 
@@ -262,9 +260,24 @@ public class GameScreen extends Screen {
 		drawManager.drawScore(this, this.score);
         drawManager.drawCoin(this,this.coin);
 		drawManager.drawLives(this, this.lives);
+		drawManager.drawTime(this, this.elapsedTime);
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 
-		// Countdown to game start.
+        if (this.achievementText != null && !this.achievementPopupCooldown.checkFinished()) {
+            drawManager.drawAchievementPopup(this, this.achievementText);
+        } else {
+            this.achievementText = null; // clear once expired
+        }
+
+
+        // Health notification popup
+        if(this.healthPopupText != null && !this.healthPopupCooldown.checkFinished()) {
+            drawManager.drawHealthPopup(this, this.healthPopupText);
+        } else {
+            this.healthPopupText = null;
+        }
+
+        // Countdown to game start.
 		if (!this.inputDelay.checkFinished()) {
 			int countdown = (int) ((INPUT_DELAY
 					- (System.currentTimeMillis()
@@ -320,17 +333,15 @@ public class GameScreen extends Screen {
 			if (bullet.getSpeed() > 0) {
 				if (checkCollision(bullet, this.ship) && !this.levelFinished) {
 					recyclable.add(bullet);
-                    if (!this.ship.isInvincible()) {
-                        if (!this.ship.isDestroyed()) {
-                            this.ship.destroy();
-                            this.lives--;
-                            this.logger.info("Hit on player ship, " + this.lives
-                                    + " lives remaining.");
-                        }
-                    }
-                }
+					if (!this.ship.isDestroyed()) {
+						this.ship.destroy();
+						this.lives--;
+                        showHealthPopup("-1 Health");
+						this.logger.info("Hit on player ship, " + this.lives
+								+ " lives remaining.");
+					}
+				}
 			} else {
-
 				for (EnemyShip enemyShip : this.enemyShipFormation)
 					if (!enemyShip.isDestroyed()
 							&& checkCollision(bullet, enemyShip)) {
@@ -358,18 +369,16 @@ public class GameScreen extends Screen {
 						}
 
 					}
-				if (this.enemyShipSpecial != null
-						&& !this.enemyShipSpecial.isDestroyed()
-						&& checkCollision(bullet, this.enemyShipSpecial)) {
-					this.score += this.enemyShipSpecial.getPointValue();
-                    this.coin += (this.enemyShipSpecial.getPointValue()/10);
-					this.shipsDestroyed++;
-					this.enemyShipSpecial.destroy();
-					this.enemyShipSpecialExplosionCooldown.reset();
-					if (!bullet.penetration()) {
+
+				// special enemy bullet event
+				for (EnemyShip enemyShipSpecial : this.enemyShipSpecialFormation)
+					if (enemyShipSpecial != null && !enemyShipSpecial.isDestroyed()
+							&& checkCollision(bullet, enemyShipSpecial)) {
+						this.score += enemyShipSpecial.getPointValue();
+						this.coin += (enemyShipSpecial.getPointValue()/10);
+						this.shipsDestroyed++;
+						this.enemyShipSpecialFormation.destroy(enemyShipSpecial);
 						recyclable.add(bullet);
-						break;
-					}
 				}
 			}
 		this.bullets.removeAll(recyclable);
@@ -443,7 +452,32 @@ public class GameScreen extends Screen {
 		return distanceX < maxDistanceX && distanceY < maxDistanceY;
 	}
 
-	/**
+    /**
+     * Shows an achievement popup message on the HUD.
+     *
+     * @param message
+     *      Text to display in the popup.
+     */
+    public void showAchievement(String message) {
+        this.achievementText = message;
+        this.achievementPopupCooldown = Core.getCooldown(2500); // Show for 2.5 seconds
+        this.achievementPopupCooldown.reset();
+    }
+
+    /**
+     * Displays a notification popup when the player gains or loses health
+     *
+     * @param message
+     *          Text to display in the popup
+     */
+
+    public void showHealthPopup(String message) {
+        this.healthPopupText = message;
+        this.healthPopupCooldown = Core.getCooldown(500);
+        this.healthPopupCooldown.reset();
+    }
+
+    /**
 	 * Returns a GameState object representing the status of the game.
 	 * 
 	 * @return Current game state.
