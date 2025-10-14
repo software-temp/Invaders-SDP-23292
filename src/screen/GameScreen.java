@@ -295,7 +295,7 @@ public class GameScreen extends Screen {
 			if (!DropItem.isTimeFreezeActive()) {
 				this.enemyShipFormation.update();
 				this.enemyShipFormation.shoot(this.bullets);
-        
+			}
 			/** when the final boss is at the field */
 			if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
 				this.finalBoss.update();
