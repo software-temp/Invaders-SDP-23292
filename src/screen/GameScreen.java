@@ -66,6 +66,8 @@ public class GameScreen extends Screen {
 	private MidBoss omegaBoss;
 	/** Set of all bullets fired by on-screen ships. */
 	private Set<Bullet> bullets;
+	/** Set of all dropItems dropped by on screen ships. */
+	private Set<DropItem> dropItems;
 	/** Current score. */
 	private int score;
 	/** Player lives left. */
@@ -80,22 +82,24 @@ public class GameScreen extends Screen {
 	private boolean levelFinished;
 	/** Checks if a bonus life is received. */
 	private boolean bonusLife;
+  /** Maximum number of lives. */
+	private int maxLives;
 	/** Current coin. */
 	private int coin;
 	/** bossBullets carry bullets which Boss fires */
 	private Set<BossBullet> bossBullets;
 	/** Is the bullet on the screen erased */
-	private boolean is_cleared = false;
-    /** Timer to track elapsed time. */
-    private GameTimer gameTimer;
-    /** Elapsed time since the game started. */
-    private long elapsedTime;
-    // Achievement popup
-    private String achievementText;
-    private Cooldown achievementPopupCooldown;
-    /** Health change popup. */
-    private String healthPopupText;
-    private Cooldown healthPopupCooldown;
+  private boolean is_cleared = false;
+  /** Timer to track elapsed time. */
+  private GameTimer gameTimer;
+  /** Elapsed time since the game started. */
+  private long elapsedTime;
+  // Achievement popup
+  private String achievementText;
+  private Cooldown achievementPopupCooldown;
+  /** Health change popup. */
+  private String healthPopupText;
+  private Cooldown healthPopupCooldown;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -106,6 +110,8 @@ public class GameScreen extends Screen {
 	 *            Current game settings.
 	 * @param bonusLife
 	 *            Checks if a bonus life is awarded this level.
+	 * @param maxLives
+	 *            Maximum number of lives.
 	 * @param width
 	 *            Screen width.
 	 * @param height
@@ -114,12 +120,13 @@ public class GameScreen extends Screen {
 	 *            Frames per second, frame rate at which the game is run.
 	 */
 	public GameScreen(final GameState gameState,
-			final GameSettings gameSettings, final boolean bonusLife,
-			final int width, final int height, final int fps) {
+					  final GameSettings gameSettings, final boolean bonusLife, final int maxLives,
+					  final int width, final int height, final int fps) {
 		super(width, height, fps);
 
 		this.gameSettings = gameSettings;
 		this.bonusLife = bonusLife;
+		this.maxLives = maxLives;
 		this.level = gameState.getLevel();
 		this.score = gameState.getScore();
 		this.lives = gameState.getLivesRemaining();
@@ -150,6 +157,7 @@ public class GameScreen extends Screen {
 				.getCooldown(BOSS_EXPLOSION);
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
 		this.bullets = new HashSet<Bullet>();
+        this.dropItems = new HashSet<DropItem>();
 
 		// Special input delay / countdown.
 		this.gameStartTime = System.currentTimeMillis();
@@ -284,9 +292,10 @@ public class GameScreen extends Screen {
 				}
 			}
 			this.ship.update();
-			this.enemyShipFormation.update();
-			this.enemyShipFormation.shoot(this.bullets);
-
+			if (!DropItem.isTimeFreezeActive()) {
+				this.enemyShipFormation.update();
+				this.enemyShipFormation.shoot(this.bullets);
+			}
 			/** when the final boss is at the field */
 			if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
 				this.finalBoss.update();
@@ -297,6 +306,7 @@ public class GameScreen extends Screen {
 		if (this.gameTimer.isRunning()) {
             this.elapsedTime = this.gameTimer.getElapsedTime();
         }
+        cleanItems();
 		manageCollisions();
 		cleanBullets();
 		draw();
@@ -345,13 +355,14 @@ public class GameScreen extends Screen {
 			drawManager.drawEntity(bullet, bullet.getPositionX(),
 					bullet.getPositionY());
 
-
+    for (DropItem dropItem : this.dropItems)
+      drawManager.drawEntity(dropItem, dropItem.getPositionX(), dropItem.getPositionY());
 
 		// Interface.
 		drawManager.drawScore(this, this.score);
 		drawManager.drawCoin(this,this.coin);
 		drawManager.drawLives(this, this.lives);
-		drawManager.drawTime(this, this.elapsedTime); 
+		drawManager.drawTime(this, this.elapsedTime);
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 
         if (this.achievementText != null && !this.achievementPopupCooldown.checkFinished()) {
@@ -399,6 +410,22 @@ public class GameScreen extends Screen {
 		BulletPool.recycle(recyclable);
 	}
 
+    /**
+     * Cleans Items that go off screen.
+     */
+
+    private void cleanItems() {
+        Set<DropItem> recyclable = new HashSet<DropItem>();
+        for (DropItem dropItem : this.dropItems) {
+            dropItem.update();
+            if (dropItem.getPositionY() < SEPARATION_LINE_HEIGHT
+                    || dropItem.getPositionY() > this.height)
+                recyclable.add(dropItem);
+        }
+        this.dropItems.removeAll(recyclable);
+        ItemPool.recycle(recyclable);
+    }
+
 	/**
 	 * Manages collisions between bullets and ships.
 	 */
@@ -408,12 +435,14 @@ public class GameScreen extends Screen {
 			if (bullet.getSpeed() > 0) {
 				if (checkCollision(bullet, this.ship) && !this.levelFinished) {
 					recyclable.add(bullet);
-					if (!this.ship.isDestroyed()) {
-						this.ship.destroy();
-						this.lives--;
-                        showHealthPopup("-1 Health");
-						this.logger.info("Hit on player ship, " + this.lives
-								+ " lives remaining.");
+					if (!this.ship.isInvincible()) {
+						if (!this.ship.isDestroyed()) {
+							this.ship.destroy();
+							this.lives--;
+							showHealthPopup("-1 Health");
+							this.logger.info("Hit on player ship, " + this.lives
+									+ " lives remaining.");
+						}
 					}
 				}
 			} else {
@@ -424,7 +453,25 @@ public class GameScreen extends Screen {
                         this.coin += (enemyShip.getPointValue()/10);
 						this.shipsDestroyed++;
 						this.enemyShipFormation.destroy(enemyShip);
-						recyclable.add(bullet);
+                        DropItem.ItemType droppedType = DropItem.getRandomItemType(0.3);
+                        if (droppedType != null) {
+                            final int ITEM_DROP_SPEED = 2;
+
+                            DropItem newDropItem = ItemPool.getItem(
+                                    enemyShip.getPositionX() + enemyShip.getWidth() / 2,
+                                    enemyShip.getPositionY() + enemyShip.getHeight() / 2,
+                                    ITEM_DROP_SPEED,
+                                    droppedType
+                            );
+                            this.dropItems.add(newDropItem);
+                            this.logger.info("An item (" + droppedType + ") dropped");
+                        }
+
+						if (!bullet.penetration()) {
+							recyclable.add(bullet);
+							break;
+						}
+
 					}
 
 				// special enemy bullet event
@@ -464,7 +511,49 @@ public class GameScreen extends Screen {
 			}
 		this.bullets.removeAll(recyclable);
 		BulletPool.recycle(recyclable);
-	}
+
+        Set<DropItem> acquiredDropItems = new HashSet<DropItem>();
+
+        if (!this.levelFinished && !this.ship.isDestroyed()) {
+            for (DropItem dropItem : this.dropItems) {
+
+                if (checkCollision(this.ship, dropItem)) {
+                    this.logger.info("Player acquired dropItem: " + dropItem.getItemType());
+                    switch (dropItem.getItemType()) {
+                        case Heal:
+                            gainLife();
+                            break;
+                        case Shield:
+                            ship.activateInvincibility(5000); // 5 seconds of invincibility
+                            break;
+						case Stop:
+							dropItem.applyTimeFreezeItem(3000);
+							break;
+						case Push:
+							dropItem.PushbackItem(this.enemyShipFormation,20);
+							break;
+                        case Explode:
+                            int destroyedEnemy = this.enemyShipFormation.destroyAll();
+                            this.score += destroyedEnemy * 5;
+                            break;
+                        case Slow:
+                            enemyShipFormation.activateSlowdown();
+                            this.logger.info("Enemy formation slowed down!");
+                            break;
+                        default:
+                            // For other dropItem types. Free to add!
+                            break;
+                    }
+                    acquiredDropItems.add(dropItem);
+                }
+            }
+            this.dropItems.removeAll(acquiredDropItems);
+            ItemPool.recycle(acquiredDropItems);
+        }
+    }
+
+
+
 
 	/**
 	 * Checks if two entities are colliding.
@@ -524,5 +613,14 @@ public class GameScreen extends Screen {
 	public final GameState getGameState() {
 		return new GameState(this.level, this.score, this.lives,
 				this.bulletsShot, this.shipsDestroyed,this.coin);
+	}
+
+	/**
+	 * Adds one life to the player.
+	 */
+	public final void gainLife() {
+		if (this.lives < this.maxLives) {
+			this.lives++;
+		}
 	}
 }
