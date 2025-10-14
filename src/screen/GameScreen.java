@@ -9,6 +9,7 @@ import engine.Core;
 import engine.GameSettings;
 import engine.GameState;
 import engine.GameTimer;
+import engine.ItemHUDManager;
 import entity.*;
 
 /**
@@ -33,6 +34,8 @@ public class GameScreen extends Screen {
 	private static final int SCREEN_CHANGE_INTERVAL = 1500;
 	/** Height of the interface separation line. */
 	private static final int SEPARATION_LINE_HEIGHT = 40;
+	/** Height of the items separation line (above items). */
+	private static final int ITEMS_SEPARATION_LINE_HEIGHT = 400;
 
 	/** Current game difficulty settings. */
 	private GameSettings gameSettings;
@@ -128,7 +131,7 @@ public class GameScreen extends Screen {
 
 		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
 		enemyShipFormation.attach(this);
-		this.ship = new Ship(this.width / 2, this.height - 30);
+		this.ship = new Ship(this.width / 2, ITEMS_SEPARATION_LINE_HEIGHT - 50);
 		// special enemy initial
 		enemyShipSpecialFormation = new EnemyShipSpecialFormation(this.gameSettings,
 				Core.getVariableCooldown(BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE),
@@ -188,7 +191,7 @@ public class GameScreen extends Screen {
                 boolean isUpBorder = this.ship.getPositionY()
                         - this.ship.getSpeed() < SEPARATION_LINE_HEIGHT;
                 boolean isDownBorder = this.ship.getPositionY()
-                        + this.ship.getHeight() + this.ship.getSpeed() > this.height - 1;
+                        + this.ship.getHeight() + this.ship.getSpeed() > ITEMS_SEPARATION_LINE_HEIGHT;
 
 				if (moveRight && !isRightBorder) {
 					this.ship.moveRight();
@@ -262,7 +265,9 @@ public class GameScreen extends Screen {
         drawManager.drawCoin(this,this.coin);
 		drawManager.drawLives(this, this.lives);
 		drawManager.drawTime(this, this.elapsedTime);
+		drawManager.drawItemsHUD(this);
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
+		drawManager.drawHorizontalLine(this, ITEMS_SEPARATION_LINE_HEIGHT);
 
         if (this.achievementText != null && !this.achievementPopupCooldown.checkFinished()) {
             drawManager.drawAchievementPopup(this, this.achievementText);
@@ -394,6 +399,10 @@ public class GameScreen extends Screen {
 
                 if (checkCollision(this.ship, dropItem)) {
                     this.logger.info("Player acquired dropItem: " + dropItem.getItemType());
+                    
+                    // Add item to HUD display
+                    ItemHUDManager.getInstance().addDroppedItem(dropItem.getItemType());
+                    
                     switch (dropItem.getItemType()) {
                         case Heal:
                             gainLife();
@@ -402,10 +411,10 @@ public class GameScreen extends Screen {
                             ship.activateInvincibility(5000); // 5 seconds of invincibility
                             break;
 						case Stop:
-							dropItem.applyTimeFreezeItem(3000);
+							DropItem.applyTimeFreezeItem(3000);
 							break;
 						case Push:
-							dropItem.PushbackItem(this.enemyShipFormation,20);
+							DropItem.PushbackItem(this.enemyShipFormation,20);
 							break;
                         case Explode:
                             int destroyedEnemy = this.enemyShipFormation.destroyAll();
