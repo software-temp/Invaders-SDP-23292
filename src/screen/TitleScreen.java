@@ -77,7 +77,7 @@ public class TitleScreen extends Screen {
 			if (inputManager.isKeyDown(KeyEvent.VK_SPACE)){
 				if (this.returnCode != 5) {
 					this.isRunning = false;
-				} else {
+				} else if (this.returnCode == 5) {
 					this.soundButton.changeSoundState();
 					// TODO : Sound setting.
 
