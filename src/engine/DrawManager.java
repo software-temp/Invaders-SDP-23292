@@ -707,8 +707,7 @@ public final class DrawManager {
 		// Draw coin balance
 		backBufferGraphics.setColor(Color.YELLOW);
 		String balanceString = String.format("Your Balance: %d coins", coinBalance);
-		drawCenteredRegularString(screen, balanceString,
-				screen.getHeight() / 8 + fontBigMetrics.getHeight() + 10);
+		drawCenteredRegularString(screen, balanceString, 120);
 
 		// Draw instructions based on mode
 		backBufferGraphics.setColor(Color.GRAY);
@@ -718,37 +717,43 @@ public final class DrawManager {
 		} else {
 			instructions = "A/D: Change Level | SPACE: Buy | ESC: Back";
 		}
-		drawCenteredRegularString(screen, instructions,
-				screen.getHeight() / 8 + fontBigMetrics.getHeight() + 30);
+		drawCenteredRegularString(screen, instructions, 145);
 
 		// Draw separator line
-		backBufferGraphics.setColor(Color.GREEN);
-		drawHorizontalLine(screen, screen.getHeight() / 5);
+		//backBufferGraphics.setColor(Color.GREEN);
+		//drawHorizontalLine(screen, 165);
 
-		// Draw items
-		int startY = screen.getHeight() / 5 + 30;
-		int itemSpacing = 55;
+		// FIXED: Draw items with proper spacing
+		int currentY = 170;  // Start position
+		int baseSpacing = 65;  // Space between each item
 
 		for (int i = 0; i < totalItems; i++) {
-			int yPos = startY + (i * itemSpacing);
 			boolean isSelected = (i == selectedItem) && (selectionMode == 0);
+			boolean isLevelSelection = (i == selectedItem && selectionMode == 1);
 			int currentLevel = shopScreen.getItemCurrentLevel(i);
 
 			drawShopItem(screen, itemNames[i], itemDescriptions[i],
 					itemPrices[i], maxLevels[i], currentLevel,
-					yPos, isSelected, coinBalance,
-					(i == selectedItem && selectionMode == 1),
-					selectedLevel);
+					currentY, isSelected, coinBalance,
+					isLevelSelection, selectedLevel);
+
+			// Add extra space when showing level selection buttons
+			if (isLevelSelection) {
+				currentY += baseSpacing + 55;
+			} else {
+				currentY += baseSpacing;
+			}
 		}
 
 		// Draw exit option
-		int exitY = screen.getHeight() - 60;
+		int exitY = screen.getHeight() - 25;
 		if (selectedItem == totalItems && selectionMode == 0) {
 			backBufferGraphics.setColor(Color.GREEN);
 		} else {
 			backBufferGraphics.setColor(Color.WHITE);
 		}
 		drawCenteredRegularString(screen, "< Back to Main Menu >", exitY);
+
 	}
 
 	/**
