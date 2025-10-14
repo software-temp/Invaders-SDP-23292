@@ -2,6 +2,8 @@ package screen;
 
 import java.awt.event.KeyEvent;
 import java.awt.Color;
+import java.util.List;
+import java.util.ArrayList;
 
 import engine.Cooldown;
 import engine.Core;
@@ -15,11 +17,45 @@ import entity.SoundButton;
  */
 public class TitleScreen extends Screen {
 
+	/**
+	 * A simple class to represent a star for the animated background.
+	 */
+	public static class Star {
+		private int x;
+		private int y;
+
+		public Star(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+
+		public int getX() {
+			return x;
+		}
+
+		public int getY() {
+			return y;
+		}
+
+		public void setY(int y) {
+			this.y = y;
+		}
+		
+		public void setX(int x) {
+			this.x = x;
+		}
+	}
+
 	/** Milliseconds between changes in user selection. */
 	private static final int SELECTION_TIME = 200;
+	/** Number of stars in the background. */
+	private static final int NUM_STARS = 150;
 	
 	/** Time between changes in user selection. */
 	private Cooldown selectionCooldown;
+
+	/** List of stars for the background animation. */
+	private List<Star> stars;
 
 	/** Sound button on/off object. */
 	private SoundButton soundButton;
@@ -42,6 +78,21 @@ public class TitleScreen extends Screen {
 		this.soundButton = new SoundButton(0, 0);
 		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
 		this.selectionCooldown.reset();
+
+		// Initialize stars for background
+		this.stars = new ArrayList<Star>();
+		for (int i = 0; i < NUM_STARS; i++) {
+			this.stars.add(new Star((int) (Math.random() * width),
+					(int) (Math.random() * height)));
+		}
+	}
+
+	/**
+	 * Getter for the stars list.
+	 * @return List of stars.
+	 */
+	public final List<Star> getStars() {
+		return this.stars;
 	}
 
 	/**
@@ -60,6 +111,15 @@ public class TitleScreen extends Screen {
 	 */
 	protected final void update() {
 		super.update();
+
+		// Animate stars
+		for (Star star : this.stars) {
+			star.setY(star.getY() + 1);
+			if (star.getY() > this.getHeight()) {
+				star.setY(0);
+				star.setX((int) (Math.random() * this.getWidth()));
+			}
+		}
 
 		draw();
 		if (this.selectionCooldown.checkFinished()
@@ -136,6 +196,9 @@ public class TitleScreen extends Screen {
 	 */
 	private void draw() {
 		drawManager.initDrawing(this);
+
+		// Draw stars
+		drawManager.drawStars(this, this.stars);
 
 		drawManager.drawTitle(this);
 		drawManager.drawMenu(this, this.returnCode);

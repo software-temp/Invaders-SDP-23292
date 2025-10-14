@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import screen.Screen;
+import screen.TitleScreen.Star;
 import entity.Entity;
 import entity.Ship;
 
@@ -49,6 +50,22 @@ public final class DrawManager {
 
 	/** Sprite types mapped to their images. */
 	private static Map<SpriteType, boolean[][]> spriteMap;
+
+	/**
+	 * Draws the starfield background.
+	 * 
+	 * @param screen
+	 *            Screen to draw on.
+	 * @param stars
+	 *            List of stars to draw.
+	 */
+	public void drawStars(final Screen screen, final List<Star> stars) {
+		backBufferGraphics.setColor(Color.WHITE);
+		for (Star star : stars) {
+			backBufferGraphics.drawRect(star.getX(), star.getY(), 1, 1);
+		}
+	}
+
 
 	/** Sprite types. */
 	public static enum SpriteType {
@@ -401,26 +418,30 @@ public final class DrawManager {
 		String shopString = "shop";
 		String exitString = "exit";
 
+		// Pulsing color for selected item
+		float pulse = (float) ((Math.sin(System.currentTimeMillis() / 200.0) + 1.0) / 2.0);
+		Color pulseColor = new Color(0, 0.5f + pulse * 0.5f, 0);
+
 		if (option == 2)
-			backBufferGraphics.setColor(Color.GREEN);
+			backBufferGraphics.setColor(pulseColor);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, playString,
 				screen.getHeight() / 3 * 2);
 		if (option == 3)
-			backBufferGraphics.setColor(Color.GREEN);
+			backBufferGraphics.setColor(pulseColor);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, highScoresString, screen.getHeight()
 				/ 3 * 2 + fontRegularMetrics.getHeight() * 2);
 		if (option == 4)
-			backBufferGraphics.setColor(Color.GREEN);
+			backBufferGraphics.setColor(pulseColor);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, shopString, screen.getHeight()
 				/ 3 * 2 + fontRegularMetrics.getHeight() * 4);
 		if (option == 0)
-			backBufferGraphics.setColor(Color.GREEN);
+			backBufferGraphics.setColor(pulseColor);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, exitString, screen.getHeight() / 3
