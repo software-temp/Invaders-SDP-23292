@@ -63,7 +63,7 @@ public class Entity {
 	 * @param color
 	 *            New color of the entity.
 	 */
-	public final void setColor(final Color color) {
+	public void setColor(final Color color) {
 		this.color = color;
 	}
 

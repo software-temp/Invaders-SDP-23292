@@ -79,7 +79,7 @@ public final class DrawManager {
 		/** Active sound button. */
 		SoundOn,
 		/** Deactive sound button. */
-		SoundOff
+		SoundOff,
 				/** Items */
 		Item_MultiShot,
 		Item_Atkspeed,
