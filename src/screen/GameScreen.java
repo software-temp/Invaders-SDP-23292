@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import engine.Cooldown;
 import engine.Core;
@@ -52,6 +53,10 @@ public class GameScreen extends Screen {
 	/** Minimum time between bonus ship appearances. */
 	private Cooldown enemyShipSpecialCooldown;
 	/** Time until bonus ship explosion disappears. */
+
+	/** team drawing may implement */
+	private FinalBoss finalBoss;
+
 	private Cooldown enemyShipSpecialExplosionCooldown;
 	/** Time until Boss explosion disappears. */
 	private Cooldown bossExplosionCooldown;
@@ -75,18 +80,22 @@ public class GameScreen extends Screen {
 	private boolean levelFinished;
 	/** Checks if a bonus life is received. */
 	private boolean bonusLife;
-  /** Current coin. */
-  private int coin;
-	/** Timer to track elapsed time. */
-  private GameTimer gameTimer;
-  /** Elapsed time since the game started. */
-  private long elapsedTime;
-  // Achievement popup
-  private String achievementText;
-  private Cooldown achievementPopupCooldown;
-  /** Health change popup. */
-  private String healthPopupText;
-  private Cooldown healthPopupCooldown;
+	/** Current coin. */
+	private int coin;
+	/** bossBullets carry bullets which Boss fires */
+	private Set<BossBullet> bossBullets;
+	/** Is the bullet on the screen erased */
+	private boolean is_cleared = false;
+    /** Timer to track elapsed time. */
+    private GameTimer gameTimer;
+    /** Elapsed time since the game started. */
+    private long elapsedTime;
+    // Achievement popup
+    private String achievementText;
+    private Cooldown achievementPopupCooldown;
+    /** Health change popup. */
+    private String healthPopupText;
+    private Cooldown healthPopupCooldown;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -125,6 +134,9 @@ public class GameScreen extends Screen {
 	 */
 	public final void initialize() {
 		super.initialize();
+		/** Initialize the bullet Boss fired */
+		this.bossBullets = new HashSet<>();
+
 
 		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
 		enemyShipFormation.attach(this);
@@ -148,7 +160,7 @@ public class GameScreen extends Screen {
 		this.omegaBoss = new OmegaBoss(Color.ORANGE);
 		omegaBoss.attach(this);
 		this.gameTimer = new GameTimer();
-    this.elapsedTime = 0;
+        this.elapsedTime = 0;
 	}
 
 	/**
@@ -172,6 +184,58 @@ public class GameScreen extends Screen {
 		super.update();
 
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
+
+			/** spawn final boss to check object (for test) */
+			if(this.finalBoss == null){
+				this.finalBoss = new FinalBoss(this.width/2-50,50,this.width,this.height);
+				this.logger.info("Final Boss created.");
+			}
+			if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
+			/** called the boss shoot logic */
+					if(this.finalBoss.getHealPoint() > this.finalBoss.getMaxHp() / 4) {
+						bossBullets.addAll(this.finalBoss.shoot1());
+						bossBullets.addAll(this.finalBoss.shoot2());
+
+					}
+					/** Is the bullet on the screen erased */
+					else {
+						if (!is_cleared){
+							bossBullets.clear();
+							is_cleared = true;
+							logger.info("boss is angry");
+						}
+						else {
+
+							bossBullets.addAll(this.finalBoss.shoot3());
+						}
+					}
+
+				/** bullets to erase */
+				Set<BossBullet> bulletsToRemove = new HashSet<>();
+
+				for (BossBullet b : bossBullets) {
+					b.update();
+					/** If the bullet goes off the screen */
+					if (b.isOffScreen(width, height)) {
+						/** bulletsToRemove carry bullet */
+						bulletsToRemove.add(b);
+					}
+					/** If the bullet collides with ship */
+					else if (this.checkCollision(b,this.ship)) {
+						if (!this.ship.isDestroyed()) {
+							this.ship.destroy();
+							this.lives--;
+							this.logger.info("Hit on player ship, " + this.lives
+									+ " lives remaining.");
+
+						}
+						bulletsToRemove.add(b);
+					}
+				}
+				/** all bullets are removed */
+				bossBullets.removeAll(bulletsToRemove);
+			}
+
 			if (!this.gameTimer.isRunning()) {
                 this.gameTimer.start();
             }
@@ -189,10 +253,10 @@ public class GameScreen extends Screen {
 						+ this.ship.getWidth() + this.ship.getSpeed() > this.width - 1;
 				boolean isLeftBorder = this.ship.getPositionX()
 						- this.ship.getSpeed() < 1;
-				boolean isUpBorder = this.ship.getPositionY()
-						- this.ship.getSpeed() < SEPARATION_LINE_HEIGHT;
-				boolean isDownBorder = this.ship.getPositionY()
-						+ this.ship.getHeight() + this.ship.getSpeed() > this.height - 1;
+                boolean isUpBorder = this.ship.getPositionY()
+                        - this.ship.getSpeed() < SEPARATION_LINE_HEIGHT;
+                boolean isDownBorder = this.ship.getPositionY()
+                        + this.ship.getHeight() + this.ship.getSpeed() > this.height - 1;
 
 				if (moveRight && !isRightBorder) {
 					this.ship.moveRight();
@@ -200,16 +264,16 @@ public class GameScreen extends Screen {
 				if (moveLeft && !isLeftBorder) {
 					this.ship.moveLeft();
 				}
-				if (moveUp && !isUpBorder) {
-					this.ship.moveUp();
-				}
-				if (moveDown && !isDownBorder) {
-					this.ship.moveDown();
-				}
+                if (moveUp && !isUpBorder) {
+                    this.ship.moveUp();
+                }
+                if (moveDown && !isDownBorder) {
+                    this.ship.moveDown();
+                }
 
 				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
-					if (this.ship.shoot(this.bullets))
-						this.bulletsShot++;
+                    if (this.ship.shoot(this.bullets))
+                        this.bulletsShot++;
 			}
 			if (this.omegaBoss != null){
 				if(!this.omegaBoss.isDestroyed()) {
@@ -222,6 +286,11 @@ public class GameScreen extends Screen {
 			this.ship.update();
 			this.enemyShipFormation.update();
 			this.enemyShipFormation.shoot(this.bullets);
+
+			/** when the final boss is at the field */
+			if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
+				this.finalBoss.update();
+			}
 			// special enemy update
 			this.enemyShipSpecialFormation.update();
 		}
@@ -257,6 +326,15 @@ public class GameScreen extends Screen {
 		// special enemy draw
 		enemyShipSpecialFormation.draw();
 
+		/** draw final boss at the field */
+		/** draw final boss bullets */
+		if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
+			for (BossBullet bossBullet : bossBullets) {
+				drawManager.drawEntity(bossBullet, bossBullet.getPositionX(), bossBullet.getPositionY());
+			}
+			drawManager.drawEntity(finalBoss, finalBoss.getPositionX(), finalBoss.getPositionY());
+		}
+
 		enemyShipFormation.draw();
 
 		if(this.omegaBoss != null) {
@@ -266,6 +344,8 @@ public class GameScreen extends Screen {
 		for (Bullet bullet : this.bullets)
 			drawManager.drawEntity(bullet, bullet.getPositionX(),
 					bullet.getPositionY());
+
+
 
 		// Interface.
 		drawManager.drawScore(this, this.score);
@@ -292,7 +372,7 @@ public class GameScreen extends Screen {
 		if (!this.inputDelay.checkFinished()) {
 			int countdown = (int) ((INPUT_DELAY
 					- (System.currentTimeMillis()
-							- this.gameStartTime)) / 1000);
+					- this.gameStartTime)) / 1000);
 			drawManager.drawCountDown(this, this.level, countdown,
 					this.bonusLife);
 			drawManager.drawHorizontalLine(this, this.height / 2 - this.height
@@ -341,7 +421,7 @@ public class GameScreen extends Screen {
 					if (!enemyShip.isDestroyed()
 							&& checkCollision(bullet, enemyShip)) {
 						this.score += enemyShip.getPointValue();
-						this.coin += (enemyShip.getPointValue()/10);
+                        this.coin += (enemyShip.getPointValue()/10);
 						this.shipsDestroyed++;
 						this.enemyShipFormation.destroy(enemyShip);
 						recyclable.add(bullet);
@@ -370,6 +450,17 @@ public class GameScreen extends Screen {
 					}
 					recyclable.add(bullet);
 				}
+
+				/** when final boss collide with bullet */
+				if(this.finalBoss != null && !this.finalBoss.isDestroyed() && checkCollision(bullet,this.finalBoss)){
+					this.finalBoss.takeDamage(1);
+					if(this.finalBoss.getHealPoint() <= 0){
+						this.score += this.finalBoss.getPointValue();
+						this.coin += (this.finalBoss.getPointValue()/10);
+					}
+					recyclable.add(bullet);
+				}
+
 			}
 		this.bullets.removeAll(recyclable);
 		BulletPool.recycle(recyclable);
