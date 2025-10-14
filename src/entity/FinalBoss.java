@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
-public class FinalBoss extends Entity{
+public class FinalBoss extends Entity implements BossEntity{
 
     private int healPoint;
     private int maxHp;
@@ -59,6 +59,7 @@ public class FinalBoss extends Entity{
      * final boss spritetype is the same with special enemy and enemyshipA, because final boss spritetype have not yet implemented
      * becasue final boss is single object, moving and shooting pattern are included in update methods
      */
+    @Override
     public void update(){
         if(this.animationCooldown.checkFinished()){
             this.animationCooldown.reset();
@@ -74,6 +75,7 @@ public class FinalBoss extends Entity{
     }
 
     /** decrease boss' healpoint */
+    @Override
     public void takeDamage(int damage){
         this.healPoint -= damage;
         if(this.healPoint <= 0){
@@ -81,6 +83,7 @@ public class FinalBoss extends Entity{
         }
     }
 
+    @Override
     public int getHealPoint(){
         return this.healPoint;
     }
@@ -88,6 +91,8 @@ public class FinalBoss extends Entity{
     public int getMaxHp(){
         return  this.maxHp;
     }
+
+    @Override
     public int getPointValue(){
         return this.pointValue;
     }
@@ -123,6 +128,7 @@ public class FinalBoss extends Entity{
     }
 
     /** move simple */
+    @Override
     public void move(int distanceX, int distanceY){
         this.positionX += distanceX;
         this.positionY += distanceY;
@@ -175,6 +181,7 @@ public class FinalBoss extends Entity{
 
 
     /** flag final boss' destroy */
+    @Override
     public void destroy(){
         if(!this.isDestroyed){
             this.isDestroyed = true;
@@ -183,7 +190,13 @@ public class FinalBoss extends Entity{
     }
 
     /** check final boss' destroy */
+    @Override
     public boolean isDestroyed(){
         return this.isDestroyed;
+    }
+
+    @Override
+    public void draw(DrawManager drawManager) {
+        drawManager.drawEntity(this, this.positionX, this.positionY);
     }
 }
