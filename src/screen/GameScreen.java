@@ -105,7 +105,7 @@ public class GameScreen extends Screen {
 	 *            Frames per second, frame rate at which the game is run.
 	 */
 	public GameScreen(final GameState gameState,
-			final Level level, final boolean bonusLife, final int maxLives
+			final Level level, final boolean bonusLife, final int maxLives,
 			final int width, final int height, final int fps) {
 		super(width, height, fps);
 
