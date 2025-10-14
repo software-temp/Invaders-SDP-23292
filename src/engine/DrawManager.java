@@ -75,7 +75,21 @@ public final class DrawManager {
 		/** Bonus ship. */
 		EnemyShipSpecial,
 		/** Destroyed enemy ship. */
-		Explosion
+		Explosion,
+		/** Active sound button. */
+		SoundOn,
+		/** Deactive sound button. */
+		SoundOff,
+				/** Items */
+		Item_MultiShot,
+		Item_Atkspeed,
+		Item_Penetrate,
+		Item_Explode,
+		Item_Slow,
+		Item_Stop,
+		Item_Push,
+		Item_Shield,
+		Item_Heal
 	};
 
 	/**
@@ -101,7 +115,15 @@ public final class DrawManager {
 			spriteMap.put(SpriteType.EnemyShipC2, new boolean[12][8]);
 			spriteMap.put(SpriteType.EnemyShipSpecial, new boolean[16][7]);
 			spriteMap.put(SpriteType.Explosion, new boolean[13][7]);
+			spriteMap.put(SpriteType.SoundOn, new boolean[15][15]);
+			spriteMap.put(SpriteType.SoundOff, new boolean[15][15]);
 
+			spriteMap.put(SpriteType.Item_Explode, new boolean[5][5]);
+			spriteMap.put(SpriteType.Item_Slow, new boolean[5][5]);
+			spriteMap.put(SpriteType.Item_Stop, new boolean[5][5]);
+			spriteMap.put(SpriteType.Item_Push, new boolean[5][5]);
+			spriteMap.put(SpriteType.Item_Shield, new boolean[5][5]);
+			spriteMap.put(SpriteType.Item_Heal, new boolean[5][5]);
 			fileManager.loadSprite(spriteMap);
 			logger.info("Finished loading the sprites.");
 
@@ -110,9 +132,11 @@ public final class DrawManager {
 			fontBig = fileManager.loadFont(24f);
 			logger.info("Finished loading the fonts.");
 
+
 		} catch (IOException e) {
 			logger.warning("Loading failed.");
-		} catch (FontFormatException e) {
+		}
+		catch (FontFormatException e) {
 			logger.warning("Font formating failed.");
 		}
 	}
@@ -243,6 +267,25 @@ public final class DrawManager {
 		backBufferGraphics.drawString(scoreString, screen.getWidth() - 120, 25);
 	}
 
+	/**
+     * Draws the elapsed time on screen.
+     *
+     * @param screen
+     * 				Screen to draw on.
+     * @param milliseconds
+     * 				Elapsed time in milliseconds.
+     */
+    public void drawTime(final Screen screen, final long milliseconds) {
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.setColor(Color.WHITE);
+        long seconds = milliseconds / 1000;
+        long minutes = seconds / 60;
+        seconds %= 60;
+        String timeString = String.format("Time: %02d:%02d", minutes, seconds);
+        backBufferGraphics.drawString(timeString, screen.getWidth() / 2 - fontRegularMetrics.stringWidth(timeString) / 2, 25);
+    }
+
+
     /**
      * Draws current score on screen.
      *
@@ -274,6 +317,59 @@ public final class DrawManager {
 		for (int i = 0; i < lives; i++)
 			drawEntity(dummyShip, 40 + 35 * i, 10);
 	}
+
+    /**
+     * Draws an achievement pop-up message on the screen.
+     *
+     * @param screen Screen where the pop-up will be drawn.
+     *
+     * @param text   The achievement message to display.
+     */
+    public void drawAchievementPopup(final Screen screen, final String text) {
+        int popupWidth = 250;
+        int popupHeight = 50;
+        int x = screen.getWidth() / 2 - popupWidth / 2;
+        int y = 80;
+
+        backBufferGraphics.setColor(new Color(0, 0, 0, 200));
+        backBufferGraphics.fillRoundRect(x, y, popupWidth, popupHeight, 15, 15);
+
+        backBufferGraphics.setColor(Color.YELLOW);
+        backBufferGraphics.drawRoundRect(x, y, popupWidth, popupHeight, 15, 15);
+
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.setColor(Color.WHITE);
+        drawCenteredRegularString(screen, text, y + popupHeight / 2 + 5);
+    }
+
+    /**
+     * Draws a notification popup for changes in health
+     *
+     * @param screen
+     *          Screen to draw on.
+     * @param text
+     *          Text to display change in health (+1 Health / -1 Health).
+     */
+    public void drawHealthPopup(final Screen screen, final String text) {
+        int popupWidth = 250;
+        int popupHeight = 40;
+        int x = screen.getWidth() / 2 - popupWidth / 2;
+        int y = 100;
+
+        backBufferGraphics.setColor(new Color(0, 0, 0, 200));
+        backBufferGraphics.fillRoundRect(x, y, popupWidth, popupHeight, 15, 15);
+
+        Color textColor;
+        if (text.startsWith("+")) {
+            textColor = new Color(50, 255, 50);
+        } else {
+            textColor = new Color(255, 50, 50);
+        }
+
+        backBufferGraphics.setColor(textColor);
+        drawCenteredBigString(screen, text, y + popupHeight / 2 + 5);
+    }
+
 
 	/**
 	 * Draws a thick line from side to side of the screen.
@@ -320,6 +416,7 @@ public final class DrawManager {
 	public void drawMenu(final Screen screen, final int option) {
 		String playString = "Play";
 		String highScoresString = "High scores";
+		String shopString = "shop";
 		String exitString = "exit";
 
 		if (option == 2)
@@ -334,12 +431,18 @@ public final class DrawManager {
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, highScoresString, screen.getHeight()
 				/ 3 * 2 + fontRegularMetrics.getHeight() * 2);
+		if (option == 4)
+			backBufferGraphics.setColor(Color.GREEN);
+		else
+			backBufferGraphics.setColor(Color.WHITE);
+		drawCenteredRegularString(screen, shopString, screen.getHeight()
+				/ 3 * 2 + fontRegularMetrics.getHeight() * 4);
 		if (option == 0)
 			backBufferGraphics.setColor(Color.GREEN);
 		else
 			backBufferGraphics.setColor(Color.WHITE);
 		drawCenteredRegularString(screen, exitString, screen.getHeight() / 3
-				* 2 + fontRegularMetrics.getHeight() * 4);
+				* 2 + fontRegularMetrics.getHeight() * 6);
 	}
 
 	/**

@@ -8,6 +8,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import entity.ShopItem;
 import screen.GameScreen;
 import screen.HighScoreScreen;
 import screen.ScoreScreen;
@@ -138,7 +139,7 @@ import screen.*;
 					
 					currentScreen = new GameScreen(gameState,
 							gameSettings.get(gameState.getLevel() - 1),
-							bonusLife, width, height, FPS);
+							bonusLife, MAX_LIVES, width, height, FPS);
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
 							+ " game screen at " + FPS + " fps.");
 					frame.setScreen(currentScreen);
