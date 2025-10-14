@@ -22,44 +22,17 @@ public class TitleScreen extends Screen {
 
 	/**
 	 * A simple class to represent a star for the animated background.
+	 * Stores the non-rotating base coordinates and speed.
 	 */
 	public static class Star {
-		private float x;
-		private float y;
-		private float speed;
+		public float baseX;
+		public float baseY;
+		public float speed;
 
-		public Star(float x, float y, float speed) {
-			this.x = x;
-			this.y = y;
+		public Star(float baseX, float baseY, float speed) {
+			this.baseX = baseX;
+			this.baseY = baseY;
 			this.speed = speed;
-		}
-
-		public int getX() {
-			return (int) x;
-		}
-
-		public int getY() {
-			return (int) y;
-		}
-
-		public float getFloatX() {
-			return x;
-		}
-
-		public float getFloatY() {
-			return y;
-		}
-
-		public float getSpeed() {
-			return speed;
-		}
-
-		public void setX(float x) {
-			this.x = x;
-		}
-
-		public void setY(float y) {
-			this.y = y;
 		}
 	}
 
@@ -84,6 +57,8 @@ public class TitleScreen extends Screen {
 	private static final int SELECTION_TIME = 200;
 	/** Number of stars in the background. */
 	private static final int NUM_STARS = 150;
+	/** Speed of the rotation animation. */
+    private static final float ROTATION_SPEED = 4.0f;
 	/** Milliseconds between enemy spawns. */
 	private static final int ENEMY_SPAWN_COOLDOWN = 2000;
 	/** Probability of an enemy spawning. */
@@ -102,10 +77,10 @@ public class TitleScreen extends Screen {
 	/** Sound button on/off object. */
 	private SoundButton soundButton;
 
-	/** Horizontal direction of star movement. */
-	private int starDirectionX;
-	/** Vertical direction of star movement. */
-	private int starDirectionY;
+	/** Current rotation angle of the starfield. */
+    private float currentAngle;
+    /** Target rotation angle of the starfield. */
+    private float targetAngle;
 
 	/** Random number generator. */
     private Random random;
@@ -141,18 +116,11 @@ public class TitleScreen extends Screen {
 
 		this.backgroundEnemies = new ArrayList<Entity>();
 
-		// Initialize star direction (downwards)
-		this.starDirectionX = 0;
-		this.starDirectionY = 1;
+		// Initialize rotation angles
+		this.currentAngle = 0;
+		this.targetAngle = 0;
 	}
 
-	/**
-	 * Getter for the stars list.
-	 * @return List of stars.
-	 */
-	public final List<Star> getStars() {
-		return this.stars;
-	}
 
 	/**
 	 * Starts the action.
@@ -171,26 +139,28 @@ public class TitleScreen extends Screen {
 	protected final void update() {
 		super.update();
 
-		// Animate stars
+		// Handle sound button color
+		if (this.returnCode == 5) {
+            float pulse = (float) ((Math.sin(System.currentTimeMillis() / 200.0) + 1.0) / 2.0);
+            Color pulseColor = new Color(0, 0.5f + pulse * 0.5f, 0);
+            this.soundButton.setColor(pulseColor);
+        } else {
+            this.soundButton.setColor(Color.WHITE);
+        }
+
+		// Smoothly animate the rotation angle
+        if (currentAngle < targetAngle) {
+            currentAngle = Math.min(currentAngle + ROTATION_SPEED, targetAngle);
+        } else if (currentAngle > targetAngle) {
+            currentAngle = Math.max(currentAngle - ROTATION_SPEED, targetAngle);
+        }
+
+		// Animate stars in their non-rotating space
 		for (Star star : this.stars) {
-			star.setX(star.getFloatX() + this.starDirectionX * star.getSpeed());
-			star.setY(star.getFloatY() + this.starDirectionY * star.getSpeed());
-
-			// Screen wrapping with randomization
-			if (star.getFloatX() < 0) {
-				star.setX(this.getWidth());
-				star.setY((float) (Math.random() * this.getHeight()));
-			} else if (star.getFloatX() > this.getWidth()) {
-				star.setX(0);
-				star.setY((float) (Math.random() * this.getHeight()));
-			}
-
-			if (star.getFloatY() < 0) {
-				star.setY(this.getHeight());
-				star.setX((float) (Math.random() * this.getWidth()));
-			} else if (star.getFloatY() > this.getHeight()) {
-				star.setY(0);
-				star.setX((float) (Math.random() * this.getWidth()));
+			star.baseY += star.speed;
+			if (star.baseY > this.getHeight()) {
+				star.baseY = 0;
+				star.baseX = (float) (Math.random() * this.getWidth());
 			}
 		}
 
@@ -200,17 +170,17 @@ public class TitleScreen extends Screen {
 			if (Math.random() < ENEMY_SPAWN_CHANCE) {
 				SpriteType[] enemyTypes = { SpriteType.EnemyShipA1, SpriteType.EnemyShipB1, SpriteType.EnemyShipC1 };
 				SpriteType randomEnemyType = enemyTypes[random.nextInt(enemyTypes.length)];
-				int randomY = (int) (Math.random() * this.getHeight() * 0.8 + this.getHeight() * 0.1);
+				int randomX = (int) (Math.random() * this.getWidth());
 				int speed = random.nextInt(2) + 1;
-				this.backgroundEnemies.add(new BackgroundEnemy(-20, randomY, speed, randomEnemyType));
+				this.backgroundEnemies.add(new BackgroundEnemy(randomX, -20, speed, randomEnemyType));
 			}
 		}
 
 		java.util.Iterator<Entity> iterator = this.backgroundEnemies.iterator();
 		while (iterator.hasNext()) {
 			BackgroundEnemy enemy = (BackgroundEnemy) iterator.next();
-			enemy.setPositionX(enemy.getPositionX() + enemy.getSpeed());
-			if (enemy.getPositionX() > this.getWidth()) {
+			enemy.setPositionY(enemy.getPositionY() + enemy.getSpeed());
+			if (enemy.getPositionY() > this.getHeight()) {
 				iterator.remove();
 			}
 		}
@@ -241,13 +211,11 @@ public class TitleScreen extends Screen {
 			if (inputManager.isKeyDown(KeyEvent.VK_RIGHT)
 					|| inputManager.isKeyDown(KeyEvent.VK_D)) {
 				this.returnCode = 5;
-				this.soundButton.setColor(Color.GREEN);
 				this.selectionCooldown.reset();
 			}
 			if (this.returnCode == 5 && inputManager.isKeyDown(KeyEvent.VK_LEFT)
 					|| inputManager.isKeyDown(KeyEvent.VK_A)) {
 				this.returnCode = 4;
-				this.soundButton.setColor(Color.WHITE);
 				this.selectionCooldown.reset();
 			}
 		}
@@ -262,26 +230,12 @@ public class TitleScreen extends Screen {
 		else if (this.returnCode == 0)
 			this.returnCode = 2;
 		else if (this.returnCode == 5) {
-			this.soundButton.setColor(Color.WHITE);
 			this.returnCode = 0;
 		} 
 		else
 			this.returnCode++;
 
-		// Rotate starfield clockwise
-		final int centerX = this.getWidth() / 2;
-		final int centerY = this.getHeight() / 2;
-		for (Star star : this.stars) {
-			float relX = star.getFloatX() - centerX;
-			float relY = star.getFloatY() - centerY;
-			star.setX(relY + centerX);
-			star.setY(-relX + centerY);
-		}
-
-		// Rotate direction vector clockwise
-		int tempDirX = this.starDirectionX;
-		this.starDirectionX = this.starDirectionY;
-		this.starDirectionY = -tempDirX;
+		this.targetAngle += 90;
 	}
 
 	/**
@@ -293,26 +247,12 @@ public class TitleScreen extends Screen {
 		else if (this.returnCode == 2)
 			this.returnCode = 0;
 		else if (this.returnCode == 5) {
-			this.soundButton.setColor(Color.WHITE);
 			this.returnCode = 3;
 		}
 		else
 			this.returnCode--;
 
-		// Rotate starfield counter-clockwise
-		final int centerX = this.getWidth() / 2;
-		final int centerY = this.getHeight() / 2;
-		for (Star star : this.stars) {
-			float relX = star.getFloatX() - centerX;
-			float relY = star.getFloatY() - centerY;
-			star.setX(-relY + centerX);
-			star.setY(relX + centerY);
-		}
-
-		// Rotate direction vector counter-clockwise
-		int tempDirX = this.starDirectionX;
-		this.starDirectionX = -this.starDirectionY;
-		this.starDirectionY = tempDirX;
+		this.targetAngle -= 90;
 	}
 
 	/**
@@ -321,12 +261,27 @@ public class TitleScreen extends Screen {
 	private void draw() {
 		drawManager.initDrawing(this);
 
-		// Draw stars
-		drawManager.drawStars(this, this.stars);
+		// Draw stars with rotation
+		drawManager.drawStars(this, this.stars, this.currentAngle);
 
-		// Draw background enemies
+		// Draw background enemies with rotation
+		final double angleRad = Math.toRadians(this.currentAngle);
+        final double cosAngle = Math.cos(angleRad);
+        final double sinAngle = Math.sin(angleRad);
+        final int centerX = this.getWidth() / 2;
+        final int centerY = this.getHeight() / 2;
+
 		for (Entity enemy : this.backgroundEnemies) {
-			drawManager.drawEntity(enemy, enemy.getPositionX(), enemy.getPositionY());
+			float relX = enemy.getPositionX() - centerX;
+            float relY = enemy.getPositionY() - centerY;
+
+            double rotatedX = relX * cosAngle - relY * sinAngle;
+            double rotatedY = relX * sinAngle + relY * cosAngle;
+
+            int screenX = (int) (rotatedX + centerX);
+            int screenY = (int) (rotatedY + centerY);
+
+			drawManager.drawEntity(enemy, screenX, screenY);
 		}
 
 		drawManager.drawTitle(this);

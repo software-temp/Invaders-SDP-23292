@@ -58,11 +58,28 @@ public final class DrawManager {
 	 *            Screen to draw on.
 	 * @param stars
 	 *            List of stars to draw.
+	 * @param angle
+	 *            Current rotation angle.
 	 */
-	public void drawStars(final Screen screen, final List<Star> stars) {
+	public void drawStars(final Screen screen, final List<Star> stars, final float angle) {
 		backBufferGraphics.setColor(Color.WHITE);
+		final int centerX = screen.getWidth() / 2;
+		final int centerY = screen.getHeight() / 2;
+		final double angleRad = Math.toRadians(angle);
+		final double cosAngle = Math.cos(angleRad);
+		final double sinAngle = Math.sin(angleRad);
+
 		for (Star star : stars) {
-			backBufferGraphics.drawRect(star.getX(), star.getY(), 1, 1);
+			float relX = star.baseX - centerX;
+			float relY = star.baseY - centerY;
+
+			double rotatedX = relX * cosAngle - relY * sinAngle;
+			double rotatedY = relX * sinAngle + relY * cosAngle;
+
+			int screenX = (int) (rotatedX + centerX);
+			int screenY = (int) (rotatedY + centerY);
+
+			backBufferGraphics.drawRect(screenX, screenY, 1, 1);
 		}
 	}
 
