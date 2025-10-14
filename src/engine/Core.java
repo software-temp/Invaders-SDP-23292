@@ -167,6 +167,7 @@ public final class Core {
 
 				} while (gameState.getLivesRemaining() > 0
 						&& gameState.getLevel() <= NUM_LEVELS);
+				SoundManager.stopAll();
 
                 if (gameState.getLivesRemaining() <= 0) {
 
