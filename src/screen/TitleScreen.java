@@ -92,7 +92,11 @@ public class TitleScreen extends Screen {
 					this.isRunning = false;
 				} else {
 					this.soundButton.changeSoundState();
-					// TODO : Sound setting.
+                    if (this.soundButton.getIsSoundOn()) {
+                        SoundManager.playLoop(MENU_MUSIC);
+                    } else {
+                        SoundManager.stop(MENU_MUSIC);
+                    }
 
 					this.selectionCooldown.reset();
 				}
