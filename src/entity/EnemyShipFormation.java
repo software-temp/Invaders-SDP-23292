@@ -32,8 +32,6 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	private static final double PROPORTION_C = 0.2;
 	/** Proportion of B-type ships. */
 	private static final double PROPORTION_B = 0.4;
-	/** Lateral speed of the formation. */
-	private static final int X_SPEED = 8;
 	/** Downwards speed of the formation. */
 	private static final int Y_SPEED = 4;
 	/** Speed of the bullets shot by the members. */
@@ -94,16 +92,28 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	private List<EnemyShip> shooters;
 	/** Number of not destroyed ships. */
 	private int shipCount;
+    /** Number of slowdown movement */
+    private int slowDownCount;
+    /** Flag to check if slowdown is active */
+    private boolean isSlowedDown;
+    /** Original X_SPEED value */
+    private static final int ORIGINAL_X_SPEED = 8;
+    /** Slowed down X_SPEED value */
+    private static final int SLOWED_X_SPEED = 4;
+    /** Duration of slowdown effect (in movement cycles) */
+    private static final int SLOWDOWN_DURATION = 18;
 
-	/** Directions the formation can move. */
-	private enum Direction {
-		/** Movement to the right side of the screen. */
-		RIGHT,
-		/** Movement to the left side of the screen. */
-		LEFT,
-		/** Movement to the bottom of the screen. */
-		DOWN
-	};
+    /** Directions the formation can move. */
+    private enum Direction {
+        /** Movement to the right-down diagonal. */
+        DOWN_RIGHT,
+        /** Movement to the left-down diagonal. */
+        DOWN_LEFT,
+        /** Movement to the right-up diagonal. */
+        UP_RIGHT,
+        /** Movement to the left-up diagonal. */
+        UP_LEFT
+    };
 
 	/**
 	 * Constructor, sets the initial conditions.
@@ -115,7 +125,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 		this.drawManager = Core.getDrawManager();
 		this.logger = Core.getLogger();
 		this.enemyShips = new ArrayList<List<EnemyShip>>();
-		this.currentDirection = Direction.RIGHT;
+		this.currentDirection = Direction.DOWN_RIGHT;
 		this.movementInterval = 0;
 		this.nShipsWide = gameSettings.getFormationWidth();
 		this.nShipsHigh = gameSettings.getFormationHeight();
@@ -195,7 +205,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 					shootingVariance);
 			this.shootingCooldown.reset();
 		}
-		
+
 		cleanUp();
 
 		int movementX = 0;
@@ -205,55 +215,81 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 		this.movementSpeed = (int) (Math.pow(remainingProportion, 2)
 				* this.baseSpeed);
 		this.movementSpeed += MINIMUM_SPEED;
-		
+
 		movementInterval++;
 		if (movementInterval >= this.movementSpeed) {
 			movementInterval = 0;
+
+            updateSlowdown();
 
 			boolean isAtBottom = positionY
 					+ this.height > screen.getHeight() - BOTTOM_MARGIN;
 			boolean isAtRightSide = positionX
 					+ this.width >= screen.getWidth() - SIDE_MARGIN;
 			boolean isAtLeftSide = positionX <= SIDE_MARGIN;
-			boolean isAtHorizontalAltitude = positionY % DESCENT_DISTANCE == 0;
+            boolean isAtTop = positionY <= INIT_POS_Y;
 
-			if (currentDirection == Direction.DOWN) {
-				if (isAtHorizontalAltitude)
-					if (previousDirection == Direction.RIGHT) {
-						currentDirection = Direction.LEFT;
-						this.logger.info("Formation now moving left 1");
-					} else {
-						currentDirection = Direction.RIGHT;
-						this.logger.info("Formation now moving right 2");
-					}
-			} else if (currentDirection == Direction.LEFT) {
-				if (isAtLeftSide)
-					if (!isAtBottom) {
-						previousDirection = currentDirection;
-						currentDirection = Direction.DOWN;
-						this.logger.info("Formation now moving down 3");
-					} else {
-						currentDirection = Direction.RIGHT;
-						this.logger.info("Formation now moving right 4");
-					}
-			} else {
-				if (isAtRightSide)
-					if (!isAtBottom) {
-						previousDirection = currentDirection;
-						currentDirection = Direction.DOWN;
-						this.logger.info("Formation now moving down 5");
-					} else {
-						currentDirection = Direction.LEFT;
-						this.logger.info("Formation now moving left 6");
-					}
-			}
+            // Diagonal movement direction change logic
+            if (currentDirection == Direction.DOWN_RIGHT) {
+                if (isAtBottom && isAtRightSide) {
+                    currentDirection = Direction.UP_LEFT;
+                    this.logger.info("Formation now moving up-left (hit corner)");
+                } else if (isAtBottom) {
+                    currentDirection = Direction.UP_RIGHT;
+                    this.logger.info("Formation now moving up-right (hit bottom)");
+                } else if (isAtRightSide) {
+                    currentDirection = Direction.DOWN_LEFT;
+                    this.logger.info("Formation now moving down-left (hit right wall)");
+                }
+            } else if (currentDirection == Direction.DOWN_LEFT) {
+                if (isAtBottom && isAtLeftSide) {
+                    currentDirection = Direction.UP_RIGHT;
+                    this.logger.info("Formation now moving up-right (hit corner)");
+                } else if (isAtBottom) {
+                    currentDirection = Direction.UP_LEFT;
+                    this.logger.info("Formation now moving up-left (hit bottom)");
+                } else if (isAtLeftSide) {
+                    currentDirection = Direction.DOWN_RIGHT;
+                    this.logger.info("Formation now moving down-right (hit left wall)");
+                }
+            } else if (currentDirection == Direction.UP_RIGHT) {
+                if (isAtTop && isAtRightSide) {
+                    currentDirection = Direction.DOWN_LEFT;
+                    this.logger.info("Formation now moving down-left (hit corner)");
+                } else if (isAtTop) {
+                    currentDirection = Direction.DOWN_RIGHT;
+                    this.logger.info("Formation now moving down-right (back to top)");
+                } else if (isAtRightSide) {
+                    currentDirection = Direction.UP_LEFT;
+                    this.logger.info("Formation now moving up-left (hit right wall)");
+                }
+            } else if (currentDirection == Direction.UP_LEFT) {
+                if (isAtTop && isAtLeftSide) {
+                    currentDirection = Direction.DOWN_RIGHT;
+                    this.logger.info("Formation now moving down-right (hit corner)");
+                } else if (isAtTop) {
+                    currentDirection = Direction.DOWN_LEFT;
+                    this.logger.info("Formation now moving down-left (back to top)");
+                } else if (isAtLeftSide) {
+                    currentDirection = Direction.UP_RIGHT;
+                    this.logger.info("Formation now moving up-right (hit left wall)");
+                }
+            }
 
-			if (currentDirection == Direction.RIGHT)
-				movementX = X_SPEED;
-			else if (currentDirection == Direction.LEFT)
-				movementX = -X_SPEED;
-			else
-				movementY = Y_SPEED;
+            int currentXSpeed = getCurrentXSpeed();
+            if (currentDirection == Direction.DOWN_RIGHT) {
+                movementX = currentXSpeed;   // right
+                movementY = Y_SPEED;   // down
+            } else if (currentDirection == Direction.DOWN_LEFT) {
+                movementX = -currentXSpeed;  // left
+                movementY = Y_SPEED;   // down
+            } else if (currentDirection == Direction.UP_RIGHT) {
+                movementX = currentXSpeed;   // right
+                movementY = -Y_SPEED;  // up
+            } else if (currentDirection == Direction.UP_LEFT) {
+                movementX = -currentXSpeed;  // left
+                movementY = -Y_SPEED;  // up
+            }
 
 			positionX += movementX;
 			positionY += movementY;
@@ -263,13 +299,14 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 			for (List<EnemyShip> column : this.enemyShips) {
 				destroyed = new ArrayList<EnemyShip>();
 				for (EnemyShip ship : column) {
-					if (ship != null && ship.isDestroyed()) {
+					if (ship != null && ship.isExplosionFinished()) {
 						destroyed.add(ship);
 						this.logger.info("Removed enemy "
 								+ column.indexOf(ship) + " from column "
 								+ this.enemyShips.indexOf(column));
 					}
 				}
+
 				column.removeAll(destroyed);
 			}
 
@@ -308,7 +345,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 		int leftMostPoint = 0;
 		int rightMostPoint = 0;
-		
+
 		for (List<EnemyShip> column : this.enemyShips) {
 			if (!column.isEmpty()) {
 				if (leftMostPoint == 0)
@@ -419,11 +456,67 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	}
 
 	/**
+	 * Destroy all ships in the formation.
+	 *
+	 * @return The number of destroyed ships.
+	 */
+
+	public final int destroyAll() {
+		int destroyed = 0;
+		for (List<EnemyShip> column : this.enemyShips) {
+			for (EnemyShip enemyShip : column) {
+				if (!enemyShip.isDestroyed()) {
+					enemyShip.destroy();
+					destroyed++;
+				}
+			}
+		}
+		this.shipCount = 0;
+		return destroyed;
+	}
+
+	/**
 	 * Checks if there are any ships remaining.
-	 * 
+	 *
 	 * @return True when all ships have been destroyed.
 	 */
 	public final boolean isEmpty() {
 		return this.shipCount <= 0;
 	}
+
+    /**
+     * Activates slowdown effect on the formation.
+     */
+    public void activateSlowdown() {
+        this.isSlowedDown = true;
+        this.slowDownCount = 0;
+        this.logger.info("Enemy formation slowed down!");
+    }
+
+    /**
+     * Gets the current movement speed based on slowdown status.
+     *
+     * @return Current X_SPEED value
+     */
+    private int getCurrentXSpeed() {
+        if (isSlowedDown) {
+            return SLOWED_X_SPEED;
+        }
+        return ORIGINAL_X_SPEED;
+    }
+
+    /**
+     * Updates slowdown counter and checks if effect should end.
+     * Call this in the update() method when formation moves.
+     */
+    private void updateSlowdown() {
+        if (isSlowedDown) {
+            slowDownCount++;
+            if (slowDownCount >= SLOWDOWN_DURATION) {
+                isSlowedDown = false;
+                slowDownCount = 0;
+                this.logger.info("Slowdown effect ended.");
+            }
+        }
+    }
 }

@@ -1,5 +1,7 @@
 package engine;
 
+import audio.SoundManager;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
@@ -8,11 +10,14 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import entity.ShopItem;
 import screen.GameScreen;
 import screen.HighScoreScreen;
 import screen.ScoreScreen;
 import screen.Screen;
 import screen.TitleScreen;
+import audio.SoundManager;
+
 
 /**
  * Implements core game logic.
@@ -134,16 +139,25 @@ public final class Core {
 					boolean bonusLife = gameState.getLevel()
 							% EXTRA_LIFE_FRECUENCY == 0
 							&& gameState.getLivesRemaining() < MAX_LIVES;
-					
+
+					SoundManager.stopAll();
+					SoundManager.playLoop("sfx/level" + gameState.getLevel() + ".wav");
+
 					currentScreen = new GameScreen(gameState,
 							gameSettings.get(gameState.getLevel() - 1),
-							bonusLife, width, height, FPS);
+							bonusLife, MAX_LIVES, width, height, FPS);
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
 							+ " game screen at " + FPS + " fps.");
 					frame.setScreen(currentScreen);
 					LOGGER.info("Closing game screen.");
 
 					gameState = ((GameScreen) currentScreen).getGameState();
+
+
+                    if (gameState.getLivesRemaining() > 0) {
+                        // Le joueur est encore en vie → passage au niveau suivant
+                        SoundManager.play("sfx/levelup.wav");
+                    }
 
 					gameState = new GameState(gameState.getLevel() + 1,
 							gameState.getScore(),
@@ -154,6 +168,11 @@ public final class Core {
 
 				} while (gameState.getLivesRemaining() > 0
 						&& gameState.getLevel() <= NUM_LEVELS);
+
+                if (gameState.getLivesRemaining() <= 0) {
+
+                    SoundManager.play("sfx/gameover.wav");
+                }
 
 				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
 						+ " score screen at " + FPS + " fps, with a score of "

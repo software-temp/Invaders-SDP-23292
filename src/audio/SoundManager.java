@@ -38,7 +38,7 @@ public class SoundManager {
         try {
             Clip c = CACHE.computeIfAbsent(resourcePath, SoundManager::loadClip);
             if (c == null) return;
-            stopAll(); // Stoppe tout avant de jouer la nouvelle musique
+            stopAll();
             c.setFramePosition(0);
             c.loop(Clip.LOOP_CONTINUOUSLY);
             c.start();
