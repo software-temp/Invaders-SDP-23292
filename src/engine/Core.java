@@ -142,6 +142,7 @@ public final class Core {
 					SoundManager.stopAll();
 					SoundManager.playLoop("sfx/level" + gameState.getLevel() + ".wav");
 
+
 					currentScreen = new GameScreen(gameState,
 							gameSettings.get(gameState.getLevel() - 1),
 							bonusLife, width, height, FPS);
