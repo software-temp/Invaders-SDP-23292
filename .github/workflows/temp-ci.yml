@@ -1,0 +1,53 @@
+# Name of the workflow
+name: Java CI for software-temp
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on pull request events but only for the master branch
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build-and-test"
+  build-and-test:
+    # This condition is the key: The job only runs if the repository owner is 'software-temp'
+    if: github.repository_owner == 'software-temp'
+
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # A sequence of tasks that will be executed as part of the job
+    steps:
+      # 1. Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Sets up a JDK 20 environment
+      - name: Set up JDK 20
+        uses: actions/setup-java@v4
+        with:
+          java-version: '20'
+          distribution: 'temurin'
+
+      # 3. Compiles the Java source code
+      - name: Compile source code
+        run: javac -d out/production $(find src -name "*.java")
+
+      # 4. Compiles the Java test code
+      - name: Compile test code
+        run: |
+          javac -d out/test \
+          -cp "lib/*:out/production" \
+          $(find test -name "*.java")
+
+      # 5. Copies resource files to the classpath to be found by the tests
+      - name: Copy resources to classpath
+        run: cp -r res/* out/production/
+
+      # 6. Runs the JUnit tests
+      - name: Run JUnit tests
+        run: |
+          java -jar lib/junit-platform-console-standalone-1.10.2.jar \
+          --class-path "out/production:out/test" \
+          --scan-class-path
