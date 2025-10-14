@@ -139,6 +139,16 @@ public final class Core {
 							% EXTRA_LIFE_FRECUENCY == 0
 							&& gameState.getLivesRemaining() < MAX_LIVES;
 
+                    if (gameState.getLivesRemaining() > 0) {
+                        SoundManager.play("sfx/levelup.wav");
+
+                        try {
+                            Thread.sleep(2000); // 1.5 seconde selon la durée de ton levelup.wav
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
 					SoundManager.stopAll();
 					SoundManager.playLoop("sfx/level" + gameState.getLevel() + ".wav");
 
@@ -153,10 +163,6 @@ public final class Core {
 					gameState = ((GameScreen) currentScreen).getGameState();
 
 
-                    if (gameState.getLivesRemaining() > 0) {
-                        // Le joueur est encore en vie → passage au niveau suivant
-                        SoundManager.play("sfx/levelup.wav");
-                    }
 
 					gameState = new GameState(gameState.getLevel() + 1,
 							gameState.getScore(),
