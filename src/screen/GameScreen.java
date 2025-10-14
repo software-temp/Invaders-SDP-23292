@@ -1,5 +1,6 @@
 package screen;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,12 +9,8 @@ import engine.Cooldown;
 import engine.Core;
 import engine.GameSettings;
 import engine.GameState;
-import entity.Bullet;
-import entity.BulletPool;
-import entity.EnemyShip;
-import entity.EnemyShipFormation;
-import entity.Entity;
-import entity.Ship;
+import engine.GameTimer;
+import entity.*;
 
 /**
  * Implements the game screen, where the action happens.
@@ -33,6 +30,8 @@ public class GameScreen extends Screen {
 	private static final int BONUS_SHIP_VARIANCE = 10000;
 	/** Time until bonus ship explosion disappears. */
 	private static final int BONUS_SHIP_EXPLOSION = 500;
+	/** Time until bonus ship explosion disappears. */
+	private static final int BOSS_EXPLOSION = 600;
 	/** Time from finishing the level to screen change. */
 	private static final int SCREEN_CHANGE_INTERVAL = 1500;
 	/** Height of the interface separation line. */
@@ -44,6 +43,8 @@ public class GameScreen extends Screen {
 	private int level;
 	/** Formation of enemy ships. */
 	private EnemyShipFormation enemyShipFormation;
+	/** Formation of special enemy ships. */
+	private EnemyShipSpecialFormation enemyShipSpecialFormation;
 	/** Player's ship. */
 	private Ship ship;
 	/** Bonus enemy ship that appears sometimes. */
@@ -52,9 +53,13 @@ public class GameScreen extends Screen {
 	private Cooldown enemyShipSpecialCooldown;
 	/** Time until bonus ship explosion disappears. */
 	private Cooldown enemyShipSpecialExplosionCooldown;
+	/** Time until Boss explosion disappears. */
+	private Cooldown bossExplosionCooldown;
 	/** Time from finishing the level to screen change. */
 	private Cooldown screenFinishedCooldown;
-	/** Set of all bullets fired by on screen ships. */
+	/** OmegaBoss */
+	private MidBoss omegaBoss;
+	/** Set of all bullets fired by on-screen ships. */
 	private Set<Bullet> bullets;
 	/** Current score. */
 	private int score;
@@ -70,8 +75,18 @@ public class GameScreen extends Screen {
 	private boolean levelFinished;
 	/** Checks if a bonus life is received. */
 	private boolean bonusLife;
-    /** Current coin. */
-    private int coin;
+  /** Current coin. */
+  private int coin;
+	/** Timer to track elapsed time. */
+  private GameTimer gameTimer;
+  /** Elapsed time since the game started. */
+  private long elapsedTime;
+  // Achievement popup
+  private String achievementText;
+  private Cooldown achievementPopupCooldown;
+  /** Health change popup. */
+  private String healthPopupText;
+  private Cooldown healthPopupCooldown;
 
 	/**
 	 * Constructor, establishes the properties of the screen.
@@ -114,12 +129,13 @@ public class GameScreen extends Screen {
 		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
 		enemyShipFormation.attach(this);
 		this.ship = new Ship(this.width / 2, this.height - 30);
-		// Appears each 10-30 seconds.
-		this.enemyShipSpecialCooldown = Core.getVariableCooldown(
-				BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE);
-		this.enemyShipSpecialCooldown.reset();
-		this.enemyShipSpecialExplosionCooldown = Core
-				.getCooldown(BONUS_SHIP_EXPLOSION);
+		// special enemy initial
+		enemyShipSpecialFormation = new EnemyShipSpecialFormation(this.gameSettings,
+				Core.getVariableCooldown(BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE),
+				Core.getCooldown(BONUS_SHIP_EXPLOSION));
+		enemyShipSpecialFormation.attach(this);
+		this.bossExplosionCooldown = Core
+				.getCooldown(BOSS_EXPLOSION);
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
 		this.bullets = new HashSet<Bullet>();
 
@@ -127,6 +143,12 @@ public class GameScreen extends Screen {
 		this.gameStartTime = System.currentTimeMillis();
 		this.inputDelay = Core.getCooldown(INPUT_DELAY);
 		this.inputDelay.reset();
+
+		// Initializing Middle Boss
+		this.omegaBoss = new OmegaBoss(Color.ORANGE);
+		omegaBoss.attach(this);
+		this.gameTimer = new GameTimer();
+    this.elapsedTime = 0;
 	}
 
 	/**
@@ -150,7 +172,9 @@ public class GameScreen extends Screen {
 		super.update();
 
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
-
+			if (!this.gameTimer.isRunning()) {
+                this.gameTimer.start();
+            }
 			if (!this.ship.isDestroyed()) {
 				boolean moveRight = inputManager.isKeyDown(KeyEvent.VK_RIGHT)
 						|| inputManager.isKeyDown(KeyEvent.VK_D);
@@ -165,10 +189,10 @@ public class GameScreen extends Screen {
 						+ this.ship.getWidth() + this.ship.getSpeed() > this.width - 1;
 				boolean isLeftBorder = this.ship.getPositionX()
 						- this.ship.getSpeed() < 1;
-                boolean isUpBorder = this.ship.getPositionY()
-                        - this.ship.getSpeed() < SEPARATION_LINE_HEIGHT;
-                boolean isDownBorder = this.ship.getPositionY()
-                        + this.ship.getHeight() + this.ship.getSpeed() > this.height - 1;
+				boolean isUpBorder = this.ship.getPositionY()
+						- this.ship.getSpeed() < SEPARATION_LINE_HEIGHT;
+				boolean isDownBorder = this.ship.getPositionY()
+						+ this.ship.getHeight() + this.ship.getSpeed() > this.height - 1;
 
 				if (moveRight && !isRightBorder) {
 					this.ship.moveRight();
@@ -176,42 +200,34 @@ public class GameScreen extends Screen {
 				if (moveLeft && !isLeftBorder) {
 					this.ship.moveLeft();
 				}
-                if (moveUp && !isUpBorder) {
-                    this.ship.moveUp();
-                }
-                if (moveDown && !isDownBorder) {
-                    this.ship.moveDown();
-                }
+				if (moveUp && !isUpBorder) {
+					this.ship.moveUp();
+				}
+				if (moveDown && !isDownBorder) {
+					this.ship.moveDown();
+				}
 
 				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
-                    if (this.ship.shoot(this.bullets))
-                        this.bulletsShot++;
+					if (this.ship.shoot(this.bullets))
+						this.bulletsShot++;
 			}
-
-			if (this.enemyShipSpecial != null) {
-				if (!this.enemyShipSpecial.isDestroyed())
-					this.enemyShipSpecial.move(2, 0);
-				else if (this.enemyShipSpecialExplosionCooldown.checkFinished())
-					this.enemyShipSpecial = null;
-
+			if (this.omegaBoss != null){
+				if(!this.omegaBoss.isDestroyed()) {
+					this.omegaBoss.update();
+				}
+				else if (this.bossExplosionCooldown.checkFinished()) {
+					this.omegaBoss = null;
+				}
 			}
-			if (this.enemyShipSpecial == null
-					&& this.enemyShipSpecialCooldown.checkFinished()) {
-				this.enemyShipSpecial = new EnemyShip();
-				this.enemyShipSpecialCooldown.reset();
-				this.logger.info("A special ship appears");
-			}
-			if (this.enemyShipSpecial != null
-					&& this.enemyShipSpecial.getPositionX() > this.width) {
-				this.enemyShipSpecial = null;
-				this.logger.info("The special ship has escaped");
-			}
-
 			this.ship.update();
 			this.enemyShipFormation.update();
 			this.enemyShipFormation.shoot(this.bullets);
+			// special enemy update
+			this.enemyShipSpecialFormation.update();
 		}
-
+		if (this.gameTimer.isRunning()) {
+            this.elapsedTime = this.gameTimer.getElapsedTime();
+        }
 		manageCollisions();
 		cleanBullets();
 		draw();
@@ -220,6 +236,9 @@ public class GameScreen extends Screen {
 				&& !this.levelFinished) {
 			this.levelFinished = true;
 			this.screenFinishedCooldown.reset();
+			if (this.gameTimer.isRunning()) {
+                this.gameTimer.stop();
+            }
 		}
 
 		if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
@@ -235,12 +254,14 @@ public class GameScreen extends Screen {
 
 		drawManager.drawEntity(this.ship, this.ship.getPositionX(),
 				this.ship.getPositionY());
-		if (this.enemyShipSpecial != null)
-			drawManager.drawEntity(this.enemyShipSpecial,
-					this.enemyShipSpecial.getPositionX(),
-					this.enemyShipSpecial.getPositionY());
+		// special enemy draw
+		enemyShipSpecialFormation.draw();
 
 		enemyShipFormation.draw();
+
+		if(this.omegaBoss != null) {
+			this.omegaBoss.draw(drawManager);
+		}
 
 		for (Bullet bullet : this.bullets)
 			drawManager.drawEntity(bullet, bullet.getPositionX(),
@@ -248,11 +269,26 @@ public class GameScreen extends Screen {
 
 		// Interface.
 		drawManager.drawScore(this, this.score);
-        drawManager.drawCoin(this,this.coin);
+		drawManager.drawCoin(this,this.coin);
 		drawManager.drawLives(this, this.lives);
+		drawManager.drawTime(this, this.elapsedTime); 
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 
-		// Countdown to game start.
+        if (this.achievementText != null && !this.achievementPopupCooldown.checkFinished()) {
+            drawManager.drawAchievementPopup(this, this.achievementText);
+        } else {
+            this.achievementText = null; // clear once expired
+        }
+
+
+        // Health notification popup
+        if(this.healthPopupText != null && !this.healthPopupCooldown.checkFinished()) {
+            drawManager.drawHealthPopup(this, this.healthPopupText);
+        } else {
+            this.healthPopupText = null;
+        }
+
+        // Countdown to game start.
 		if (!this.inputDelay.checkFinished()) {
 			int countdown = (int) ((INPUT_DELAY
 					- (System.currentTimeMillis()
@@ -295,6 +331,7 @@ public class GameScreen extends Screen {
 					if (!this.ship.isDestroyed()) {
 						this.ship.destroy();
 						this.lives--;
+                        showHealthPopup("-1 Health");
 						this.logger.info("Hit on player ship, " + this.lives
 								+ " lives remaining.");
 					}
@@ -304,19 +341,33 @@ public class GameScreen extends Screen {
 					if (!enemyShip.isDestroyed()
 							&& checkCollision(bullet, enemyShip)) {
 						this.score += enemyShip.getPointValue();
-                        this.coin += (enemyShip.getPointValue()/10);
+						this.coin += (enemyShip.getPointValue()/10);
 						this.shipsDestroyed++;
 						this.enemyShipFormation.destroy(enemyShip);
 						recyclable.add(bullet);
 					}
-				if (this.enemyShipSpecial != null
-						&& !this.enemyShipSpecial.isDestroyed()
-						&& checkCollision(bullet, this.enemyShipSpecial)) {
-					this.score += this.enemyShipSpecial.getPointValue();
-                    this.coin += (this.enemyShipSpecial.getPointValue()/10);
-					this.shipsDestroyed++;
-					this.enemyShipSpecial.destroy();
-					this.enemyShipSpecialExplosionCooldown.reset();
+
+				// special enemy bullet event
+				for (EnemyShip enemyShipSpecial : this.enemyShipSpecialFormation)
+					if (enemyShipSpecial != null && !enemyShipSpecial.isDestroyed()
+							&& checkCollision(bullet, enemyShipSpecial)) {
+						this.score += enemyShipSpecial.getPointValue();
+						this.coin += (enemyShipSpecial.getPointValue()/10);
+						this.shipsDestroyed++;
+						this.enemyShipSpecialFormation.destroy(enemyShipSpecial);
+						recyclable.add(bullet);
+				}
+				if (this.omegaBoss != null
+						&& !this.omegaBoss.isDestroyed()
+						&& checkCollision(bullet, this.omegaBoss)) {
+					this.omegaBoss.takeDamage(2);
+					if(this.omegaBoss.getHealPoint() <= 0) {
+						this.shipsDestroyed++;
+						this.score += this.omegaBoss.getPointValue();
+						this.coin += (this.omegaBoss.getPointValue()/10);
+						this.omegaBoss.destroy();
+						this.bossExplosionCooldown.reset();
+					}
 					recyclable.add(bullet);
 				}
 			}
@@ -349,7 +400,32 @@ public class GameScreen extends Screen {
 		return distanceX < maxDistanceX && distanceY < maxDistanceY;
 	}
 
-	/**
+    /**
+     * Shows an achievement popup message on the HUD.
+     *
+     * @param message
+     *      Text to display in the popup.
+     */
+    public void showAchievement(String message) {
+        this.achievementText = message;
+        this.achievementPopupCooldown = Core.getCooldown(2500); // Show for 2.5 seconds
+        this.achievementPopupCooldown.reset();
+    }
+
+    /**
+     * Displays a notification popup when the player gains or loses health
+     *
+     * @param message
+     *          Text to display in the popup
+     */
+
+    public void showHealthPopup(String message) {
+        this.healthPopupText = message;
+        this.healthPopupCooldown = Core.getCooldown(500);
+        this.healthPopupCooldown.reset();
+    }
+
+    /**
 	 * Returns a GameState object representing the status of the game.
 	 * 
 	 * @return Current game state.
