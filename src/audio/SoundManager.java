@@ -33,12 +33,19 @@ public class SoundManager {
             return null;
         }
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 08ef35672740096ed7b936b4a608b7b7b3f48039
     public static void playLoop(String resourcePath) {
         try {
             Clip c = CACHE.computeIfAbsent(resourcePath, SoundManager::loadClip);
             if (c == null) return;
+<<<<<<< HEAD
             stopAll();
+=======
+            stopAll(); // Stoppe tout avant de jouer la nouvelle musique
+>>>>>>> 08ef35672740096ed7b936b4a608b7b7b3f48039
             c.setFramePosition(0);
             c.loop(Clip.LOOP_CONTINUOUSLY);
             c.start();
@@ -47,6 +54,7 @@ public class SoundManager {
         }
     }
 
+<<<<<<< HEAD
     public static void stop(String resourcePath) {
         try {
             Clip c = CACHE.get(resourcePath);
@@ -59,9 +67,15 @@ public class SoundManager {
         }
     }
 
+=======
+>>>>>>> 08ef35672740096ed7b936b4a608b7b7b3f48039
     public static void stopAll() {
         for (Clip c : CACHE.values()) {
             if (c.isRunning()) c.stop();
         }
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 08ef35672740096ed7b936b4a608b7b7b3f48039
 }
