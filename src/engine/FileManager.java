@@ -71,8 +71,8 @@ public final class FileManager {
 
 		try {
 			inputStream = DrawManager.class.getClassLoader()
-					.getResourceAsStream("graphics");
-			char c;
+                    .getResourceAsStream("graphics");
+            char c;
 
 			// Sprite loading.
 			for (Map.Entry<SpriteType, boolean[][]> sprite : spriteMap
