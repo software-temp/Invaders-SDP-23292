@@ -14,6 +14,7 @@ import screen.HighScoreScreen;
 import screen.ScoreScreen;
 import screen.Screen;
 import screen.TitleScreen;
+import screen.ShopScreen;
 
 /**
  * Implements core game logic.
@@ -117,7 +118,7 @@ public final class Core {
 
 		int returnCode = 1;
 		do {
-			gameState = new GameState(1, 0, MAX_LIVES, 0, 0,0);
+			gameState = new GameState(1, 0, MAX_LIVES, 0, 0,100);
 
 			switch (returnCode) {
 			case 1:
@@ -174,6 +175,15 @@ public final class Core {
 				returnCode = frame.setScreen(currentScreen);
 				LOGGER.info("Closing high score screen.");
 				break;
+				case 4:
+					// Shop screen.
+					currentScreen = new ShopScreen(gameState, width, height, FPS);
+					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+							+ " shop screen at " + FPS + " fps, with "
+							+ gameState.getCoin() + " coins.");
+					returnCode = frame.setScreen(currentScreen);
+					LOGGER.info("Closing shop screen.");
+					break;
 			default:
 				break;
 			}
