@@ -1,5 +1,6 @@
 package screen;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,6 +30,8 @@ public class GameScreen extends Screen {
 	private static final int BONUS_SHIP_VARIANCE = 10000;
 	/** Time until bonus ship explosion disappears. */
 	private static final int BONUS_SHIP_EXPLOSION = 500;
+	/** Time until bonus ship explosion disappears. */
+	private static final int BOSS_EXPLOSION = 600;
 	/** Time from finishing the level to screen change. */
 	private static final int SCREEN_CHANGE_INTERVAL = 1500;
 	/** Height of the interface separation line. */
@@ -50,9 +53,13 @@ public class GameScreen extends Screen {
 	private Cooldown enemyShipSpecialCooldown;
 	/** Time until bonus ship explosion disappears. */
 	private Cooldown enemyShipSpecialExplosionCooldown;
+	/** Time until Boss explosion disappears. */
+	private Cooldown bossExplosionCooldown;
 	/** Time from finishing the level to screen change. */
 	private Cooldown screenFinishedCooldown;
-	/** Set of all bullets fired by on screen ships. */
+	/** OmegaBoss */
+	private MidBoss omegaBoss;
+	/** Set of all bullets fired by on-screen ships. */
 	private Set<Bullet> bullets;
 	/** Current score. */
 	private int score;
@@ -127,6 +134,8 @@ public class GameScreen extends Screen {
 				Core.getVariableCooldown(BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE),
 				Core.getCooldown(BONUS_SHIP_EXPLOSION));
 		enemyShipSpecialFormation.attach(this);
+		this.bossExplosionCooldown = Core
+				.getCooldown(BOSS_EXPLOSION);
 		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
 		this.bullets = new HashSet<Bullet>();
 
@@ -135,8 +144,11 @@ public class GameScreen extends Screen {
 		this.inputDelay = Core.getCooldown(INPUT_DELAY);
 		this.inputDelay.reset();
 
+		// Initializing Middle Boss
+		this.omegaBoss = new OmegaBoss(Color.ORANGE);
+		omegaBoss.attach(this);
 		this.gameTimer = new GameTimer();
-        this.elapsedTime = 0;
+    this.elapsedTime = 0;
 	}
 
 	/**
@@ -177,10 +189,10 @@ public class GameScreen extends Screen {
 						+ this.ship.getWidth() + this.ship.getSpeed() > this.width - 1;
 				boolean isLeftBorder = this.ship.getPositionX()
 						- this.ship.getSpeed() < 1;
-                boolean isUpBorder = this.ship.getPositionY()
-                        - this.ship.getSpeed() < SEPARATION_LINE_HEIGHT;
-                boolean isDownBorder = this.ship.getPositionY()
-                        + this.ship.getHeight() + this.ship.getSpeed() > this.height - 1;
+				boolean isUpBorder = this.ship.getPositionY()
+						- this.ship.getSpeed() < SEPARATION_LINE_HEIGHT;
+				boolean isDownBorder = this.ship.getPositionY()
+						+ this.ship.getHeight() + this.ship.getSpeed() > this.height - 1;
 
 				if (moveRight && !isRightBorder) {
 					this.ship.moveRight();
@@ -188,16 +200,24 @@ public class GameScreen extends Screen {
 				if (moveLeft && !isLeftBorder) {
 					this.ship.moveLeft();
 				}
-                if (moveUp && !isUpBorder) {
-                    this.ship.moveUp();
-                }
-                if (moveDown && !isDownBorder) {
-                    this.ship.moveDown();
-                }
+				if (moveUp && !isUpBorder) {
+					this.ship.moveUp();
+				}
+				if (moveDown && !isDownBorder) {
+					this.ship.moveDown();
+				}
 
 				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
-                    if (this.ship.shoot(this.bullets))
-                        this.bulletsShot++;
+					if (this.ship.shoot(this.bullets))
+						this.bulletsShot++;
+			}
+			if (this.omegaBoss != null){
+				if(!this.omegaBoss.isDestroyed()) {
+					this.omegaBoss.update();
+				}
+				else if (this.bossExplosionCooldown.checkFinished()) {
+					this.omegaBoss = null;
+				}
 			}
 			this.ship.update();
 			this.enemyShipFormation.update();
@@ -239,13 +259,17 @@ public class GameScreen extends Screen {
 
 		enemyShipFormation.draw();
 
+		if(this.omegaBoss != null) {
+			this.omegaBoss.draw(drawManager);
+		}
+
 		for (Bullet bullet : this.bullets)
 			drawManager.drawEntity(bullet, bullet.getPositionX(),
 					bullet.getPositionY());
 
 		// Interface.
 		drawManager.drawScore(this, this.score);
-        drawManager.drawCoin(this,this.coin);
+		drawManager.drawCoin(this,this.coin);
 		drawManager.drawLives(this, this.lives);
 		drawManager.drawTime(this, this.elapsedTime); 
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
@@ -317,7 +341,7 @@ public class GameScreen extends Screen {
 					if (!enemyShip.isDestroyed()
 							&& checkCollision(bullet, enemyShip)) {
 						this.score += enemyShip.getPointValue();
-                        this.coin += (enemyShip.getPointValue()/10);
+						this.coin += (enemyShip.getPointValue()/10);
 						this.shipsDestroyed++;
 						this.enemyShipFormation.destroy(enemyShip);
 						recyclable.add(bullet);
@@ -332,6 +356,19 @@ public class GameScreen extends Screen {
 						this.shipsDestroyed++;
 						this.enemyShipSpecialFormation.destroy(enemyShipSpecial);
 						recyclable.add(bullet);
+				}
+				if (this.omegaBoss != null
+						&& !this.omegaBoss.isDestroyed()
+						&& checkCollision(bullet, this.omegaBoss)) {
+					this.omegaBoss.takeDamage(2);
+					if(this.omegaBoss.getHealPoint() <= 0) {
+						this.shipsDestroyed++;
+						this.score += this.omegaBoss.getPointValue();
+						this.coin += (this.omegaBoss.getPointValue()/10);
+						this.omegaBoss.destroy();
+						this.bossExplosionCooldown.reset();
+					}
+					recyclable.add(bullet);
 				}
 			}
 		this.bullets.removeAll(recyclable);
