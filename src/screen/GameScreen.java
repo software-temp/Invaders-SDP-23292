@@ -1,15 +1,16 @@
 package screen;
 
-import java.awt.event.KeyEvent;
-import java.util.HashSet;
-import java.util.Set;
-
 import engine.Cooldown;
 import engine.Core;
 import engine.GameSettings;
 import engine.GameState;
 import engine.GameTimer;
 import entity.*;
+import java.awt.event.KeyEvent;
+import java.util.HashSet;
+import java.util.Set;
+
+import engine.level.Level;
 
 /**
  * Implements the game screen, where the action happens.
@@ -86,8 +87,8 @@ public class GameScreen extends Screen {
 	 * 
 	 * @param gameState
 	 *            Current game state.
-	 * @param gameSettings
-	 *            Current game settings.
+	 * @param level
+	 *            Current level settings.
 	 * @param bonusLife
 	 *            Checks if a bonus life is awarded this level.
 	 * @param width
@@ -98,11 +99,11 @@ public class GameScreen extends Screen {
 	 *            Frames per second, frame rate at which the game is run.
 	 */
 	public GameScreen(final GameState gameState,
-			final GameSettings gameSettings, final boolean bonusLife,
+			final Level level, final boolean bonusLife,
 			final int width, final int height, final int fps) {
 		super(width, height, fps);
 
-		this.gameSettings = gameSettings;
+		this.gameSettings = new GameSettings(level.getFormationWidth(), level.getFormationHeight(), level.getBaseSpeed(), level.getShootingFrecuency());
 		this.bonusLife = bonusLife;
 		this.level = gameState.getLevel();
 		this.score = gameState.getScore();
