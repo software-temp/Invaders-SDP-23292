@@ -177,5 +177,4 @@ log*/
 log*
 *.ttf
 .checkstyle
-res
 production

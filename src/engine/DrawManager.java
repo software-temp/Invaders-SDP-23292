@@ -76,6 +76,10 @@ public final class DrawManager {
 		EnemyShipSpecial,
 		/** Destroyed enemy ship. */
 		Explosion,
+		/** Active sound button. */
+		SoundOn,
+		/** Deactive sound button. */
+		SoundOff
 				/** Items */
 		Item_MultiShot,
 		Item_Atkspeed,
@@ -111,6 +115,9 @@ public final class DrawManager {
 			spriteMap.put(SpriteType.EnemyShipC2, new boolean[12][8]);
 			spriteMap.put(SpriteType.EnemyShipSpecial, new boolean[16][7]);
 			spriteMap.put(SpriteType.Explosion, new boolean[13][7]);
+			spriteMap.put(SpriteType.SoundOn, new boolean[15][15]);
+			spriteMap.put(SpriteType.SoundOff, new boolean[15][15]);
+
 			spriteMap.put(SpriteType.Item_Explode, new boolean[5][5]);
 			spriteMap.put(SpriteType.Item_Slow, new boolean[5][5]);
 			spriteMap.put(SpriteType.Item_Stop, new boolean[5][5]);
