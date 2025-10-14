@@ -752,8 +752,13 @@ public final class DrawManager {
 		} else {
 			backBufferGraphics.setColor(Color.WHITE);
 		}
-		drawCenteredRegularString(screen, "< Back to Main Menu >", exitY);
 
+        if (shopScreen.betweenLevels)
+        {
+            drawCenteredRegularString(screen, "< Back to Game >", exitY);
+        } else {
+            drawCenteredRegularString(screen, "< Back to Main Menu >", exitY);
+        }
 	}
 
 	/**
