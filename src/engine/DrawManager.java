@@ -127,7 +127,7 @@ public final class DrawManager {
 			fileManager.loadSprite(spriteMap);
 			logger.info("Finished loading the sprites.");
 
-			// Font loading.
+			// Font loading
 			fontRegular = fileManager.loadFont(14f);
 			fontBig = fileManager.loadFont(24f);
 			logger.info("Finished loading the fonts.");

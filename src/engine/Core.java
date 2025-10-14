@@ -130,14 +130,13 @@ public final class Core {
                     LOGGER.info("Closing title screen.");
                     break;
                 case 2:
-                    // === Main game and level progression ===
                     do {
-                        // One extra life every few levels.
+                        // One extra life every few levels
                         boolean bonusLife = gameState.getLevel()
                                 % EXTRA_LIFE_FRECUENCY == 0
                                 && gameState.getLivesRemaining() < MAX_LIVES;
 
-                        // --- Start a new level ---
+                        // Start a new level
                         currentScreen = new GameScreen(
                                 gameState,
                                 gameSettings.get(gameState.getLevel() - 1),
@@ -153,21 +152,18 @@ public final class Core {
                         frame.setScreen(currentScreen);
                         LOGGER.info("Closing game screen.");
 
-                        // Retrieve the game state at the end of the level.
                         gameState = ((GameScreen) currentScreen).getGameState();
 
-                        // --- If the player is still alive, open the shop once ---
                         if (gameState.getLivesRemaining() > 0) {
                             LOGGER.info("Opening shop screen with "
                                     + gameState.getCoin() + " coins.");
 
-                            // Launch the ShopScreen (between levels).
+                            //Launch the ShopScreen (between levels)
                             currentScreen = new ShopScreen(gameState, width, height, FPS, true);
 
                             frame.setScreen(currentScreen);
                             LOGGER.info("Closing shop screen.");
 
-                            // --- Prepare the next level ---
                             gameState = new GameState(
                                     gameState.getLevel() + 1,          // Increment level
                                     gameState.getScore(),              // Keep current score
@@ -177,11 +173,10 @@ public final class Core {
                                     gameState.getCoin()                // Keep current coins
                             );
                         }
-                        // Loop while player still has lives and levels remaining.
+                        // Loop while player still has lives and levels remaining
                     } while (gameState.getLivesRemaining() > 0
                             && gameState.getLevel() <= NUM_LEVELS);
 
-                    // --- Game over: display score screen ---
                     LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
                             + " score screen at " + FPS + " fps, with a score of "
                             + gameState.getScore() + ", "
@@ -194,7 +189,7 @@ public final class Core {
                     LOGGER.info("Closing score screen.");
                     break;
                 case 3:
-                    // High scores.
+                    // High scores
                     currentScreen = new HighScoreScreen(width, height, FPS);
                     LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
                             + " high score screen at " + FPS + " fps.");

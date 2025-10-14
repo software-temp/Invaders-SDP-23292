@@ -76,7 +76,7 @@ public class ShopScreen extends Screen {
     private Cooldown purchaseFeedbackCooldown;
     private String feedbackMessage;
 
-    /** Indicates if the shop was opened between levels (true) or from the main menu (false). */
+    /** Indicates if the shop was opened between levels (true) or from the main menu (false) */
     public boolean betweenLevels;
 
     /**
