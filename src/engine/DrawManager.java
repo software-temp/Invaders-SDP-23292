@@ -270,12 +270,14 @@ public final class DrawManager {
      */
     public void drawTime(final Screen screen, final long milliseconds) {
         backBufferGraphics.setFont(fontRegular);
-        backBufferGraphics.setColor(Color.WHITE);
+        backBufferGraphics.setColor(Color.GRAY);
         long seconds = milliseconds / 1000;
         long minutes = seconds / 60;
         seconds %= 60;
         String timeString = String.format("Time: %02d:%02d", minutes, seconds);
-        backBufferGraphics.drawString(timeString, screen.getWidth() / 2 - fontRegularMetrics.stringWidth(timeString) / 2, 25);
+        int x = screen.getWidth() - fontRegularMetrics.stringWidth(timeString) - 10;
+        int y = screen.getHeight() - 10;
+        backBufferGraphics.drawString(timeString, x, y);
     }
 
 
