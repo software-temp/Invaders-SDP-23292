@@ -447,35 +447,41 @@ public final class DrawManager {
 	 */
 	public void drawMenu(final Screen screen, final int option) {
 		String playString = "Play";
-		String highScoresString = "High scores";
-		String shopString = "shop";
-		String exitString = "exit";
-
-		if (option == 2)
-			backBufferGraphics.setColor(Color.GREEN);
-		else
-			backBufferGraphics.setColor(Color.WHITE);
-		drawCenteredRegularString(screen, playString,
-				screen.getHeight() / 3 * 2);
-		if (option == 3)
-			backBufferGraphics.setColor(Color.GREEN);
-		else
-			backBufferGraphics.setColor(Color.WHITE);
-		drawCenteredRegularString(screen, highScoresString, screen.getHeight()
-				/ 3 * 2 + fontRegularMetrics.getHeight() * 2);
-		if (option == 4)
-			backBufferGraphics.setColor(Color.GREEN);
-		else
-			backBufferGraphics.setColor(Color.WHITE);
-		drawCenteredRegularString(screen, shopString, screen.getHeight()
-				/ 3 * 2 + fontRegularMetrics.getHeight() * 4);
-		if (option == 0)
-			backBufferGraphics.setColor(Color.GREEN);
-		else
-			backBufferGraphics.setColor(Color.WHITE);
-		drawCenteredRegularString(screen, exitString, screen.getHeight() / 3
-				* 2 + fontRegularMetrics.getHeight() * 6);
-	}
+		        String highScoresString = "High scores";
+		        String achievementsString = "Achievements";
+		        String shopString = "shop";
+		        String exitString = "exit";
+		
+		        if (option == 2)
+		            backBufferGraphics.setColor(Color.GREEN);
+		        else
+		            backBufferGraphics.setColor(Color.WHITE);
+		                drawCenteredRegularString(screen, playString,
+		                        screen.getHeight() / 3 * 2);
+		                if (option == 3)
+		                    backBufferGraphics.setColor(Color.GREEN);
+		                else
+		                    backBufferGraphics.setColor(Color.WHITE);
+		                drawCenteredRegularString(screen, highScoresString, screen.getHeight()
+		                        / 3 * 2 + fontRegularMetrics.getHeight() * 1);
+		                if (option == 6) // New Achievements option
+		                    backBufferGraphics.setColor(Color.GREEN);
+		                else
+		                    backBufferGraphics.setColor(Color.WHITE);
+		                drawCenteredRegularString(screen, achievementsString, screen.getHeight()
+		                        / 3 * 2 + fontRegularMetrics.getHeight() * 2);
+		                if (option == 4)
+		                    backBufferGraphics.setColor(Color.GREEN);
+		                else
+		                    backBufferGraphics.setColor(Color.WHITE);
+		                drawCenteredRegularString(screen, shopString, screen.getHeight()
+		                        / 3 * 2 + fontRegularMetrics.getHeight() * 3);
+		                if (option == 0)
+		                    backBufferGraphics.setColor(Color.GREEN);
+		                else
+		                    backBufferGraphics.setColor(Color.WHITE);
+		                drawCenteredRegularString(screen, exitString, screen.getHeight() / 3
+		                        * 2 + fontRegularMetrics.getHeight() * 4);	}
 
 	/**
 	 * Draws game results.
@@ -622,21 +628,40 @@ public final class DrawManager {
 	 * @param highScores
 	 *            List of high scores.
 	 */
-	public void drawHighScores(final Screen screen,
-			final List<Score> highScores) {
-		backBufferGraphics.setColor(Color.WHITE);
-		int i = 0;
-		String scoreString = "";
-
-		for (Score score : highScores) {
-			scoreString = String.format("%s        %04d", score.getName(),
-					score.getScore());
-			drawCenteredRegularString(screen, scoreString, screen.getHeight()
-					/ 4 + fontRegularMetrics.getHeight() * (i + 1) * 2);
-			i++;
-		}
-	}
-
+	    public void drawHighScores(final Screen screen,
+	            final List<Score> highScores) {
+	        backBufferGraphics.setColor(Color.WHITE);
+	        int i = 0;
+	        String scoreString = "";
+	
+	        for (Score score : highScores) {
+	            scoreString = String.format("%s        %04d", score.getName(),
+	                    score.getScore());
+	            drawCenteredRegularString(screen, scoreString, screen.getHeight()
+	                    / 4 + fontRegularMetrics.getHeight() * (i + 1) * 2);
+	            i++;
+	        }
+	    }
+	
+	    public void drawAchievements(final Screen screen, final List<Achievement> achievements) {
+	        backBufferGraphics.setColor(Color.GREEN);
+	        drawCenteredBigString(screen, "Achievements", screen.getHeight() / 8);
+	
+	        int i = 0;
+	        for (Achievement achievement : achievements) {
+	            if (achievement.isUnlocked()) {
+	                backBufferGraphics.setColor(Color.GREEN);
+	            } else {
+	                backBufferGraphics.setColor(Color.WHITE);
+	            }
+	            drawCenteredRegularString(screen, achievement.getName() + " - " + achievement.getDescription(),
+	                    screen.getHeight() / 4 + fontRegularMetrics.getHeight() * (i + 1) * 2);
+	            i++;
+	        }
+	
+	        backBufferGraphics.setColor(Color.GRAY);
+	        drawCenteredRegularString(screen, "Press ESC to return", screen.getHeight() - 50);
+	    }
 	/**
 	 * Draws a centered string on regular font.
 	 * 
