@@ -139,27 +139,29 @@ public class FinalBoss extends Entity implements BossEntity{
 
     /** first shooting pattern of final boss */
     public Set<BossBullet> shoot1(){
-        Set<BossBullet> bullets = new HashSet<>();
         if(this.shootCooldown1.checkFinished()){
             this.shootCooldown1.reset();
+            Set<BossBullet> bullets = new HashSet<>();
             int arr[] = {0,1,-1,2,-2};
             for (int i : arr){
                 BossBullet bullet = new BossBullet(this.getPositionX() + this.getWidth() / 2 - 3,this.getPositionY() + this.getHeight(), i,4,6,10,Color.yellow);
                 bullets.add(bullet);
             }
+            return bullets;
         }
-        return bullets;
+        return java.util.Collections.emptySet();
     }
     /** second shooting pattern of final boss */
     public Set<BossBullet> shoot2() {
-        Set<BossBullet> bullets = new HashSet<>();
-        random_x = (int) (Math.random() * screenWidth);
         if (this.shootCooldown2.checkFinished()) {
             this.shootCooldown2.reset();
-            BossBullet bullet = new BossBullet(random_x, 1, 0, 2,6,10,Color.yellow);
+            Set<BossBullet> bullets = new HashSet<>();
+            int randomX = (int) (Math.random() * screenWidth);
+            BossBullet bullet = new BossBullet(randomX, 1, 0, 2,6,10,Color.yellow);
             bullets.add(bullet);
+            return bullets;
         }
-        return bullets;
+        return java.util.Collections.emptySet();
     }
     /** third shooting pattern of final boss */
     public Set<BossBullet> shoot3() {
