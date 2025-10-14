@@ -20,6 +20,7 @@ public class GameState {
 	private int shipsDestroyed;
     /** Current coin. */
     private int coin;
+    private int deaths;
 
 
 	/**
@@ -45,10 +46,21 @@ public class GameState {
 		this.score = score;
 		this.livesRemaining = livesRemaining;
 		this.bulletsShot = bulletsShot;
-		this.shipsDestroyed = shipsDestroyed;
-        this.coin = coin;
-	}
-
+		        this.shipsDestroyed = shipsDestroyed;
+		        this.coin = coin;
+		        this.deaths = 0;
+		    }
+		
+		    public void incrementDeaths() {
+		        this.deaths++;
+		        if (this.deaths >= 5) {
+		            AchievementManager.getInstance().unlockAchievement("New here?");
+		        }
+		    }
+		
+		    public final int getDeaths() {
+		        return deaths;
+		    }
 	/**
 	 * @return the level
 	 */
