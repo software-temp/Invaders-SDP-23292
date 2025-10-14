@@ -677,4 +677,187 @@ public final class DrawManager {
 			drawCenteredBigString(screen, "GO!", screen.getHeight() / 2
 					+ fontBigMetrics.getHeight() / 3);
 	}
+	/**
+	 * Draws the complete shop screen with all items and levels.
+	 *
+	 * @param screen Screen to draw on.
+	 * @param coinBalance Player's current coin balance.
+	 * @param selectedItem Currently selected item index.
+	 * @param selectionMode 0 = selecting item, 1 = selecting level.
+	 * @param selectedLevel Currently selected level for purchase.
+	 * @param totalItems Total number of items.
+	 * @param itemNames Array of item names.
+	 * @param itemDescriptions Array of item descriptions.
+	 * @param itemPrices 2D array of prices [item][level].
+	 * @param maxLevels Array of maximum levels per item.
+	 * @param shopScreen Reference to shop screen for getting current levels.
+	 */
+	public void drawShopScreen(final Screen screen, final int coinBalance,
+							   final int selectedItem, final int selectionMode,
+							   final int selectedLevel, final int totalItems,
+							   final String[] itemNames,
+							   final String[] itemDescriptions,
+							   final int[][] itemPrices,
+							   final int[] maxLevels,
+							   final screen.ShopScreen shopScreen) {
+		// Draw title
+		backBufferGraphics.setColor(Color.GREEN);
+		drawCenteredBigString(screen, "SHOP", screen.getHeight() / 8);
+
+		// Draw coin balance
+		backBufferGraphics.setColor(Color.YELLOW);
+		String balanceString = String.format("Your Balance: %d coins", coinBalance);
+		drawCenteredRegularString(screen, balanceString, 120);
+
+		// Draw instructions based on mode
+		backBufferGraphics.setColor(Color.GRAY);
+		String instructions = "";
+		if (selectionMode == 0) {
+			instructions = "W/S: Navigate | SPACE: Select | ESC: Exit";
+		} else {
+			instructions = "A/D: Change Level | SPACE: Buy | ESC: Back";
+		}
+		drawCenteredRegularString(screen, instructions, 145);
+
+		// Draw separator line
+		//backBufferGraphics.setColor(Color.GREEN);
+		//drawHorizontalLine(screen, 165);
+
+		// FIXED: Draw items with proper spacing
+		int currentY = 170;  // Start position
+		int baseSpacing = 65;  // Space between each item
+
+		for (int i = 0; i < totalItems; i++) {
+			boolean isSelected = (i == selectedItem) && (selectionMode == 0);
+			boolean isLevelSelection = (i == selectedItem && selectionMode == 1);
+			int currentLevel = shopScreen.getItemCurrentLevel(i);
+
+			drawShopItem(screen, itemNames[i], itemDescriptions[i],
+					itemPrices[i], maxLevels[i], currentLevel,
+					currentY, isSelected, coinBalance,
+					isLevelSelection, selectedLevel);
+
+			// Add extra space when showing level selection buttons
+			if (isLevelSelection) {
+				currentY += baseSpacing + 55;
+			} else {
+				currentY += baseSpacing;
+			}
+		}
+
+		// Draw exit option
+		int exitY = screen.getHeight() - 25;
+		if (selectedItem == totalItems && selectionMode == 0) {
+			backBufferGraphics.setColor(Color.GREEN);
+		} else {
+			backBufferGraphics.setColor(Color.WHITE);
+		}
+		drawCenteredRegularString(screen, "< Back to Main Menu >", exitY);
+
+	}
+
+	/**
+	 * Draws a single shop item with level indicators.
+	 *
+	 * @param screen Screen to draw on.
+	 * @param itemName Name of the item.
+	 * @param description Description of the item.
+	 * @param prices Array of prices for each level.
+	 * @param maxLevel Maximum level for this item.
+	 * @param currentLevel Current owned level.
+	 * @param yPosition Y position to draw.
+	 * @param isSelected Whether item is selected.
+	 * @param playerCoins Player's current coin balance.
+	 * @param isLevelSelection Whether in level selection mode.
+	 * @param selectedLevel Currently selected level for purchase.
+	 */
+	public void drawShopItem(final Screen screen, final String itemName,
+							 final String description, final int[] prices,
+							 final int maxLevel, final int currentLevel,
+							 final int yPosition, final boolean isSelected,
+							 final int playerCoins, final boolean isLevelSelection,
+							 final int selectedLevel) {
+
+		// Draw item name
+		if (isSelected || isLevelSelection) {
+			backBufferGraphics.setColor(Color.GREEN);
+		} else {
+			backBufferGraphics.setColor(Color.WHITE);
+		}
+
+		String levelInfo = currentLevel > 0 ?
+				" [Lv." + currentLevel + "/" + maxLevel + "]" : " [Not Owned]";
+		backBufferGraphics.setFont(fontRegular);
+		backBufferGraphics.drawString(itemName + levelInfo, 30, yPosition);
+
+		// Draw description if selected
+		if (isSelected || isLevelSelection) {
+			backBufferGraphics.setColor(Color.GRAY);
+			backBufferGraphics.drawString(description, 30, yPosition + 15);
+		}
+
+		// Draw level options if in level selection mode for this item
+		if (isLevelSelection) {
+			int levelStartX = 30;
+			int levelY = yPosition + 35;
+
+			for (int lvl = 1; lvl <= maxLevel; lvl++) {
+				int price = prices[lvl - 1];
+				boolean canAfford = playerCoins >= price;
+				boolean isOwned = currentLevel >= lvl;
+				boolean isThisLevel = (lvl == selectedLevel);
+
+				// Set color based on state
+				if (isOwned) {
+					backBufferGraphics.setColor(Color.DARK_GRAY);
+				} else if (isThisLevel) {
+					backBufferGraphics.setColor(Color.GREEN);
+				} else if (canAfford) {
+					backBufferGraphics.setColor(Color.WHITE);
+				} else {
+					backBufferGraphics.setColor(Color.RED);
+				}
+
+				String levelText = "Lv." + lvl + " (" + price + "$)";
+				if (isOwned) {
+					levelText = "Lv." + lvl + " [OWNED]";
+				}
+
+				backBufferGraphics.drawString(levelText,
+						levelStartX + ((lvl - 1) * 95),
+						levelY);
+			}
+		}
+	}
+
+	/**
+	 * Draws purchase feedback message.
+	 *
+	 * @param screen Screen to draw on.
+	 * @param message Feedback message to display.
+	 */
+	public void drawShopFeedback(final Screen screen, final String message) {
+		int popupWidth = 300;
+		int popupHeight = 50;
+		int x = screen.getWidth() / 2 - popupWidth / 2;
+		int y = 70;
+
+		// Draw background
+		backBufferGraphics.setColor(new Color(0, 0, 0, 200));
+		backBufferGraphics.fillRoundRect(x, y, popupWidth, popupHeight, 15, 15);
+
+		// Draw border
+		if (message.contains("Purchased")) {
+			backBufferGraphics.setColor(Color.GREEN);
+		} else if (message.contains("Not enough") || message.contains("failed")) {
+			backBufferGraphics.setColor(Color.RED);
+		} else {
+			backBufferGraphics.setColor(Color.YELLOW);
+		}
+		backBufferGraphics.drawRoundRect(x, y, popupWidth, popupHeight, 15, 15);
+
+		// Draw message
+		backBufferGraphics.setFont(fontRegular);
+		drawCenteredRegularString(screen, message, y + popupHeight / 2 + 5);
+	}
 }
