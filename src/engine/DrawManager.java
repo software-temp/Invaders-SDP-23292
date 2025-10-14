@@ -80,6 +80,16 @@ public final class DrawManager {
 		SoundOn,
 		/** Deactive sound button. */
 		SoundOff
+				/** Items */
+		Item_MultiShot,
+		Item_Atkspeed,
+		Item_Penetrate,
+		Item_Explode,
+		Item_Slow,
+		Item_Stop,
+		Item_Push,
+		Item_Shield,
+		Item_Heal
 	};
 
 	/**
@@ -108,6 +118,12 @@ public final class DrawManager {
 			spriteMap.put(SpriteType.SoundOn, new boolean[15][15]);
 			spriteMap.put(SpriteType.SoundOff, new boolean[15][15]);
 
+			spriteMap.put(SpriteType.Item_Explode, new boolean[5][5]);
+			spriteMap.put(SpriteType.Item_Slow, new boolean[5][5]);
+			spriteMap.put(SpriteType.Item_Stop, new boolean[5][5]);
+			spriteMap.put(SpriteType.Item_Push, new boolean[5][5]);
+			spriteMap.put(SpriteType.Item_Shield, new boolean[5][5]);
+			spriteMap.put(SpriteType.Item_Heal, new boolean[5][5]);
 			fileManager.loadSprite(spriteMap);
 			logger.info("Finished loading the sprites.");
 
@@ -116,9 +132,11 @@ public final class DrawManager {
 			fontBig = fileManager.loadFont(24f);
 			logger.info("Finished loading the fonts.");
 
+
 		} catch (IOException e) {
 			logger.warning("Loading failed.");
-		} catch (FontFormatException e) {
+		}
+		catch (FontFormatException e) {
 			logger.warning("Font formating failed.");
 		}
 	}
