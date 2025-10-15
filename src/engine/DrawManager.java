@@ -318,7 +318,7 @@ public final class DrawManager {
         backBufferGraphics.setFont(fontRegular);
         backBufferGraphics.setColor(Color.WHITE);
         String scoreString = String.format("%03d$", coin);
-        backBufferGraphics.drawString(scoreString, screen.getWidth() - 200, 25);
+        backBufferGraphics.drawString(scoreString, screen.getWidth() - 200, screen.getHeight() - 40);
     }
 
 	/**
