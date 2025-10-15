@@ -301,6 +301,7 @@ public final class DrawManager {
         long seconds = milliseconds / 1000;
         long minutes = seconds / 60;
         seconds %= 60;
+        // Time Format: MM:SS
         String timeString = String.format("Time: %02d:%02d", minutes, seconds);
         backBufferGraphics.drawString(timeString, screen.getWidth() / 2 - fontRegularMetrics.stringWidth(timeString) / 2, 25);
     }
