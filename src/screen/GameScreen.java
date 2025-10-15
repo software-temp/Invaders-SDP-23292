@@ -243,7 +243,6 @@ public class GameScreen extends Screen {
 						                        if (!this.ship.isDestroyed()) {
 						                            this.ship.destroy();
 						                            this.lives--;
-						                            this.gameState.incrementDeaths();
 						                            this.logger.info("Hit on player ship, " + this.lives
 						                                    + " lives remaining.");
 						}
@@ -458,7 +457,6 @@ public class GameScreen extends Screen {
 						if (!this.ship.isDestroyed()) {
 							                           this.ship.destroy();
 							                           this.lives--;
-							                           this.gameState.incrementDeaths();
 							                           showHealthPopup("-1 Health");							this.logger.info("Hit on player ship, " + this.lives
 									+ " lives remaining.");
 						}
