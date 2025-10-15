@@ -14,7 +14,6 @@ public class AchievementManager {
 
     private AchievementManager() {
         achievements = new ArrayList<>();
-        achievements.add(new Achievement("New here?", "Die 5 times"));
         achievements.add(new Achievement("Beginner", "Clear level 1"));
         achievements.add(new Achievement("Intermediate", "Clear level 3"));
         achievements.add(new Achievement("Boss Slayer", "Defeat a boss"));
