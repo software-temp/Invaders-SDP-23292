@@ -301,6 +301,7 @@ public final class DrawManager {
         long seconds = milliseconds / 1000;
         long minutes = seconds / 60;
         seconds %= 60;
+        // Time Format: MM:SS
         String timeString = String.format("Time: %02d:%02d", minutes, seconds);
         backBufferGraphics.drawString(timeString, screen.getWidth() / 2 - fontRegularMetrics.stringWidth(timeString) / 2, 25);
     }
@@ -317,9 +318,14 @@ public final class DrawManager {
     public void drawCoin(final Screen screen, final int coin) {
         backBufferGraphics.setFont(fontRegular);
         backBufferGraphics.setColor(Color.WHITE);
-        String scoreString = String.format("%03d$", coin);
-        backBufferGraphics.drawString(scoreString, screen.getWidth() - 200, 25);
+        String coinString = String.format("%03d$", coin);
+
+        int x = screen.getWidth() / 2 - fontRegularMetrics.stringWidth(coinString) / 2;// Center horizontally
+        int y = screen.getHeight() - 50; // Altered vertical height to match the level display height
+
+        backBufferGraphics.drawString(coinString, x, y);
     }
+
 
 	/**
 	 * Draws number of remaining lives on screen.
