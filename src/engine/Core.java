@@ -52,7 +52,6 @@ public final class Core {
 	/** Logger handler for printing to console. */
 	private static ConsoleHandler consoleHandler;
 
-import screen.*;
 
 	/**
 	 * Test implementation.
