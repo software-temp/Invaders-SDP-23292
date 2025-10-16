@@ -28,11 +28,32 @@ public class TitleScreen extends Screen {
 		public float baseX;
 		public float baseY;
 		public float speed;
+		public float brightness;
+        public float brightnessOffset;
 
 		public Star(float baseX, float baseY, float speed) {
 			this.baseX = baseX;
 			this.baseY = baseY;
 			this.speed = speed;
+			this.brightness = 0;
+			this.brightnessOffset = (float) (Math.random() * Math.PI * 2);
+		}
+	}
+
+	/**
+	 * A simple class to represent a shooting star.
+	 */
+	public static class ShootingStar {
+		public float x;
+		public float y;
+		public float speedX;
+		public float speedY;
+
+		public ShootingStar(float x, float y, float speedX, float speedY) {
+			this.x = x;
+			this.y = y;
+			this.speedX = speedX;
+			this.speedY = speedY;
 		}
 	}
 
@@ -63,16 +84,24 @@ public class TitleScreen extends Screen {
 	private static final int ENEMY_SPAWN_COOLDOWN = 2000;
 	/** Probability of an enemy spawning. */
 	private static final double ENEMY_SPAWN_CHANCE = 0.3;
+	/** Milliseconds between shooting star spawns. */
+    private static final int SHOOTING_STAR_COOLDOWN = 3000;
+    /** Probability of a shooting star spawning. */
+    private static final double SHOOTING_STAR_SPAWN_CHANCE = 0.2;
 	
 	/** Time between changes in user selection. */
 	private Cooldown selectionCooldown;
 	/** Cooldown for enemy spawning. */
 	private Cooldown enemySpawnCooldown;
+	/** Cooldown for shooting star spawning. */
+    private Cooldown shootingStarCooldown;
 
 	/** List of stars for the background animation. */
 	private List<Star> stars;
 	/** List of background enemies. */
 	private List<Entity> backgroundEnemies;
+	/** List of shooting stars. */
+    private List<ShootingStar> shootingStars;
 
 	/** Sound button on/off object. */
 	private SoundButton soundButton;
@@ -103,8 +132,10 @@ public class TitleScreen extends Screen {
 		this.soundButton = new SoundButton(0, 0);
 		this.selectionCooldown = Core.getCooldown(SELECTION_TIME);
 		this.enemySpawnCooldown = Core.getCooldown(ENEMY_SPAWN_COOLDOWN);
+		this.shootingStarCooldown = Core.getCooldown(SHOOTING_STAR_COOLDOWN);
 		this.selectionCooldown.reset();
 		this.enemySpawnCooldown.reset();
+		this.shootingStarCooldown.reset();
 
 		this.random = new Random();
 		this.stars = new ArrayList<Star>();
@@ -115,6 +146,7 @@ public class TitleScreen extends Screen {
 		}
 
 		this.backgroundEnemies = new ArrayList<Entity>();
+		this.shootingStars = new ArrayList<ShootingStar>();
 
 		// Initialize rotation angles
 		this.currentAngle = 0;
@@ -139,15 +171,6 @@ public class TitleScreen extends Screen {
 	protected final void update() {
 		super.update();
 
-		// Handle sound button color
-		if (this.returnCode == 5) {
-            float pulse = (float) ((Math.sin(System.currentTimeMillis() / 200.0) + 1.0) / 2.0);
-            Color pulseColor = new Color(0, 0.5f + pulse * 0.5f, 0);
-            this.soundButton.setColor(pulseColor);
-        } else {
-            this.soundButton.setColor(Color.WHITE);
-        }
-
 		// Smoothly animate the rotation angle
         if (currentAngle < targetAngle) {
             currentAngle = Math.min(currentAngle + ROTATION_SPEED, targetAngle);
@@ -162,6 +185,8 @@ public class TitleScreen extends Screen {
 				star.baseY = 0;
 				star.baseX = (float) (Math.random() * this.getWidth());
 			}
+			// Update brightness for twinkling effect
+			star.brightness = 0.5f + (float) (Math.sin(star.brightnessOffset + System.currentTimeMillis() / 500.0) + 1.0) / 4.0f;
 		}
 
 		// Spawn and move background enemies
@@ -176,14 +201,44 @@ public class TitleScreen extends Screen {
 			}
 		}
 
-		java.util.Iterator<Entity> iterator = this.backgroundEnemies.iterator();
-		while (iterator.hasNext()) {
-			BackgroundEnemy enemy = (BackgroundEnemy) iterator.next();
+		java.util.Iterator<Entity> enemyIterator = this.backgroundEnemies.iterator();
+		while (enemyIterator.hasNext()) {
+			BackgroundEnemy enemy = (BackgroundEnemy) enemyIterator.next();
 			enemy.setPositionY(enemy.getPositionY() + enemy.getSpeed());
 			if (enemy.getPositionY() > this.getHeight()) {
-				iterator.remove();
+				enemyIterator.remove();
 			}
 		}
+
+		// Spawn and move shooting stars
+        if (this.shootingStarCooldown.checkFinished()) {
+            this.shootingStarCooldown.reset();
+            if (Math.random() < SHOOTING_STAR_SPAWN_CHANCE) {
+                float speedX = (float) (Math.random() * 10 + 5) * (Math.random() > 0.5 ? 1 : -1);
+                float speedY = (float) (Math.random() * 10 + 5) * (Math.random() > 0.5 ? 1 : -1);
+                this.shootingStars.add(new ShootingStar(random.nextInt(this.getWidth()), -10, speedX, speedY));
+            }
+        }
+
+		java.util.Iterator<ShootingStar> shootingStarIterator = this.shootingStars.iterator();
+        while (shootingStarIterator.hasNext()) {
+            ShootingStar shootingStar = shootingStarIterator.next();
+            shootingStar.x += shootingStar.speedX;
+            shootingStar.y += shootingStar.speedY;
+            if (shootingStar.x < -20 || shootingStar.x > this.getWidth() + 20 ||
+                shootingStar.y < -20 || shootingStar.y > this.getHeight() + 20) {
+                shootingStarIterator.remove();
+            }
+        }
+
+		// Handle sound button color
+		if (this.returnCode == 5) {
+            float pulse = (float) ((Math.sin(System.currentTimeMillis() / 200.0) + 1.0) / 2.0);
+            Color pulseColor = new Color(0, 0.5f + pulse * 0.5f, 0);
+            this.soundButton.setColor(pulseColor);
+        } else {
+            this.soundButton.setColor(Color.WHITE);
+        }
 
 		draw();
 		if (this.selectionCooldown.checkFinished()
@@ -263,6 +318,9 @@ public class TitleScreen extends Screen {
 
 		// Draw stars with rotation
 		drawManager.drawStars(this, this.stars, this.currentAngle);
+
+		// Draw shooting stars with rotation
+        drawManager.drawShootingStars(this, this.shootingStars, this.currentAngle);
 
 		// Draw background enemies with rotation
 		final double angleRad = Math.toRadians(this.currentAngle);

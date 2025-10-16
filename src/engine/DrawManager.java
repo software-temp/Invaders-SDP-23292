@@ -62,7 +62,6 @@ public final class DrawManager {
 	 *            Current rotation angle.
 	 */
 	public void drawStars(final Screen screen, final List<Star> stars, final float angle) {
-		backBufferGraphics.setColor(Color.WHITE);
 		final int centerX = screen.getWidth() / 2;
 		final int centerY = screen.getHeight() / 2;
 		final double angleRad = Math.toRadians(angle);
@@ -79,7 +78,44 @@ public final class DrawManager {
 			int screenX = (int) (rotatedX + centerX);
 			int screenY = (int) (rotatedY + centerY);
 
+			// Use star's brightness to set its color for twinkling effect
+			float b = star.brightness;
+			if (b < 0) b = 0;
+			if (b > 1) b = 1;
+			backBufferGraphics.setColor(new Color(b, b, b));
 			backBufferGraphics.drawRect(screenX, screenY, 1, 1);
+		}
+	}
+
+	/**
+	 * Draws the shooting stars.
+	 * 
+	 * @param screen
+	 *            Screen to draw on.
+	 * @param shootingStars
+	 *            List of shooting stars to draw.
+	 * @param angle
+	 *            Current rotation angle.
+	 */
+	public void drawShootingStars(final Screen screen, final List<TitleScreen.ShootingStar> shootingStars, final float angle) {
+		final int centerX = screen.getWidth() / 2;
+		final int centerY = screen.getHeight() / 2;
+		final double angleRad = Math.toRadians(angle);
+		final double cosAngle = Math.cos(angleRad);
+		final double sinAngle = Math.sin(angleRad);
+
+		for (TitleScreen.ShootingStar star : shootingStars) {
+			float relX = star.x - centerX;
+			float relY = star.y - centerY;
+
+			double rotatedX = relX * cosAngle - relY * sinAngle;
+			double rotatedY = relX * sinAngle + relY * cosAngle;
+
+			int screenX = (int) (rotatedX + centerX);
+			int screenY = (int) (rotatedY + centerY);
+
+			backBufferGraphics.setColor(new Color(1.0f, 1.0f, 0.8f)); // Bright yellow
+			backBufferGraphics.drawRect(screenX, screenY, 2, 2);
 		}
 	}
 
