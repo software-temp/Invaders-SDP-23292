@@ -26,6 +26,8 @@ public class AchievementManager {
         achievements.add(new Achievement("First Blood", "Defeat your first enemy"));
         achievements.add(new Achievement("Bear Grylls", "Survive for 60 seconds"));
         achievements.add(new Achievement("Bad Sniper", "Under 80% accuracy"));
+
+        loadAchievements();
     }
 
     public static AchievementManager getInstance() {
@@ -43,6 +45,8 @@ public class AchievementManager {
         for (Achievement achievement : achievements) {
             if (achievement.getName().equals(name) && !achievement.isUnlocked()) {
                 achievement.unlock();
+
+                saveAchievements();
                 break;
             }
         }
@@ -76,5 +80,51 @@ public class AchievementManager {
     public void onShotFired() {
         shotsFired++;
     }
+
+    /**
+     * Loads achievement status from file and updates the current achievement list.
+     * <p>
+     * Requests the FileManager to load saved achievement data, then updates
+     * each achievement's unlocked state accordingly.
+     * </p>
+     *
+     * @throws RuntimeException
+     *             If an I/O error occurs while loading achievements.
+     */
+    public void loadAchievements() {
+        try {
+            // Ask FileManager to load saved achievement status
+            java.util.Map<String, Boolean> unlockedStatus = Core.getFileManager().loadAchievements();
+            // Update the state of each achievement based on the loaded data.
+            for (Achievement achievement : achievements) {
+                if (unlockedStatus.getOrDefault(achievement.getName(), false)) {
+                    achievement.unlock();
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to load achievement file! Creating a new one.");
+            // If file loading fails, attempt an initial save.
+            saveAchievements();
+        }
+    }
+    /**
+     * Saves the current achievement status to file.
+     * <p>
+     * Requests the FileManager to write all current achievements to disk.
+     * </p>
+     *
+     * @throws RuntimeException
+     *             If an I/O error occurs while saving achievements.
+     */
+    private void saveAchievements() {
+        try {
+            // Ask FileManager to save all current achievement data
+            Core.getFileManager().saveAchievements(achievements);
+        } catch (IOException e) {
+            System.err.println("Failed to save achievement file!");
+            e.printStackTrace();
+        }
+    }
+
 
 }
