@@ -126,8 +126,14 @@ public class AchievementManager {
     }
 
     /**
-     * Loads achievement status from a file.
-     * This method reads the saved state and updates the 'unlocked' status of the achievements.
+     * Loads achievement status from file and updates the current achievement list.
+     * <p>
+     * Requests the FileManager to load saved achievement data, then updates
+     * each achievement's unlocked state accordingly.
+     * </p>
+     *
+     * @throws RuntimeException
+     *             If an I/O error occurs while loading achievements.
      */
     public void loadAchievements() {
         try {
@@ -146,7 +152,13 @@ public class AchievementManager {
         }
     }
     /**
-     * Saves the current status of all achievements to a file.
+     * Saves the current achievement status to file.
+     * <p>
+     * Requests the FileManager to write all current achievements to disk.
+     * </p>
+     *
+     * @throws RuntimeException
+     *             If an I/O error occurs while saving achievements.
      */
     private void saveAchievements() {
         try {
