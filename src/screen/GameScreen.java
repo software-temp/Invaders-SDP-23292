@@ -289,8 +289,10 @@ public class GameScreen extends Screen {
                 }
 
 				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
-                    if (this.ship.shoot(this.bullets))
-                        this.bulletsShot++;
+                    if (this.ship.shoot(this.bullets)) {
+						this.bulletsShot++;
+						AchievementManager.getInstance().onShotFired();
+					}
 			}
 			if (this.omegaBoss != null){
 				if(!this.omegaBoss.isDestroyed()) {
@@ -314,6 +316,7 @@ public class GameScreen extends Screen {
 		}
 		if (this.gameTimer.isRunning()) {
             this.elapsedTime = this.gameTimer.getElapsedTime();
+				AchievementManager.getInstance().onTimeElapsedSeconds((int)(this.elapsedTime / 1000));
         }
         cleanItems();
 		manageCollisions();
@@ -471,6 +474,7 @@ public class GameScreen extends Screen {
                         this.coin += (enemyShip.getPointValue()/10);
 						this.shipsDestroyed++;
 						this.enemyShipFormation.destroy(enemyShip);
+						AchievementManager.getInstance().onEnemyDefeated();
                         DropItem.ItemType droppedType = DropItem.getRandomItemType(0.3);
                         if (droppedType != null) {
                             final int ITEM_DROP_SPEED = 2;
