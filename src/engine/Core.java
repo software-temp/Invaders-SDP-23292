@@ -84,11 +84,11 @@ public final class Core {
 		int height = frame.getHeight();
 
 		levelManager = new LevelManager();
-		GameState gameState;
+		GameState gameState = new GameState(1, 0, MAX_LIVES, 0, 0,0);
 
-		int returnCode = 1;
+
+        int returnCode = 1;
 		do {
-			gameState = new GameState(1, 0, MAX_LIVES, 0, 0,100);
 
 			switch (returnCode) {
                 case 1:

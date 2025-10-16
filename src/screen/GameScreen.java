@@ -139,6 +139,7 @@ public class GameScreen extends Screen {
 		this.maxLives = maxLives;
 		        this.level = gameState.getLevel();
 		        this.score = gameState.getScore();
+                this.coin = gameState.getCoin();
 		        this.lives = gameState.getLivesRemaining();
 		        this.gameState = gameState;		if (this.bonusLife)
 			this.lives++;
@@ -204,10 +205,13 @@ public class GameScreen extends Screen {
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
 
 			/** spawn final boss to check object (for test) */
+
 			if(this.finalBoss == null){
 				this.finalBoss = new FinalBoss(this.width/2-50,50,this.width,this.height);
 				this.logger.info("Final Boss created.");
 			}
+
+
 			if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
 			/** called the boss shoot logic */
 					if(this.finalBoss.getHealPoint() > this.finalBoss.getMaxHp() / 4) {
