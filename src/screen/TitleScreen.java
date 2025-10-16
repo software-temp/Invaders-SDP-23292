@@ -79,7 +79,10 @@ public class TitleScreen extends Screen {
 					this.isRunning = false;
 				} else {
 					this.soundButton.changeSoundState();
-					// TODO : Sound setting.
+
+					if (SoundButton.getIsSoundOn()) {
+						// TODO : Sound setting.
+					}
 
 					this.selectionCooldown.reset();
 				}
@@ -103,32 +106,40 @@ public class TitleScreen extends Screen {
 	 * Shifts the focus to the next menu item.
 	 */
 	private void nextMenuItem() {
-		if (this.returnCode == 4)
+		if (this.returnCode == 2)
+			this.returnCode = 3;
+		else if (this.returnCode == 3)
+			this.returnCode = 6;
+		else if (this.returnCode == 6)
+			this.returnCode = 4;
+		else if (this.returnCode == 4)
 			this.returnCode = 0;
 		else if (this.returnCode == 0)
 			this.returnCode = 2;
 		else if (this.returnCode == 5) {
 			this.soundButton.setColor(Color.WHITE);
 			this.returnCode = 0;
-		} 
-		else
-			this.returnCode++;
+		}
 	}
 
 	/**
 	 * Shifts the focus to the previous menu item.
 	 */
 	private void previousMenuItem() {
-		if (this.returnCode == 0)
-			this.returnCode = 4;
-		else if (this.returnCode == 2)
+		if (this.returnCode == 2)
 			this.returnCode = 0;
+		else if (this.returnCode == 0)
+			this.returnCode = 4;
+		else if (this.returnCode == 4)
+			this.returnCode = 6;
+		else if (this.returnCode == 6)
+			this.returnCode = 3;
+		else if (this.returnCode == 3)
+			this.returnCode = 2;
 		else if (this.returnCode == 5) {
 			this.soundButton.setColor(Color.WHITE);
-			this.returnCode = 3;
+			this.returnCode = 6;
 		}
-		else
-			this.returnCode--;
 	}
 
 	/**
@@ -143,13 +154,5 @@ public class TitleScreen extends Screen {
 				this.height * 4 / 5 - 16);
 
 		drawManager.completeDrawing(this);
-	}
-
-	/**
-	 * Getter for the sound state.
-	 * @return isSoundOn of the sound button.
-	 */
-	public boolean getIsSoundOn() {
-		return this.soundButton.getIsSoundOn();
 	}
 }
