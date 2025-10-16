@@ -81,21 +81,18 @@ public class TitleScreen extends Screen {
 					this.isRunning = false;
 				} else {
 					this.soundButton.changeSoundState();
-<<<<<<< HEAD
 
 					if (SoundButton.getIsSoundOn()) {
 						// TODO : Sound setting.
 					}
 
 					this.selectionCooldown.reset();
-=======
 					if (this.soundButton.isTeamCreditScreenPossible()) {
 						this.returnCode = 8;
 						this.isRunning = false;
 					} else {
 						this.selectionCooldown.reset();
 					}
->>>>>>> 0eefe064c358c5cb8c2d131e8d1e5aef375b64ff
 				}
 			}
 			if (inputManager.isKeyDown(KeyEvent.VK_RIGHT)

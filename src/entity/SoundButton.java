@@ -26,18 +26,11 @@ public class SoundButton extends Entity {
     public SoundButton(final int positionX, final int positionY) {
         super(positionX, positionY, 32, 32, Color.WHITE);
 
-<<<<<<< HEAD
-        if (isSoundOn)
-            this.spriteType = SpriteType.SoundOn;
-        else
-            this.spriteType = SpriteType.SoundOff;
-=======
         if (isSoundOn) {
             this.spriteType = SpriteType.SoundOn;
         } else {
             this.spriteType = SpriteType.SoundOff;
         }
->>>>>>> 0eefe064c358c5cb8c2d131e8d1e5aef375b64ff
     }
 
     /**

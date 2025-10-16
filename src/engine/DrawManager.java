@@ -12,12 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-<<<<<<< HEAD
 import entity.FinalBoss;
 import entity.Ship;
-=======
 import screen.CreditScreen;
->>>>>>> 0eefe064c358c5cb8c2d131e8d1e5aef375b64ff
 import screen.Screen;
 import entity.Entity;
 
