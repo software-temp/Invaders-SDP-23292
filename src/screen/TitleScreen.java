@@ -74,17 +74,28 @@ public class TitleScreen extends Screen {
 				nextMenuItem();
 				this.selectionCooldown.reset();
 			}
+
 			if (inputManager.isKeyDown(KeyEvent.VK_SPACE)){
+				/** select menu*/
 				if (this.returnCode != 5) {
 					this.isRunning = false;
 				} else {
 					this.soundButton.changeSoundState();
+<<<<<<< HEAD
 
 					if (SoundButton.getIsSoundOn()) {
 						// TODO : Sound setting.
 					}
 
 					this.selectionCooldown.reset();
+=======
+					if (this.soundButton.isTeamCreditScreenPossible()) {
+						this.returnCode = 8;
+						this.isRunning = false;
+					} else {
+						this.selectionCooldown.reset();
+					}
+>>>>>>> 0eefe064c358c5cb8c2d131e8d1e5aef375b64ff
 				}
 			}
 			if (inputManager.isKeyDown(KeyEvent.VK_RIGHT)
@@ -93,6 +104,7 @@ public class TitleScreen extends Screen {
 				this.soundButton.setColor(Color.GREEN);
 				this.selectionCooldown.reset();
 			}
+
 			if (this.returnCode == 5 && inputManager.isKeyDown(KeyEvent.VK_LEFT)
 					|| inputManager.isKeyDown(KeyEvent.VK_A)) {
 				this.returnCode = 4;

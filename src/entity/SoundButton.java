@@ -11,6 +11,8 @@ public class SoundButton extends Entity {
 
     /** State of all Sound on/off */
     private static boolean isSoundOn = true;
+    /** Variables to store the number of times the button has been pressed (Using Easter egg)*/
+    private int turnOnSound = 0;
 
     /**
      * Constructor, establishes the button's properties.
@@ -24,10 +26,18 @@ public class SoundButton extends Entity {
     public SoundButton(final int positionX, final int positionY) {
         super(positionX, positionY, 32, 32, Color.WHITE);
 
+<<<<<<< HEAD
         if (isSoundOn)
             this.spriteType = SpriteType.SoundOn;
         else
             this.spriteType = SpriteType.SoundOff;
+=======
+        if (isSoundOn) {
+            this.spriteType = SpriteType.SoundOn;
+        } else {
+            this.spriteType = SpriteType.SoundOff;
+        }
+>>>>>>> 0eefe064c358c5cb8c2d131e8d1e5aef375b64ff
     }
 
     /**
@@ -42,12 +52,22 @@ public class SoundButton extends Entity {
      * Change the sound state and the button sprite.
      */
     public void changeSoundState() {
+
         if (isSoundOn) {
             this.spriteType = SpriteType.SoundOff;
             isSoundOn = false;
         } else {
             this.spriteType = SpriteType.SoundOn;
             isSoundOn = true;
+            turnOnSound++;
         }
+    }
+    /**
+     * Determine if you need to switch to the credit screen.
+     * @return If you turn on the sound more than five times, it's true, otherwise it's false.
+     * (Using Easter egg)
+     */
+    public boolean isTeamCreditScreenPossible() {
+        return this.turnOnSound >= 5;
     }
 }

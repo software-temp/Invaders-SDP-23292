@@ -8,6 +8,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+<<<<<<< HEAD
 import entity.ShopItem;
 import screen.GameScreen;
 import screen.HighScoreScreen;
@@ -17,6 +18,9 @@ import screen.TitleScreen;
 import screen.AchievementScreen;
 import engine.level.LevelManager;
 import screen.ShopScreen;
+=======
+import screen.*;
+>>>>>>> 0eefe064c358c5cb8c2d131e8d1e5aef375b64ff
 
 /**
  * Implements core game logic.
@@ -131,7 +135,36 @@ public final class Core {
                         frame.setScreen(currentScreen);
                         LOGGER.info("Closing game screen.");
 
+<<<<<<< HEAD
                         gameState = ((GameScreen) currentScreen).getGameState();
+=======
+				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+						+ " score screen at " + FPS + " fps, with a score of "
+						+ gameState.getScore() + ", "
+						+ gameState.getLivesRemaining() + " lives remaining, "
+						+ gameState.getBulletsShot() + " bullets shot and "
+						+ gameState.getShipsDestroyed() + " ships destroyed.");
+				currentScreen = new ScoreScreen(width, height, FPS, gameState);
+				returnCode = frame.setScreen(currentScreen);
+				LOGGER.info("Closing score screen.");
+				break;
+			case 3:
+				// High scores.
+				currentScreen = new HighScoreScreen(width, height, FPS);
+				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+						+ " high score screen at " + FPS + " fps.");
+				returnCode = frame.setScreen(currentScreen);
+				LOGGER.info("Closing high score screen.");
+				break;
+			case 8: // (추가) CreditScreen
+				currentScreen = new CreditScreen(width, height, FPS);
+				LOGGER.info("Starting " + currentScreen.getClass().getSimpleName() + " screen.");
+				returnCode = frame.setScreen(currentScreen);
+				break;
+			default:
+				break;
+			}
+>>>>>>> 0eefe064c358c5cb8c2d131e8d1e5aef375b64ff
 
                         if (gameState.getLivesRemaining() > 0) {
                             LOGGER.info("Opening shop screen with "
