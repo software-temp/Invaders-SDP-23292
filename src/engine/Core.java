@@ -89,7 +89,7 @@ public final class Core {
 
         int returnCode = 1;
 		do {
-
+            gameState = new GameState(1, 0, MAX_LIVES, 0, 0,gameState.getCoin());
 			switch (returnCode) {
                 case 1:
                     // Main menu.
