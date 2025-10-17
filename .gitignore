@@ -172,7 +172,10 @@ out/
 #############
 ## Custom
 #############
-
+*.log
+log*/
 log*
 *.ttf
 .checkstyle
+production
+achievements.dat
