@@ -245,7 +245,7 @@ public class GameScreen extends Screen {
 						bulletsToRemove.add(b);
 					}
 					/** If the bullet collides with ship */
-					else if (this.checkCollision(b, this.ship)) {
+					else if (this.livesP1 > 0 && this.checkCollision(b, this.ship)) {
 						if (!this.ship.isDestroyed()) {
 							this.ship.destroy();
 							this.livesP1--;
@@ -253,7 +253,7 @@ public class GameScreen extends Screen {
 						}
 						bulletsToRemove.add(b);
 					}
-					else if (this.shipP2 != null && !this.shipP2.isDestroyed() && this.checkCollision(b, this.shipP2)) {
+					else if (this.shipP2 != null && this.livesP2 > 0 && !this.shipP2.isDestroyed() && this.checkCollision(b, this.shipP2)) {
 						if (!this.shipP2.isDestroyed()) {
 							this.shipP2.destroy();
 							this.livesP2--;
@@ -270,7 +270,7 @@ public class GameScreen extends Screen {
 				this.gameTimer.start();
 			}
 
-			if (!this.ship.isDestroyed()) {
+			if (this.livesP1 > 0 && !this.ship.isDestroyed()) {
 				boolean p1Right = inputManager.isP1KeyDown(java.awt.event.KeyEvent.VK_D);
 				boolean p1Left  = inputManager.isP1KeyDown(java.awt.event.KeyEvent.VK_A);
 				boolean p1Up    = inputManager.isP1KeyDown(java.awt.event.KeyEvent.VK_W);
@@ -297,7 +297,7 @@ public class GameScreen extends Screen {
 				}
 			}
 
-			if (this.shipP2 != null && !this.shipP2.isDestroyed()) {
+			if (this.shipP2 != null && this.livesP2 > 0 && !this.shipP2.isDestroyed()) {
 				boolean p2Right = inputManager.isP2KeyDown(java.awt.event.KeyEvent.VK_RIGHT);
 				boolean p2Left  = inputManager.isP2KeyDown(java.awt.event.KeyEvent.VK_LEFT);
 				boolean p2Up    = inputManager.isP2KeyDown(java.awt.event.KeyEvent.VK_UP);
@@ -375,16 +375,19 @@ public class GameScreen extends Screen {
 			this.isRunning = false;
 	}
 
+
 	/**
 	 * Draws the elements associated with the screen.
 	 */
 	private void draw() {
 		drawManager.initDrawing(this);
 
-		drawManager.drawEntity(this.ship, this.ship.getPositionX(),
-				this.ship.getPositionY());
+		if (this.livesP1 > 0) {
+			drawManager.drawEntity(this.ship, this.ship.getPositionX(),
+					this.ship.getPositionY());
+		}
 
-		if (this.shipP2 != null) {
+		if (this.shipP2 != null && this.livesP2 > 0) {
 			drawManager.drawEntity(this.shipP2, this.shipP2.getPositionX(), this.shipP2.getPositionY());
 		}
 
@@ -492,7 +495,7 @@ public class GameScreen extends Screen {
 		Set<Bullet> recyclable = new HashSet<Bullet>();
 		for (Bullet bullet : this.bullets)
 			if (bullet.getSpeed() > 0) {
-				if (checkCollision(bullet, this.ship) && !this.levelFinished) {
+				if (this.livesP1 > 0 && checkCollision(bullet, this.ship) && !this.levelFinished) {
 					recyclable.add(bullet);
 					if (!this.ship.isInvincible()) {
 						if (!this.ship.isDestroyed()) {
@@ -503,7 +506,7 @@ public class GameScreen extends Screen {
 									+ " lives remaining.");
 						}
 					}
-				} else if (this.shipP2 != null && !this.shipP2.isDestroyed()
+				} else if (this.shipP2 != null && this.livesP2 > 0 && !this.shipP2.isDestroyed()
 						&& checkCollision(bullet, this.shipP2) && !this.levelFinished) {
 					recyclable.add(bullet);
 					if (!this.shipP2.isInvincible()) {
@@ -588,11 +591,11 @@ public class GameScreen extends Screen {
 
 		Set<DropItem> acquiredDropItems = new HashSet<DropItem>();
 
-		if (!this.levelFinished && (!this.ship.isDestroyed()
-				|| (this.shipP2 != null && !this.shipP2.isDestroyed()))) {
+		if (!this.levelFinished && ((this.livesP1 > 0 && !this.ship.isDestroyed())
+				|| (this.shipP2 != null && this.livesP2 > 0 && !this.shipP2.isDestroyed()))) {
 			for (DropItem dropItem : this.dropItems) {
 
-				if (!this.ship.isDestroyed() && checkCollision(this.ship, dropItem)) {
+				if (this.livesP1 > 0 && !this.ship.isDestroyed() && checkCollision(this.ship, dropItem)) {
 					this.logger.info("Player acquired dropItem: " + dropItem.getItemType());
 
 					// Add item to HUD display
@@ -624,7 +627,7 @@ public class GameScreen extends Screen {
 							break;
 					}
 					acquiredDropItems.add(dropItem);
-				} else if (this.shipP2 != null && !this.shipP2.isDestroyed()
+				} else if (this.shipP2 != null && this.livesP2 > 0 && !this.shipP2.isDestroyed()
 						&& checkCollision(this.shipP2, dropItem)) {
 					this.logger.info("Player acquired dropItem: " + dropItem.getItemType());
 
@@ -664,6 +667,7 @@ public class GameScreen extends Screen {
 		}
 	}
 
+	
 	/**
 	 * Checks if two entities are colliding.
 	 * 
