@@ -292,9 +292,17 @@ public final class DrawManager {
 	public void drawScore(final Screen screen, final int score) {
 		backBufferGraphics.setFont(fontRegular);
 		backBufferGraphics.setColor(Color.WHITE);
-		String scoreString = String.format("Score:%04d", score);
+		String scoreString = String.format("P1:%04d", score);
 		backBufferGraphics.drawString(scoreString, screen.getWidth() - 120, 25);
 	}
+    // === [ADD] 在 Score 下面一行绘制 P2 的分数 ===
+    public void drawScoreP2(final Screen screen, final int scoreP2) {
+        backBufferGraphics.setFont(fontRegular);
+        backBufferGraphics.setColor(Color.WHITE);
+        String text = String.format("P2:%04d", scoreP2);
+        // Y 坐标比 Score 多 15px，避免重叠
+        backBufferGraphics.drawString(text, screen.getWidth() - 120, 40);
+    }
 
 	/**
      * Draws the elapsed time on screen.

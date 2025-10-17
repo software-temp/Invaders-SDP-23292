@@ -80,7 +80,11 @@ public class GameScreen extends Screen {
 	private Set<DropItem> dropItems;
 	/** Current score. */
 	private int score;
-	/** Player lives left. */
+    // === [ADD] 双人独立分数 ===
+    private int scoreP1 = 0;
+    private int scoreP2 = 0;
+
+    /** Player lives left. */
 	private int livesP1;
 	private int livesP2;
 	/** Total bullets shot by the player. */
@@ -97,7 +101,18 @@ public class GameScreen extends Screen {
 	private int maxLives;
 	/** Current coin. */
 	private int coin;
-	/** bossBullets carry bullets which Boss fires */
+    // 统一的加分入口：既维护 P1/P2，又维护 legacy this.score（总分）
+    private void addPointsFor(Bullet bullet, int pts) {
+        Integer owner = (bullet != null ? bullet.getOwnerId() : null);
+        if (owner != null && owner == 2) {
+            this.scoreP2 += pts;   // P2
+        } else {
+            this.scoreP1 += pts;   // 默认给 P1（兼容 null）
+        }
+        this.score += pts;         // 继续维护总分，兼容旧流程
+    }
+
+    /** bossBullets carry bullets which Boss fires */
 	private Set<BossBullet> bossBullets;
 	/** Is the bullet on the screen erased */
   private boolean is_cleared = false;
@@ -165,8 +180,10 @@ public class GameScreen extends Screen {
 		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
 		enemyShipFormation.attach(this);
 		this.ship = new Ship(this.width / 2 - 100, ITEMS_SEPARATION_LINE_HEIGHT - 50);
-		this.shipP2 = new Ship(this.width / 2 + 100, ITEMS_SEPARATION_LINE_HEIGHT - 50);
-		// special enemy initial
+        this.ship.setPlayerId(1);   // === [ADD] 玩家1 ===
+        this.shipP2 = new Ship(this.width / 2 + 100, ITEMS_SEPARATION_LINE_HEIGHT - 50);
+        this.shipP2.setPlayerId(2); // === [ADD] 玩家2 ===
+        // special enemy initial
 		enemyShipSpecialFormation = new EnemyShipSpecialFormation(this.gameSettings,
 				Core.getVariableCooldown(BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE),
 				Core.getCooldown(BONUS_SHIP_EXPLOSION));
@@ -417,8 +434,9 @@ public class GameScreen extends Screen {
 			drawManager.drawEntity(dropItem, dropItem.getPositionX(), dropItem.getPositionY());
 
 		// Interface.
-		drawManager.drawScore(this, this.score);
-		drawManager.drawCoin(this,this.coin);
+        drawManager.drawScore(this, this.scoreP1);   // 顶部仍显示 P1
+        drawManager.drawScoreP2(this, this.scoreP2); // 新增第二行：P2
+        drawManager.drawCoin(this,this.coin);
 		drawManager.drawLives(this, this.livesP1);
 		drawManager.drawLivesP2(this, this.livesP2);
 		drawManager.drawTime(this, this.elapsedTime);
@@ -523,9 +541,10 @@ public class GameScreen extends Screen {
 				for (EnemyShip enemyShip : this.enemyShipFormation)
 					if (!enemyShip.isDestroyed()
 							&& checkCollision(bullet, enemyShip)) {
-						this.score += enemyShip.getPointValue();
-						this.coin += (enemyShip.getPointValue()/10);
-						this.shipsDestroyed++;
+                        int pts = enemyShip.getPointValue();
+                        addPointsFor(bullet, pts);
+                        this.coin += (pts / 10);
+                        this.shipsDestroyed++;
 						this.enemyShipFormation.destroy(enemyShip);
 						AchievementManager.getInstance().onEnemyDefeated();
 						DropItem.ItemType droppedType = DropItem.getRandomItemType(0.3);
@@ -553,9 +572,10 @@ public class GameScreen extends Screen {
 				for (EnemyShip enemyShipSpecial : this.enemyShipSpecialFormation)
 					if (enemyShipSpecial != null && !enemyShipSpecial.isDestroyed()
 							&& checkCollision(bullet, enemyShipSpecial)) {
-						this.score += enemyShipSpecial.getPointValue();
-						this.coin += (enemyShipSpecial.getPointValue()/10);
-						this.shipsDestroyed++;
+                        int pts = enemyShipSpecial.getPointValue();
+                        addPointsFor(bullet, pts);
+                        this.coin += (pts / 10);
+                        this.shipsDestroyed++;
 						this.enemyShipSpecialFormation.destroy(enemyShipSpecial);
 						recyclable.add(bullet);
 					}
@@ -565,9 +585,10 @@ public class GameScreen extends Screen {
 					this.omegaBoss.takeDamage(2);
 					if(this.omegaBoss.getHealPoint() <= 0) {
 						this.shipsDestroyed++;
-						this.score += this.omegaBoss.getPointValue();
-						this.coin += (this.omegaBoss.getPointValue()/10);
-						this.omegaBoss.destroy();
+                        int pts = this.omegaBoss.getPointValue();
+                        addPointsFor(bullet, pts);
+                        this.coin += (pts / 10);
+                        this.omegaBoss.destroy();
 						AchievementManager.getInstance().unlockAchievement("Boss Slayer");
 						this.bossExplosionCooldown.reset();
 					}
@@ -578,9 +599,10 @@ public class GameScreen extends Screen {
 				if(this.finalBoss != null && !this.finalBoss.isDestroyed() && checkCollision(bullet,this.finalBoss)){
 					this.finalBoss.takeDamage(1);
 					if(this.finalBoss.getHealPoint() <= 0){
-						this.score += this.finalBoss.getPointValue();
-						this.coin += (this.finalBoss.getPointValue()/10);
-						AchievementManager.getInstance().unlockAchievement("Boss Slayer");
+                        int pts = this.finalBoss.getPointValue();
+                        addPointsFor(bullet, pts);
+                        this.coin += (pts / 10);
+                        AchievementManager.getInstance().unlockAchievement("Boss Slayer");
 					}
 					recyclable.add(bullet);
 				}
@@ -616,8 +638,9 @@ public class GameScreen extends Screen {
 							break;
 						case Explode:
 							int destroyedEnemy = this.enemyShipFormation.destroyAll();
-							this.score += destroyedEnemy * 5;
-							break;
+                            int pts = destroyedEnemy * 5;
+                            addPointsFor(null, pts);
+                            break;
 						case Slow:
 							enemyShipFormation.activateSlowdown();
 							this.logger.info("Enemy formation slowed down!");
@@ -649,8 +672,9 @@ public class GameScreen extends Screen {
 							break;
 						case Explode:
 							int destroyedEnemy = this.enemyShipFormation.destroyAll();
-							this.score += destroyedEnemy * 5;
-							break;
+                            int pts = destroyedEnemy * 5;
+                            addPointsFor(null, pts);
+                            break;
 						case Slow:
 							enemyShipFormation.activateSlowdown();
 							this.logger.info("Enemy formation slowed down!");
