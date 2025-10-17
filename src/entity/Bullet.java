@@ -11,8 +11,14 @@ import engine.DrawManager.SpriteType;
  * 
  */
 public class Bullet extends Entity {
+    // === [ADD] owner 标记：1=P1, 2=P2，null 兼容旧逻辑 ===
+    private Integer ownerId;
 
-	/**
+    public Integer getOwnerId() { return ownerId; }
+    public void setOwnerId(Integer ownerId) { this.ownerId = ownerId; }
+
+
+    /**
 	 * Speed of the bullet, positive or negative depending on direction -
 	 * positive is down.
 	 */
