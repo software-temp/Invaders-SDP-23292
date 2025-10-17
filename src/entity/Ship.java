@@ -150,7 +150,7 @@ public class Ship extends Entity {
         if (!this.isInvincible) {
             SoundManager.play("sfx/impact.wav");
             this.destructionCooldown.reset();
-    	}
+        }
     }
 
 	/**
