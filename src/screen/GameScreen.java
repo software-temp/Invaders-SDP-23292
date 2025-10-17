@@ -57,6 +57,7 @@ public class GameScreen extends Screen {
 	private EnemyShipSpecialFormation enemyShipSpecialFormation;
 	/** Player's ship. */
 	private Ship ship;
+	private Ship shipP2;
 	/** Bonus enemy ship that appears sometimes. */
 	private EnemyShip enemyShipSpecial;
 	/** Minimum time between bonus ship appearances. */
@@ -158,7 +159,8 @@ public class GameScreen extends Screen {
 
 		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
 		enemyShipFormation.attach(this);
-		this.ship = new Ship(this.width / 2, ITEMS_SEPARATION_LINE_HEIGHT - 50);
+		this.ship = new Ship(this.width / 2 - 100, ITEMS_SEPARATION_LINE_HEIGHT - 50);
+		this.shipP2 = new Ship(this.width / 2 + 100, ITEMS_SEPARATION_LINE_HEIGHT - 50);
 		// special enemy initial
 		enemyShipSpecialFormation = new EnemyShipSpecialFormation(this.gameSettings,
 				Core.getVariableCooldown(BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE),
@@ -205,32 +207,26 @@ public class GameScreen extends Screen {
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
 
 			/** spawn final boss to check object (for test) */
-
-			if(this.finalBoss == null){
-				this.finalBoss = new FinalBoss(this.width/2-50,50,this.width,this.height);
+			if (this.finalBoss == null) {
+				this.finalBoss = new FinalBoss(this.width / 2 - 50, 50, this.width, this.height);
 				this.logger.info("Final Boss created.");
 			}
 
-
 			if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
-			/** called the boss shoot logic */
-					if(this.finalBoss.getHealPoint() > this.finalBoss.getMaxHp() / 4) {
-						bossBullets.addAll(this.finalBoss.shoot1());
-						bossBullets.addAll(this.finalBoss.shoot2());
-
-					}
+				/** called the boss shoot logic */
+				if (this.finalBoss.getHealPoint() > this.finalBoss.getMaxHp() / 4) {
+					bossBullets.addAll(this.finalBoss.shoot1());
+					bossBullets.addAll(this.finalBoss.shoot2());
+				} else {
 					/** Is the bullet on the screen erased */
-					else {
-						if (!is_cleared){
-							bossBullets.clear();
-							is_cleared = true;
-							logger.info("boss is angry");
-						}
-						else {
-
-							bossBullets.addAll(this.finalBoss.shoot3());
-						}
+					if (!is_cleared) {
+						bossBullets.clear();
+						is_cleared = true;
+						logger.info("boss is angry");
+					} else {
+						bossBullets.addAll(this.finalBoss.shoot3());
 					}
+				}
 
 				/** bullets to erase */
 				Set<BossBullet> bulletsToRemove = new HashSet<>();
@@ -243,12 +239,11 @@ public class GameScreen extends Screen {
 						bulletsToRemove.add(b);
 					}
 					/** If the bullet collides with ship */
-					else if (this.checkCollision(b,this.ship)) {
-						                        if (!this.ship.isDestroyed()) {
-						                            this.ship.destroy();
-						                            this.lives--;
-						                            this.logger.info("Hit on player ship, " + this.lives
-						                                    + " lives remaining.");
+					else if (this.checkCollision(b, this.ship)) {
+						if (!this.ship.isDestroyed()) {
+							this.ship.destroy();
+							this.lives--;
+							this.logger.info("Hit on player ship, " + this.lives + " lives remaining.");
 						}
 						bulletsToRemove.add(b);
 					}
@@ -258,51 +253,69 @@ public class GameScreen extends Screen {
 			}
 
 			if (!this.gameTimer.isRunning()) {
-                this.gameTimer.start();
-            }
+				this.gameTimer.start();
+			}
+
+
 			if (!this.ship.isDestroyed()) {
-				boolean moveRight = inputManager.isKeyDown(KeyEvent.VK_RIGHT)
-						|| inputManager.isKeyDown(KeyEvent.VK_D);
-				boolean moveLeft = inputManager.isKeyDown(KeyEvent.VK_LEFT)
-						|| inputManager.isKeyDown(KeyEvent.VK_A);
-				boolean moveUp = inputManager.isKeyDown(KeyEvent.VK_UP)
-						|| inputManager.isKeyDown(KeyEvent.VK_W);
-				boolean moveDown = inputManager.isKeyDown(KeyEvent.VK_DOWN)
-						|| inputManager.isKeyDown(KeyEvent.VK_S);
+				boolean p1Right = inputManager.isP1KeyDown(java.awt.event.KeyEvent.VK_D);
+				boolean p1Left  = inputManager.isP1KeyDown(java.awt.event.KeyEvent.VK_A);
+				boolean p1Up    = inputManager.isP1KeyDown(java.awt.event.KeyEvent.VK_W);
+				boolean p1Down  = inputManager.isP1KeyDown(java.awt.event.KeyEvent.VK_S);
+				boolean p1Fire  = inputManager.isP1KeyDown(java.awt.event.KeyEvent.VK_SPACE);
 
 				boolean isRightBorder = this.ship.getPositionX()
 						+ this.ship.getWidth() + this.ship.getSpeed() > this.width - 1;
-				boolean isLeftBorder = this.ship.getPositionX()
-						- this.ship.getSpeed() < 1;
-                boolean isUpBorder = this.ship.getPositionY()
-                        - this.ship.getSpeed() < SEPARATION_LINE_HEIGHT;
-                boolean isDownBorder = this.ship.getPositionY()
-                        + this.ship.getHeight() + this.ship.getSpeed() > ITEMS_SEPARATION_LINE_HEIGHT;
+				boolean isLeftBorder = this.ship.getPositionX() - this.ship.getSpeed() < 1;
+				boolean isUpBorder = this.ship.getPositionY() - this.ship.getSpeed() < SEPARATION_LINE_HEIGHT;
+				boolean isDownBorder = this.ship.getPositionY()
+						+ this.ship.getHeight() + this.ship.getSpeed() > ITEMS_SEPARATION_LINE_HEIGHT;
 
-				if (moveRight && !isRightBorder) {
-					this.ship.moveRight();
-				}
-				if (moveLeft && !isLeftBorder) {
-					this.ship.moveLeft();
-				}
-                if (moveUp && !isUpBorder) {
-                    this.ship.moveUp();
-                }
-                if (moveDown && !isDownBorder) {
-                    this.ship.moveDown();
-                }
+				if (p1Right && !isRightBorder) this.ship.moveRight();
+				if (p1Left  && !isLeftBorder)  this.ship.moveLeft();
+				if (p1Up    && !isUpBorder)    this.ship.moveUp();
+				if (p1Down  && !isDownBorder)  this.ship.moveDown();
 
-				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
-                    if (this.ship.shoot(this.bullets)) {
+				if (p1Fire) {
+					if (this.ship.shoot(this.bullets)) {
 						this.bulletsShot++;
 						AchievementManager.getInstance().onShotFired();
 					}
-			}
-			if (this.omegaBoss != null){
-				if(!this.omegaBoss.isDestroyed()) {
-					this.omegaBoss.update();
 				}
-				else if (this.bossExplosionCooldown.checkFinished()) {
+			}
+
+
+			if (this.shipP2 != null && !this.shipP2.isDestroyed()) {
+				boolean p2Right = inputManager.isP2KeyDown(java.awt.event.KeyEvent.VK_RIGHT);
+				boolean p2Left  = inputManager.isP2KeyDown(java.awt.event.KeyEvent.VK_LEFT);
+				boolean p2Up    = inputManager.isP2KeyDown(java.awt.event.KeyEvent.VK_UP);
+				boolean p2Down  = inputManager.isP2KeyDown(java.awt.event.KeyEvent.VK_DOWN);
+				boolean p2Fire  = inputManager.isP2KeyDown(java.awt.event.KeyEvent.VK_ENTER);
+
+				boolean p2RightBorder = this.shipP2.getPositionX()
+						+ this.shipP2.getWidth() + this.shipP2.getSpeed() > this.width - 1;
+				boolean p2LeftBorder = this.shipP2.getPositionX() - this.shipP2.getSpeed() < 1;
+				boolean p2UpBorder = this.shipP2.getPositionY() - this.shipP2.getSpeed() < SEPARATION_LINE_HEIGHT;
+				boolean p2DownBorder = this.shipP2.getPositionY()
+						+ this.shipP2.getHeight() + this.shipP2.getSpeed() > ITEMS_SEPARATION_LINE_HEIGHT;
+
+				if (p2Right && !p2RightBorder) this.shipP2.moveRight();
+				if (p2Left  && !p2LeftBorder)  this.shipP2.moveLeft();
+				if (p2Up    && !p2UpBorder)    this.shipP2.moveUp();
+				if (p2Down  && !p2DownBorder)  this.shipP2.moveDown();
+
+				if (p2Fire) {
+					if (this.shipP2.shoot(this.bullets)) {
+						this.bulletsShot++;
+						AchievementManager.getInstance().onShotFired();
+					}
+				}
+			}
+
+			if (this.omegaBoss != null) {
+				if (!this.omegaBoss.isDestroyed()) {
+					this.omegaBoss.update();
+				} else if (this.bossExplosionCooldown.checkFinished()) {
 					this.omegaBoss = null;
 				}
 			}
@@ -312,41 +325,41 @@ public class GameScreen extends Screen {
 				this.enemyShipFormation.shoot(this.bullets);
 			}
 			/** when the final boss is at the field */
-			if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
+			if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
 				this.finalBoss.update();
 			}
 			// special enemy update
 			this.enemyShipSpecialFormation.update();
 		}
+
 		if (this.gameTimer.isRunning()) {
-            this.elapsedTime = this.gameTimer.getElapsedTime();
-				AchievementManager.getInstance().onTimeElapsedSeconds((int)(this.elapsedTime / 1000));
-        }
-        cleanItems();
+			this.elapsedTime = this.gameTimer.getElapsedTime();
+			AchievementManager.getInstance().onTimeElapsedSeconds((int) (this.elapsedTime / 1000));
+		}
+		cleanItems();
 		manageCollisions();
 		cleanBullets();
 		draw();
 
-		        if ((this.enemyShipFormation.isEmpty() || this.lives == 0)
-		                && !this.levelFinished) {
-		            this.levelFinished = true;
-		            this.screenFinishedCooldown.reset();
-		            if (this.gameTimer.isRunning()) {
-		                this.gameTimer.stop();
-		            }
-		
-		            if (this.lives > 0) {
-		                if (this.level == 1) {
-		                    AchievementManager.getInstance().unlockAchievement("Beginner");
-		                } else if (this.level == 3) {
-		                    AchievementManager.getInstance().unlockAchievement("Intermediate");
-		                }
-		            }
-		        }
+		if ((this.enemyShipFormation.isEmpty() || this.lives == 0) && !this.levelFinished) {
+			this.levelFinished = true;
+			this.screenFinishedCooldown.reset();
+			if (this.gameTimer.isRunning()) {
+				this.gameTimer.stop();
+			}
+
+			if (this.lives > 0) {
+				if (this.level == 1) {
+					AchievementManager.getInstance().unlockAchievement("Beginner");
+				} else if (this.level == 3) {
+					AchievementManager.getInstance().unlockAchievement("Intermediate");
+				}
+			}
+		}
 		if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
 			this.isRunning = false;
-
 	}
+
 
 	/**
 	 * Draws the elements associated with the screen.
@@ -356,6 +369,11 @@ public class GameScreen extends Screen {
 
 		drawManager.drawEntity(this.ship, this.ship.getPositionX(),
 				this.ship.getPositionY());
+
+		if (this.shipP2 != null && !this.shipP2.isDestroyed()) {
+			drawManager.drawEntity(this.shipP2, this.shipP2.getPositionX(), this.shipP2.getPositionY());
+		}
+
 		// special enemy draw
 		enemyShipSpecialFormation.draw();
 
