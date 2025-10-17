@@ -108,21 +108,23 @@ public class Ship extends Entity {
 			if (bulletCount == 1) {
 				// Normal shot (when Spread Shot is not purchased)
 				bullets.add(BulletPool.getBullet(centerX, centerY, BULLET_SPEED));
-			} else {
-				// Fire Spread Shot
-				int startOffset = -(bulletCount / 2) * spacing;
+                SoundManager.play("sfx/laser.wav");
+            } else {
+                // Fire Spread Shot
+                int startOffset = -(bulletCount / 2) * spacing;
 
-				for (int i = 0; i < bulletCount; i++) {
-					int offsetX = startOffset + (i * spacing);
-					bullets.add(BulletPool.getBullet(
+                for (int i = 0; i < bulletCount; i++) {
+                    int offsetX = startOffset + (i * spacing);
+                    bullets.add(BulletPool.getBullet(
 							centerX + offsetX,
 							centerY,
 							BULLET_SPEED
 					));
+                    // might consider putting a different sound
                     SoundManager.play("sfx/laser.wav");
-				}
-			}
-			return true;
+                }
+            }
+            return true;
 		}
 		return false;
 	}
@@ -144,12 +146,12 @@ public class Ship extends Entity {
 
 	/**
 	 * Switches the ship to its destroyed state.
-     */
-    public final void destroy() {
+	 */
+	public final void destroy() {
         if (!this.isInvincible) {
             SoundManager.play("sfx/impact.wav");
             this.destructionCooldown.reset();
-	    }
+        }
     }
 
 	/**
