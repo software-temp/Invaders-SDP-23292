@@ -667,7 +667,7 @@ public class GameScreen extends Screen {
 		}
 	}
 
-	
+
 	/**
 	 * Checks if two entities are colliding.
 	 * 
