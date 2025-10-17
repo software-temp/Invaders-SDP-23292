@@ -81,7 +81,8 @@ public class GameScreen extends Screen {
 	/** Current score. */
 	private int score;
 	/** Player lives left. */
-	private int lives;
+	private int livesP1;
+	private int livesP2;
 	/** Total bullets shot by the player. */
 	private int bulletsShot;
 	/** Total ships destroyed by the player. */
@@ -141,9 +142,13 @@ public class GameScreen extends Screen {
 		        this.level = gameState.getLevel();
 		        this.score = gameState.getScore();
                 this.coin = gameState.getCoin();
-		        this.lives = gameState.getLivesRemaining();
-		        this.gameState = gameState;		if (this.bonusLife)
-			this.lives++;
+		        this.livesP1 = gameState.getLivesRemaining();
+				this.livesP2 = gameState.getLivesRemainingP2();
+		        this.gameState = gameState;
+				if (this.bonusLife) {
+					this.livesP1++;
+					this.livesP2++;
+				}
 		this.bulletsShot = gameState.getBulletsShot();
 		this.shipsDestroyed = gameState.getShipsDestroyed();
 	}
@@ -192,7 +197,8 @@ public class GameScreen extends Screen {
 	public final int run() {
 		super.run();
 
-		this.score += LIFE_SCORE * (this.lives - 1);
+		this.score += LIFE_SCORE * (this.livesP1 - 1);
+		this.score += LIFE_SCORE * (this.livesP2 - 1);
 		this.logger.info("Screen cleared with a score of " + this.score);
 
 		return this.returnCode;
@@ -242,16 +248,16 @@ public class GameScreen extends Screen {
 					else if (this.checkCollision(b, this.ship)) {
 						if (!this.ship.isDestroyed()) {
 							this.ship.destroy();
-							this.lives--;
-							this.logger.info("Hit on player ship, " + this.lives + " lives remaining.");
+							this.livesP1--;
+							this.logger.info("Hit on player ship, " + this.livesP1 + " lives remaining.");
 						}
 						bulletsToRemove.add(b);
 					}
 					else if (this.shipP2 != null && !this.shipP2.isDestroyed() && this.checkCollision(b, this.shipP2)) {
 						if (!this.shipP2.isDestroyed()) {
 							this.shipP2.destroy();
-							this.lives--;
-							this.logger.info("Hit on player ship, " + this.lives + " lives remaining.");
+							this.livesP2--;
+							this.logger.info("Hit on player ship, " + this.livesP2 + " lives remaining.");
 						}
 						bulletsToRemove.add(b);
 					}
@@ -350,14 +356,14 @@ public class GameScreen extends Screen {
 		cleanBullets();
 		draw();
 
-		if ((this.enemyShipFormation.isEmpty() || this.lives == 0) && !this.levelFinished) {
+		if ((this.enemyShipFormation.isEmpty() || ((this.livesP1 == 0) && (this.shipP2 == null || this.livesP2 == 0))) && !this.levelFinished) {
 			this.levelFinished = true;
 			this.screenFinishedCooldown.reset();
 			if (this.gameTimer.isRunning()) {
 				this.gameTimer.stop();
 			}
 
-			if (this.lives > 0) {
+			if ((this.livesP1 > 0) || (this.shipP2 != null && this.livesP2 > 0)) {
 				if (this.level == 1) {
 					AchievementManager.getInstance().unlockAchievement("Beginner");
 				} else if (this.level == 3) {
@@ -410,7 +416,8 @@ public class GameScreen extends Screen {
 		// Interface.
 		drawManager.drawScore(this, this.score);
 		drawManager.drawCoin(this,this.coin);
-		drawManager.drawLives(this, this.lives);
+		drawManager.drawLives(this, this.livesP1);
+		drawManager.drawLivesP2(this, this.livesP2);
 		drawManager.drawTime(this, this.elapsedTime);
 		drawManager.drawItemsHUD(this);
 		drawManager.drawLevel(this, this.level);
@@ -490,9 +497,9 @@ public class GameScreen extends Screen {
 					if (!this.ship.isInvincible()) {
 						if (!this.ship.isDestroyed()) {
 							this.ship.destroy();
-							this.lives--;
+							this.livesP1--;
 							showHealthPopup("-1 Health");
-							this.logger.info("Hit on player ship, " + this.lives
+							this.logger.info("Hit on player ship, " + this.livesP1
 									+ " lives remaining.");
 						}
 					}
@@ -502,9 +509,9 @@ public class GameScreen extends Screen {
 					if (!this.shipP2.isInvincible()) {
 						if (!this.shipP2.isDestroyed()) {
 							this.shipP2.destroy();
-							this.lives--;
+							this.livesP2--;
 							showHealthPopup("-1 Health");
-							this.logger.info("Hit on player ship, " + this.lives
+							this.logger.info("Hit on player ship, " + this.livesP2
 									+ " lives remaining.");
 						}
 					}
@@ -626,7 +633,7 @@ public class GameScreen extends Screen {
 
 					switch (dropItem.getItemType()) {
 						case Heal:
-							gainLife();
+							gainLifeP2();
 							break;
 						case Shield:
 							shipP2.activateInvincibility(5000); // 5 seconds of invincibility
@@ -716,15 +723,21 @@ public class GameScreen extends Screen {
 	        if (this.coin > 2000) {
 	            AchievementManager.getInstance().unlockAchievement("Mr. Greedy");
 	        }
-	        return new GameState(this.level, this.score, this.lives,
+	        return new GameState(this.level, this.score, this.livesP1,this.livesP2,
 	                this.bulletsShot, this.shipsDestroyed,this.coin);
 	    }
 	/**
 	 * Adds one life to the player.
 	 */
 	public final void gainLife() {
-		if (this.lives < this.maxLives) {
-			this.lives++;
+		if (this.livesP1 < this.maxLives) {
+			this.livesP1++;
+		}
+	}
+
+	public final void gainLifeP2() {
+		if (this.livesP2 < this.maxLives) {
+			this.livesP2++;
 		}
 	}
 }
