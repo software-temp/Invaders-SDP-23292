@@ -74,14 +74,25 @@ public class TitleScreen extends Screen {
 				nextMenuItem();
 				this.selectionCooldown.reset();
 			}
+
 			if (inputManager.isKeyDown(KeyEvent.VK_SPACE)){
+				/** select menu*/
 				if (this.returnCode != 5) {
 					this.isRunning = false;
 				} else {
 					this.soundButton.changeSoundState();
-					// TODO : Sound setting.
+
+					if (SoundButton.getIsSoundOn()) {
+						// TODO : Sound setting.
+					}
 
 					this.selectionCooldown.reset();
+					if (this.soundButton.isTeamCreditScreenPossible()) {
+						this.returnCode = 8;
+						this.isRunning = false;
+					} else {
+						this.selectionCooldown.reset();
+					}
 				}
 			}
 			if (inputManager.isKeyDown(KeyEvent.VK_RIGHT)
@@ -90,6 +101,7 @@ public class TitleScreen extends Screen {
 				this.soundButton.setColor(Color.GREEN);
 				this.selectionCooldown.reset();
 			}
+
 			if (this.returnCode == 5 && inputManager.isKeyDown(KeyEvent.VK_LEFT)
 					|| inputManager.isKeyDown(KeyEvent.VK_A)) {
 				this.returnCode = 4;
@@ -135,7 +147,7 @@ public class TitleScreen extends Screen {
 			this.returnCode = 2;
 		else if (this.returnCode == 5) {
 			this.soundButton.setColor(Color.WHITE);
-			this.returnCode = 3;
+			this.returnCode = 6;
 		}
 	}
 
@@ -151,13 +163,5 @@ public class TitleScreen extends Screen {
 				this.height * 4 / 5 - 16);
 
 		drawManager.completeDrawing(this);
-	}
-
-	/**
-	 * Getter for the sound state.
-	 * @return isSoundOn of the sound button.
-	 */
-	public boolean getIsSoundOn() {
-		return this.soundButton.getIsSoundOn();
 	}
 }
