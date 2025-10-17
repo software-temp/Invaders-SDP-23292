@@ -27,6 +27,8 @@ public class EnemyShip extends Entity {
 
 	/** Cooldown between sprite changes. */
 	private Cooldown animationCooldown;
+    /** Cooldown between explosions. */
+    private Cooldown explosionCooldown;
 	/** Checks if the ship has been hit by a bullet. */
 	private boolean isDestroyed;
 	/** Values of the ship, in points, when destroyed. */
@@ -64,6 +66,7 @@ public class EnemyShip extends Entity {
 
 		this.spriteType = spriteType;
 		this.animationCooldown = Core.getCooldown(500);
+        this.explosionCooldown = Core.getCooldown(500);
 		this.isDestroyed = false;
 
 		switch (this.spriteType) {
@@ -97,6 +100,7 @@ public class EnemyShip extends Entity {
 		this.spriteType = SpriteType.EnemyShipSpecial;
 		this.isDestroyed = false;
 		this.pointValue = BONUS_TYPE_POINTS;
+        this.explosionCooldown = Core.getCooldown(500);
 	}
 
 	/**
@@ -157,9 +161,12 @@ public class EnemyShip extends Entity {
 	 * Destroys the ship, causing an explosion.
 	 */
 	public final void destroy() {
-		this.isDestroyed = true;
-		this.spriteType = SpriteType.Explosion;
-        SoundManager.play("sfx/disappearance.wav");
+        if (!this.isDestroyed) {
+            this.isDestroyed = true;
+            this.spriteType = SpriteType.Explosion;
+            SoundManager.play("sfx/disappearance.wav");
+            this.explosionCooldown.reset();
+        }
 	}
 
 	/**
@@ -186,4 +193,12 @@ public class EnemyShip extends Entity {
 	public final void setXSpeed(final int x_speed) {
 		this.X_SPEED = x_speed;
 	}
+
+    /**
+     * Check if the explosion effect is finished.
+     * @return True if the explosion is finished.
+     */
+    public final boolean isExplosionFinished() {
+        return this.isDestroyed && this.explosionCooldown.checkFinished();
+    }
 }
