@@ -247,6 +247,14 @@ public class GameScreen extends Screen {
 						}
 						bulletsToRemove.add(b);
 					}
+					else if (this.shipP2 != null && !this.shipP2.isDestroyed() && this.checkCollision(b, this.shipP2)) {
+						if (!this.shipP2.isDestroyed()) {
+							this.shipP2.destroy();
+							this.lives--;
+							this.logger.info("Hit on player ship, " + this.lives + " lives remaining.");
+						}
+						bulletsToRemove.add(b);
+					}
 				}
 				/** all bullets are removed */
 				bossBullets.removeAll(bulletsToRemove);
@@ -255,7 +263,6 @@ public class GameScreen extends Screen {
 			if (!this.gameTimer.isRunning()) {
 				this.gameTimer.start();
 			}
-
 
 			if (!this.ship.isDestroyed()) {
 				boolean p1Right = inputManager.isP1KeyDown(java.awt.event.KeyEvent.VK_D);
@@ -283,7 +290,6 @@ public class GameScreen extends Screen {
 					}
 				}
 			}
-
 
 			if (this.shipP2 != null && !this.shipP2.isDestroyed()) {
 				boolean p2Right = inputManager.isP2KeyDown(java.awt.event.KeyEvent.VK_RIGHT);
@@ -320,6 +326,9 @@ public class GameScreen extends Screen {
 				}
 			}
 			this.ship.update();
+			if (this.shipP2 != null) {
+				this.shipP2.update();
+			}
 			if (!DropItem.isTimeFreezeActive()) {
 				this.enemyShipFormation.update();
 				this.enemyShipFormation.shoot(this.bullets);
@@ -360,7 +369,6 @@ public class GameScreen extends Screen {
 			this.isRunning = false;
 	}
 
-
 	/**
 	 * Draws the elements associated with the screen.
 	 */
@@ -370,7 +378,7 @@ public class GameScreen extends Screen {
 		drawManager.drawEntity(this.ship, this.ship.getPositionX(),
 				this.ship.getPositionY());
 
-		if (this.shipP2 != null && !this.shipP2.isDestroyed()) {
+		if (this.shipP2 != null) {
 			drawManager.drawEntity(this.shipP2, this.shipP2.getPositionX(), this.shipP2.getPositionY());
 		}
 
@@ -396,8 +404,8 @@ public class GameScreen extends Screen {
 			drawManager.drawEntity(bullet, bullet.getPositionX(),
 					bullet.getPositionY());
 
-    for (DropItem dropItem : this.dropItems)
-      drawManager.drawEntity(dropItem, dropItem.getPositionX(), dropItem.getPositionY());
+		for (DropItem dropItem : this.dropItems)
+			drawManager.drawEntity(dropItem, dropItem.getPositionX(), dropItem.getPositionY());
 
 		// Interface.
 		drawManager.drawScore(this, this.score);
@@ -405,25 +413,24 @@ public class GameScreen extends Screen {
 		drawManager.drawLives(this, this.lives);
 		drawManager.drawTime(this, this.elapsedTime);
 		drawManager.drawItemsHUD(this);
-        drawManager.drawLevel(this, this.level);
-        drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
+		drawManager.drawLevel(this, this.level);
+		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 		drawManager.drawHorizontalLine(this, ITEMS_SEPARATION_LINE_HEIGHT);
 
-        if (this.achievementText != null && !this.achievementPopupCooldown.checkFinished()) {
-            drawManager.drawAchievementPopup(this, this.achievementText);
-        } else {
-            this.achievementText = null; // clear once expired
-        }
+		if (this.achievementText != null && !this.achievementPopupCooldown.checkFinished()) {
+			drawManager.drawAchievementPopup(this, this.achievementText);
+		} else {
+			this.achievementText = null; // clear once expired
+		}
 
+		// Health notification popup
+		if(this.healthPopupText != null && !this.healthPopupCooldown.checkFinished()) {
+			drawManager.drawHealthPopup(this, this.healthPopupText);
+		} else {
+			this.healthPopupText = null;
+		}
 
-        // Health notification popup
-        if(this.healthPopupText != null && !this.healthPopupCooldown.checkFinished()) {
-            drawManager.drawHealthPopup(this, this.healthPopupText);
-        } else {
-            this.healthPopupText = null;
-        }
-
-        // Countdown to game start.
+		// Countdown to game start.
 		if (!this.inputDelay.checkFinished()) {
 			int countdown = (int) ((INPUT_DELAY
 					- (System.currentTimeMillis()
@@ -438,6 +445,7 @@ public class GameScreen extends Screen {
 
 		drawManager.completeDrawing(this);
 	}
+
 
 	/**
 	 * Cleans bullets that go off screen.
@@ -481,9 +489,22 @@ public class GameScreen extends Screen {
 					recyclable.add(bullet);
 					if (!this.ship.isInvincible()) {
 						if (!this.ship.isDestroyed()) {
-							                           this.ship.destroy();
-							                           this.lives--;
-							                           showHealthPopup("-1 Health");							this.logger.info("Hit on player ship, " + this.lives
+							this.ship.destroy();
+							this.lives--;
+							showHealthPopup("-1 Health");
+							this.logger.info("Hit on player ship, " + this.lives
+									+ " lives remaining.");
+						}
+					}
+				} else if (this.shipP2 != null && !this.shipP2.isDestroyed()
+						&& checkCollision(bullet, this.shipP2) && !this.levelFinished) {
+					recyclable.add(bullet);
+					if (!this.shipP2.isInvincible()) {
+						if (!this.shipP2.isDestroyed()) {
+							this.shipP2.destroy();
+							this.lives--;
+							showHealthPopup("-1 Health");
+							this.logger.info("Hit on player ship, " + this.lives
 									+ " lives remaining.");
 						}
 					}
@@ -493,23 +514,23 @@ public class GameScreen extends Screen {
 					if (!enemyShip.isDestroyed()
 							&& checkCollision(bullet, enemyShip)) {
 						this.score += enemyShip.getPointValue();
-                        this.coin += (enemyShip.getPointValue()/10);
+						this.coin += (enemyShip.getPointValue()/10);
 						this.shipsDestroyed++;
 						this.enemyShipFormation.destroy(enemyShip);
 						AchievementManager.getInstance().onEnemyDefeated();
-                        DropItem.ItemType droppedType = DropItem.getRandomItemType(0.3);
-                        if (droppedType != null) {
-                            final int ITEM_DROP_SPEED = 2;
+						DropItem.ItemType droppedType = DropItem.getRandomItemType(0.3);
+						if (droppedType != null) {
+							final int ITEM_DROP_SPEED = 2;
 
-                            DropItem newDropItem = ItemPool.getItem(
-                                    enemyShip.getPositionX() + enemyShip.getWidth() / 2,
-                                    enemyShip.getPositionY() + enemyShip.getHeight() / 2,
-                                    ITEM_DROP_SPEED,
-                                    droppedType
-                            );
-                            this.dropItems.add(newDropItem);
-                            this.logger.info("An item (" + droppedType + ") dropped");
-                        }
+							DropItem newDropItem = ItemPool.getItem(
+									enemyShip.getPositionX() + enemyShip.getWidth() / 2,
+									enemyShip.getPositionY() + enemyShip.getHeight() / 2,
+									ITEM_DROP_SPEED,
+									droppedType
+							);
+							this.dropItems.add(newDropItem);
+							this.logger.info("An item (" + droppedType + ") dropped");
+						}
 
 						if (!bullet.penetration()) {
 							recyclable.add(bullet);
@@ -527,7 +548,7 @@ public class GameScreen extends Screen {
 						this.shipsDestroyed++;
 						this.enemyShipSpecialFormation.destroy(enemyShipSpecial);
 						recyclable.add(bullet);
-				}
+					}
 				if (this.omegaBoss != null
 						&& !this.omegaBoss.isDestroyed()
 						&& checkCollision(bullet, this.omegaBoss)) {
@@ -535,9 +556,10 @@ public class GameScreen extends Screen {
 					if(this.omegaBoss.getHealPoint() <= 0) {
 						this.shipsDestroyed++;
 						this.score += this.omegaBoss.getPointValue();
-						                        this.coin += (this.omegaBoss.getPointValue()/10);
-						                        this.omegaBoss.destroy();
-						                        AchievementManager.getInstance().unlockAchievement("Boss Slayer");						this.bossExplosionCooldown.reset();
+						this.coin += (this.omegaBoss.getPointValue()/10);
+						this.omegaBoss.destroy();
+						AchievementManager.getInstance().unlockAchievement("Boss Slayer");
+						this.bossExplosionCooldown.reset();
 					}
 					recyclable.add(bullet);
 				}
@@ -545,63 +567,95 @@ public class GameScreen extends Screen {
 				/** when final boss collide with bullet */
 				if(this.finalBoss != null && !this.finalBoss.isDestroyed() && checkCollision(bullet,this.finalBoss)){
 					this.finalBoss.takeDamage(1);
-					                    if(this.finalBoss.getHealPoint() <= 0){
-					                        this.score += this.finalBoss.getPointValue();
-					                        this.coin += (this.finalBoss.getPointValue()/10);
-					                        AchievementManager.getInstance().unlockAchievement("Boss Slayer");
-					                    }					recyclable.add(bullet);
+					if(this.finalBoss.getHealPoint() <= 0){
+						this.score += this.finalBoss.getPointValue();
+						this.coin += (this.finalBoss.getPointValue()/10);
+						AchievementManager.getInstance().unlockAchievement("Boss Slayer");
+					}
+					recyclable.add(bullet);
 				}
 
 			}
 		this.bullets.removeAll(recyclable);
 		BulletPool.recycle(recyclable);
 
-        Set<DropItem> acquiredDropItems = new HashSet<DropItem>();
+		Set<DropItem> acquiredDropItems = new HashSet<DropItem>();
 
-        if (!this.levelFinished && !this.ship.isDestroyed()) {
-            for (DropItem dropItem : this.dropItems) {
+		if (!this.levelFinished && (!this.ship.isDestroyed()
+				|| (this.shipP2 != null && !this.shipP2.isDestroyed()))) {
+			for (DropItem dropItem : this.dropItems) {
 
-                if (checkCollision(this.ship, dropItem)) {
-                    this.logger.info("Player acquired dropItem: " + dropItem.getItemType());
-                    
-                    // Add item to HUD display
-                    ItemHUDManager.getInstance().addDroppedItem(dropItem.getItemType());
-                    
-                    switch (dropItem.getItemType()) {
-                        case Heal:
-                            gainLife();
-                            break;
-                        case Shield:
-                            ship.activateInvincibility(5000); // 5 seconds of invincibility
-                            break;
+				if (!this.ship.isDestroyed() && checkCollision(this.ship, dropItem)) {
+					this.logger.info("Player acquired dropItem: " + dropItem.getItemType());
+
+					// Add item to HUD display
+					ItemHUDManager.getInstance().addDroppedItem(dropItem.getItemType());
+
+					switch (dropItem.getItemType()) {
+						case Heal:
+							gainLife();
+							break;
+						case Shield:
+							ship.activateInvincibility(5000); // 5 seconds of invincibility
+							break;
 						case Stop:
 							DropItem.applyTimeFreezeItem(3000);
 							break;
 						case Push:
 							DropItem.PushbackItem(this.enemyShipFormation,20);
 							break;
-                        case Explode:
-                            int destroyedEnemy = this.enemyShipFormation.destroyAll();
-                            this.score += destroyedEnemy * 5;
-                            break;
-                        case Slow:
-                            enemyShipFormation.activateSlowdown();
-                            this.logger.info("Enemy formation slowed down!");
-                            break;
-                        default:
-                            // For other dropItem types. Free to add!
-                            break;
-                    }
-                    acquiredDropItems.add(dropItem);
-                }
-            }
-            this.dropItems.removeAll(acquiredDropItems);
-            ItemPool.recycle(acquiredDropItems);
-        }
-    }
+						case Explode:
+							int destroyedEnemy = this.enemyShipFormation.destroyAll();
+							this.score += destroyedEnemy * 5;
+							break;
+						case Slow:
+							enemyShipFormation.activateSlowdown();
+							this.logger.info("Enemy formation slowed down!");
+							break;
+						default:
+							// For other dropItem types. Free to add!
+							break;
+					}
+					acquiredDropItems.add(dropItem);
+				} else if (this.shipP2 != null && !this.shipP2.isDestroyed()
+						&& checkCollision(this.shipP2, dropItem)) {
+					this.logger.info("Player acquired dropItem: " + dropItem.getItemType());
 
+					// Add item to HUD display
+					ItemHUDManager.getInstance().addDroppedItem(dropItem.getItemType());
 
-
+					switch (dropItem.getItemType()) {
+						case Heal:
+							gainLife();
+							break;
+						case Shield:
+							shipP2.activateInvincibility(5000); // 5 seconds of invincibility
+							break;
+						case Stop:
+							DropItem.applyTimeFreezeItem(3000);
+							break;
+						case Push:
+							DropItem.PushbackItem(this.enemyShipFormation,20);
+							break;
+						case Explode:
+							int destroyedEnemy = this.enemyShipFormation.destroyAll();
+							this.score += destroyedEnemy * 5;
+							break;
+						case Slow:
+							enemyShipFormation.activateSlowdown();
+							this.logger.info("Enemy formation slowed down!");
+							break;
+						default:
+							// For other dropItem types. Free to add!
+							break;
+					}
+					acquiredDropItems.add(dropItem);
+				}
+			}
+			this.dropItems.removeAll(acquiredDropItems);
+			ItemPool.recycle(acquiredDropItems);
+		}
+	}
 
 	/**
 	 * Checks if two entities are colliding.
