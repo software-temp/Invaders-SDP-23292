@@ -13,6 +13,7 @@ import screen.GameScreen;
 import screen.HighScoreScreen;
 import screen.ScoreScreen;
 import screen.Screen;
+import screen.ShopScreen;
 import screen.TitleScreen;
 import screen.AchievementScreen;
 import engine.level.LevelManager;
