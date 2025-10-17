@@ -131,7 +131,7 @@ public final class Core {
                                 + " game screen at " + FPS + " fps.");
                         frame.setScreen(currentScreen);
                         LOGGER.info("Closing game screen.");
-
+                        gameState = ((GameScreen) currentScreen).getGameState();
                         if (gameState.getLivesRemaining() > 0) {
                             LOGGER.info("Opening shop screen with "
                                     + gameState.getCoin() + " coins.");
