@@ -259,15 +259,17 @@ public class TitleScreen extends Screen {
 					this.isRunning = false;
 				} else if (this.returnCode == 5) {
 					this.soundButton.changeSoundState();
-					// TODO : Sound setting.
+					
+					if (SoundButton.getIsSoundOn()) {
+						// TODO : Sound setting.
+					}
 
-				}
-
-				if (this.soundButton.isTeamCreditScreenPossible()) {
+					if (this.soundButton.isTeamCreditScreenPossible()) {
 						this.returnCode = 8;
 						this.isRunning = false;
-				} else {
+					} else {
 						this.selectionCooldown.reset();
+					}
 				}
 			}
 			if (inputManager.isKeyDown(KeyEvent.VK_RIGHT)
@@ -370,6 +372,6 @@ public class TitleScreen extends Screen {
 	 * @return isSoundOn of the sound button.
 	 */
 	public boolean getIsSoundOn() {
-		return this.soundButton.getIsSoundOn();
+		return SoundButton.getIsSoundOn();
 	}
 }
