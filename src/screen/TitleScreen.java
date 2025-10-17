@@ -58,13 +58,15 @@ public class TitleScreen extends Screen {
 	 */
 	public final int run() {
         if (!musicStarted) {
+			SoundManager.uncutAllSound();
             SoundManager.playLoop(MENU_MUSIC);
             musicStarted = true;
         }
 
 		super.run();
 
-        SoundManager.stop(MENU_MUSIC);
+        SoundManager.stopAll();
+		SoundManager.cutAllSound();
 		return this.returnCode;
 	}
 
