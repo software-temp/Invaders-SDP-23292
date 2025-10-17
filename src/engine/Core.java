@@ -162,7 +162,9 @@ public final class Core {
                         // Loop while player still has lives and levels remaining
                     } while (gameState.getLivesRemaining() > 0);
 
-                    LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+					SoundManager.play("sfx/gameover.wav");
+
+					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
                             + " score screen at " + FPS + " fps, with a score of "
                             + gameState.getScore() + ", "
                             + gameState.getLivesRemaining() + " lives remaining, "
