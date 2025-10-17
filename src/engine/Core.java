@@ -121,6 +121,9 @@ public final class Core {
                           break;
                         }
 
+						SoundManager.stopAll();
+						SoundManager.playLoop("sfx/level" + gameState.getLevel() + ".wav");
+
                         // Start a new level
                         currentScreen = new GameScreen(
                                 gameState,
@@ -140,10 +143,10 @@ public final class Core {
                         gameState = ((GameScreen) currentScreen).getGameState();
 
                         if (gameState.getLivesRemaining() > 0) {
-                            LOGGER.info("Opening shop screen with "
-                                    + gameState.getCoin() + " coins.");
+							SoundManager.play("sfx/levelup.wav");
 
-                            SoundManager.play("sfx/levelup.wav");
+							LOGGER.info("Opening shop screen with "
+                                    + gameState.getCoin() + " coins.");
 
                             //Launch the ShopScreen (between levels)
                             currentScreen = new ShopScreen(gameState, width, height, FPS, true);
@@ -163,7 +166,8 @@ public final class Core {
                         // Loop while player still has lives and levels remaining
                     } while (gameState.getLivesRemaining() > 0);
 
-                    SoundManager.play("sfx/gameover.wav");
+					SoundManager.stopAll();
+					SoundManager.play("sfx/gameover.wav");
 
                     LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
                             + " score screen at " + FPS + " fps, with a score of "
