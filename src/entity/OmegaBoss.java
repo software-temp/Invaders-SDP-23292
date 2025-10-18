@@ -32,14 +32,17 @@ public class OmegaBoss extends MidBoss {
 	private boolean isRight = true;
 	/** Current vertical movement direction. true for down, false for up. */
 	private boolean isDown = true;
-
+	/** Boss cannot move below this boundary. */
+	private final int omegaMovementBottomBoundary;
 	/**
 	 * Constructor, establishes the boss entity's generic properties.
 	 *
+	 * @param omegaMovementBottomBoundary    The lowermost Y-coordinate for the boss's movement. The boss cannot move below this value.
 	 * @param color     Color of the boss entity.
 	 */
-	public OmegaBoss(Color color) {
+	public OmegaBoss(Color color,int omegaMovementBottomBoundary) {
 		super(INIT_POS_X, INIT_POS_Y, OMEGA_WIDTH, OMEGA_HEIGHT, OMEGA_HEALTH, OMEGA_POINT_VALUE, color);
+		this.omegaMovementBottomBoundary = omegaMovementBottomBoundary;
 		this.spriteType= DrawManager.SpriteType.EnemyShipSpecial;
 		this.logger.info("OMEGA : Initializing Boss OMEGA");
 		this.logger.info("OMEGA : move using the default pattern");
@@ -114,8 +117,8 @@ public class OmegaBoss extends MidBoss {
 		if (this.positionY <= INIT_POS_Y) {
 			this.positionY = INIT_POS_Y;
 			this.isDown = true;
-		} else if (this.positionY + this.height >= screen.getHeight()) {
-			this.positionY = screen.getHeight() - this.height;
+		} else if (this.positionY + this.height >= omegaMovementBottomBoundary) {
+			this.positionY = omegaMovementBottomBoundary - this.height;
 			this.isDown = false;
 		}
 	}
