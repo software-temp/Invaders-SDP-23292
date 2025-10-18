@@ -313,7 +313,7 @@ public final class DrawManager {
         // Time Format: MM:SS
         String timeString = String.format("Time: %02d:%02d", minutes, seconds);
 		int x = 10;
-		int y = screen.getHeight() - 10;
+		int y = screen.getHeight() - 20;
 		backBufferGraphics.drawString(timeString, x, y);
     }
 
