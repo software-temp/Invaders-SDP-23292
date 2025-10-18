@@ -28,325 +28,261 @@ import engine.level.Level;
  */
 public class GameScreen extends Screen {
 
-    /**
-     * Milliseconds until the screen accepts user input.
-     */
-    private static final int INPUT_DELAY = 6000;
-    /**
-     * Bonus score for each life remaining at the end of the level.
-     */
-    private static final int LIFE_SCORE = 100;
-    /**
-     * Minimum time between bonus ship's appearances.
-     */
-    private static final int BONUS_SHIP_INTERVAL = 20000;
-    /**
-     * Maximum variance in the time between bonus ship's appearances.
-     */
-    private static final int BONUS_SHIP_VARIANCE = 10000;
-    /**
-     * Time until bonus ship explosion disappears.
-     */
-    private static final int BONUS_SHIP_EXPLOSION = 500;
-    /**
-     * Time until bonus ship explosion disappears.
-     */
-    private static final int BOSS_EXPLOSION = 600;
-    /**
-     * Time from finishing the level to screen change.
-     */
-    private static final int SCREEN_CHANGE_INTERVAL = 1500;
-    /**
-     * Height of the interface separation line.
-     */
-    private static final int SEPARATION_LINE_HEIGHT = 40;
-    /**
-     * Height of the items separation line (above items).
-     */
-    private static final int ITEMS_SEPARATION_LINE_HEIGHT = 400;
+	/** Milliseconds until the screen accepts user input. */
+	private static final int INPUT_DELAY = 6000;
+	/** Bonus score for each life remaining at the end of the level. */
+	private static final int LIFE_SCORE = 100;
+	/** Minimum time between bonus ship's appearances. */
+	private static final int BONUS_SHIP_INTERVAL = 20000;
+	/** Maximum variance in the time between bonus ship's appearances. */
+	private static final int BONUS_SHIP_VARIANCE = 10000;
+	/** Time until bonus ship explosion disappears. */
+	private static final int BONUS_SHIP_EXPLOSION = 500;
+	/** Time until bonus ship explosion disappears. */
+	private static final int BOSS_EXPLOSION = 600;
+	/** Time from finishing the level to screen change. */
+	private static final int SCREEN_CHANGE_INTERVAL = 1500;
+	/** Height of the interface separation line. */
+	private static final int SEPARATION_LINE_HEIGHT = 40;
+	/** Height of the items separation line (above items). */
+	private static final int ITEMS_SEPARATION_LINE_HEIGHT = 400;
 
-    /**
-     * Current game difficulty settings.
-     */
-    private GameSettings gameSettings;
-    /**
-     * Current difficulty level number.
-     */
-    private int level;
-    /**
-     * Formation of enemy ships.
-     */
-    private EnemyShipFormation enemyShipFormation;
-    /**
-     * Formation of special enemy ships.
-     */
-    private EnemyShipSpecialFormation enemyShipSpecialFormation;
-    /**
-     * Player's ship.
-     */
-    private Ship ship;
-    /**
-     * Minimum time between bonus ship appearances.
-     */
-    private Cooldown enemyShipSpecialCooldown;
-    /** Time until bonus ship explosion disappears. */
+	/** Current game difficulty settings. */
+	private GameSettings gameSettings;
+	/** Current difficulty level number. */
+	private int level;
+	/** Formation of enemy ships. */
+	private EnemyShipFormation enemyShipFormation;
+	/** Formation of special enemy ships. */
+	private EnemyShipSpecialFormation enemyShipSpecialFormation;
+	/** Player's ship. */
+	private Ship ship;
+	/** Minimum time between bonus ship appearances. */
+	private Cooldown enemyShipSpecialCooldown;
+	/** Time until bonus ship explosion disappears. */
 
-    /**
-     * team drawing may implement
-     */
-    private FinalBoss finalBoss;
+	/** team drawing may implement */
+	private FinalBoss finalBoss;
 
-    private Cooldown enemyShipSpecialExplosionCooldown;
-    /**
-     * Time until Boss explosion disappears.
-     */
-    private Cooldown bossExplosionCooldown;
-    /**
-     * Time from finishing the level to screen change.
-     */
-    private Cooldown screenFinishedCooldown;
-    /**
-     * OmegaBoss
-     */
-    private MidBoss omegaBoss;
-    /**
-     * Set of all bullets fired by on-screen ships.
-     */
-    private Set<Bullet> bullets;
-    /**
-     * Set of all dropItems dropped by on screen ships.
-     */
-    private Set<DropItem> dropItems;
-    /**
-     * Current score.
-     */
-    private int score;
-    /**
-     * Player lives left.
-     */
-    private int lives;
-    /**
-     * Total bullets shot by the player.
-     */
-    private int bulletsShot;
-    /**
-     * Total ships destroyed by the player.
-     */
-    private int shipsDestroyed;
-    /**
-     * Moment the game starts.
-     */
-    private long gameStartTime;
-    /**
-     * Checks if the level is finished.
-     */
-    private boolean levelFinished;
-    /**
-     * Checks if a bonus life is received.
-     */
-    private boolean bonusLife;
-    /**
-     * Maximum number of lives.
-     */
-    private int maxLives;
-    /**
-     * Current coin.
-     */
-    private int coin;
-    /**
-     * bossBullets carry bullets which Boss fires
-     */
-    private Set<BossBullet> bossBullets;
-    /**
-     * Is the bullet on the screen erased
-     */
-    private boolean is_cleared = false;
-    /**
-     * Timer to track elapsed time.
-     */
-    private GameTimer gameTimer;
-    /**
-     * Elapsed time since the game started.
-     */
-    private long elapsedTime;
-    // Achievement popup
-    private String achievementText;
-    private Cooldown achievementPopupCooldown;
-    /**
-     * Health change popup.
-     */
-    private String healthPopupText;
-    private Cooldown healthPopupCooldown;
+	private Cooldown enemyShipSpecialExplosionCooldown;
+	/** Time until Boss explosion disappears. */
+	private Cooldown bossExplosionCooldown;
+	/** Time from finishing the level to screen change. */
+	private Cooldown screenFinishedCooldown;
+	/** OmegaBoss */
+	private MidBoss omegaBoss;
+	/** Set of all bullets fired by on-screen ships. */
+	private Set<Bullet> bullets;
+	/** Set of all dropItems dropped by on screen ships. */
+	private Set<DropItem> dropItems;
+	/** Current score. */
+	private int score;
+	/** Player lives left. */
+	private int lives;
+	/** Total bullets shot by the player. */
+	private int bulletsShot;
+	/** Total ships destroyed by the player. */
+	private int shipsDestroyed;
+	/** Moment the game starts. */
+	private long gameStartTime;
+	/** Checks if the level is finished. */
+	private boolean levelFinished;
+	/** Checks if a bonus life is received. */
+	private boolean bonusLife;
+  /** Maximum number of lives. */
+	private int maxLives;
+	/** Current coin. */
+	private int coin;
+	/** bossBullets carry bullets which Boss fires */
+	private Set<BossBullet> bossBullets;
+	/** Is the bullet on the screen erased */
+  private boolean is_cleared = false;
+  /** Timer to track elapsed time. */
+  private GameTimer gameTimer;
+  /** Elapsed time since the game started. */
+  private long elapsedTime;
+  // Achievement popup
+  private String achievementText;
+  private Cooldown achievementPopupCooldown;
+  /** Health change popup. */
+  private String healthPopupText;
+  private Cooldown healthPopupCooldown;
 
-    private GameState gameState;
+	    private GameState gameState;
 
-    /**
-     * Constructor, establishes the properties of the screen.
-     *
-     * @param gameState Current game state.	 * @param level
-     *                  Current level settings.
-     * @param bonusLife Checks if a bonus life is awarded this level.
-     * @param maxLives  Maximum number of lives.
-     * @param width     Screen width.
-     * @param height    Screen height.
-     * @param fps       Frames per second, frame rate at which the game is run.
-     */
-    public GameScreen(final GameState gameState,
-                      final Level level, final boolean bonusLife, final int maxLives,
-                      final int width, final int height, final int fps) {
-        super(width, height, fps);
+	    /**
+	     * Constructor, establishes the properties of the screen.
+	     *
+	     * @param gameState
+	     *            Current game state.	 * @param level
+	 *            Current level settings.
+	 * @param bonusLife
+	 *            Checks if a bonus life is awarded this level.
+	 * @param maxLives
+	 *            Maximum number of lives.
+	 * @param width
+	 *            Screen width.
+	 * @param height
+	 *            Screen height.
+	 * @param fps
+	 *            Frames per second, frame rate at which the game is run.
+	 */
+	public GameScreen(final GameState gameState,
+			final Level level, final boolean bonusLife, final int maxLives,
+			final int width, final int height, final int fps) {
+		super(width, height, fps);
 
-        this.gameSettings = new GameSettings(level.getFormationWidth(), level.getFormationHeight(), level.getBaseSpeed(), level.getShootingFrecuency());
-        this.bonusLife = bonusLife;
-        this.maxLives = maxLives;
-        this.level = gameState.getLevel();
-        this.score = gameState.getScore();
-        this.coin = gameState.getCoin();
-        this.lives = gameState.getLivesRemaining();
-        this.gameState = gameState;
-        if (this.bonusLife)
-            this.lives++;
-        this.bulletsShot = gameState.getBulletsShot();
-        this.shipsDestroyed = gameState.getShipsDestroyed();
-    }
+		this.gameSettings = new GameSettings(level.getFormationWidth(), level.getFormationHeight(), level.getBaseSpeed(), level.getShootingFrecuency());
+		this.bonusLife = bonusLife;
+		this.maxLives = maxLives;
+		        this.level = gameState.getLevel();
+		        this.score = gameState.getScore();
+                this.coin = gameState.getCoin();
+		        this.lives = gameState.getLivesRemaining();
+		        this.gameState = gameState;		if (this.bonusLife)
+			this.lives++;
+		this.bulletsShot = gameState.getBulletsShot();
+		this.shipsDestroyed = gameState.getShipsDestroyed();
+	}
 
-    /**
-     * Initializes basic screen properties, and adds necessary elements.
-     */
-    public final void initialize() {
-        super.initialize();
-        /** Initialize the bullet Boss fired */
-        this.bossBullets = new HashSet<>();
+	/**
+	 * Initializes basic screen properties, and adds necessary elements.
+	 */
+	public final void initialize() {
+		super.initialize();
+		/** Initialize the bullet Boss fired */
+		this.bossBullets = new HashSet<>();
 
 
-        enemyShipFormation = new EnemyShipFormation(this.gameSettings);
-        enemyShipFormation.attach(this);
-        this.ship = new Ship(this.width / 2, ITEMS_SEPARATION_LINE_HEIGHT - 50);
-        // special enemy initial
-        enemyShipSpecialFormation = new EnemyShipSpecialFormation(this.gameSettings,
-                Core.getVariableCooldown(BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE),
-                Core.getCooldown(BONUS_SHIP_EXPLOSION));
-        enemyShipSpecialFormation.attach(this);
-        this.bossExplosionCooldown = Core
-                .getCooldown(BOSS_EXPLOSION);
-        this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
-        this.bullets = new HashSet<Bullet>();
+		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
+		enemyShipFormation.attach(this);
+		this.ship = new Ship(this.width / 2, ITEMS_SEPARATION_LINE_HEIGHT - 50);
+		// special enemy initial
+		enemyShipSpecialFormation = new EnemyShipSpecialFormation(this.gameSettings,
+				Core.getVariableCooldown(BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE),
+				Core.getCooldown(BONUS_SHIP_EXPLOSION));
+		enemyShipSpecialFormation.attach(this);
+		this.bossExplosionCooldown = Core
+				.getCooldown(BOSS_EXPLOSION);
+		this.screenFinishedCooldown = Core.getCooldown(SCREEN_CHANGE_INTERVAL);
+		this.bullets = new HashSet<Bullet>();
         this.dropItems = new HashSet<DropItem>();
 
-        // Special input delay / countdown.
-        this.gameStartTime = System.currentTimeMillis();
-        this.inputDelay = Core.getCooldown(INPUT_DELAY);
-        this.inputDelay.reset();
+		// Special input delay / countdown.
+		this.gameStartTime = System.currentTimeMillis();
+		this.inputDelay = Core.getCooldown(INPUT_DELAY);
+		this.inputDelay.reset();
 
-        // Initializing Middle Boss
-        this.omegaBoss = new OmegaBoss(Color.ORANGE);
-        omegaBoss.attach(this);
-        this.gameTimer = new GameTimer();
+		// Initializing Middle Boss
+		this.omegaBoss = new OmegaBoss(Color.ORANGE);
+		omegaBoss.attach(this);
+		this.gameTimer = new GameTimer();
         this.elapsedTime = 0;
-    }
+	}
 
-    /**
-     * Starts the action.
-     *
-     * @return Next screen code.
-     */
-    public final int run() {
-        super.run();
+	/**
+	 * Starts the action.
+	 *
+	 * @return Next screen code.
+	 */
+	public final int run() {
+		super.run();
 
-        this.score += LIFE_SCORE * (this.lives - 1);
-        this.logger.info("Screen cleared with a score of " + this.score);
+		this.score += LIFE_SCORE * (this.lives - 1);
+		this.logger.info("Screen cleared with a score of " + this.score);
 
-        return this.returnCode;
-    }
+		return this.returnCode;
+	}
 
-    /**
-     * Updates the elements on screen and checks for events.
-     */
-    protected final void update() {
-        super.update();
+	/**
+	 * Updates the elements on screen and checks for events.
+	 */
+	protected final void update() {
+		super.update();
 
-        if (this.inputDelay.checkFinished() && !this.levelFinished) {
+		if (this.inputDelay.checkFinished() && !this.levelFinished) {
 
-            /** spawn final boss to check object (for test) */
+			/** spawn final boss to check object (for test) */
 
-            if (this.finalBoss == null) {
-                this.finalBoss = new FinalBoss(this.width / 2 - 50, 50, this.width, this.height);
-                this.logger.info("Final Boss created.");
-            }
+			if(this.finalBoss == null){
+				this.finalBoss = new FinalBoss(this.width/2-50,50,this.width,this.height);
+				this.logger.info("Final Boss created.");
+			}
 
 
-            if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
-                /** called the boss shoot logic */
-                if (this.finalBoss.getHealPoint() > this.finalBoss.getMaxHp() / 4) {
-                    bossBullets.addAll(this.finalBoss.shoot1());
-                    bossBullets.addAll(this.finalBoss.shoot2());
+			if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
+			/** called the boss shoot logic */
+					if(this.finalBoss.getHealPoint() > this.finalBoss.getMaxHp() / 4) {
+						bossBullets.addAll(this.finalBoss.shoot1());
+						bossBullets.addAll(this.finalBoss.shoot2());
 
-                }
-                /** Is the bullet on the screen erased */
-                else {
-                    if (!is_cleared) {
-                        bossBullets.clear();
-                        is_cleared = true;
-                        logger.info("boss is angry");
-                    } else {
+					}
+					/** Is the bullet on the screen erased */
+					else {
+						if (!is_cleared){
+							bossBullets.clear();
+							is_cleared = true;
+							logger.info("boss is angry");
+						}
+						else {
 
-                        bossBullets.addAll(this.finalBoss.shoot3());
-                    }
-                }
+							bossBullets.addAll(this.finalBoss.shoot3());
+						}
+					}
 
-                /** bullets to erase */
-                Set<BossBullet> bulletsToRemove = new HashSet<>();
+				/** bullets to erase */
+				Set<BossBullet> bulletsToRemove = new HashSet<>();
 
-                for (BossBullet b : bossBullets) {
-                    b.update();
-                    /** If the bullet goes off the screen */
-                    if (b.isOffScreen(width, height)) {
-                        /** bulletsToRemove carry bullet */
-                        bulletsToRemove.add(b);
-                    }
-                    /** If the bullet collides with ship */
-                    else if (this.checkCollision(b, this.ship)) {
-                        if (!this.ship.isDestroyed()) {
-                            this.ship.destroy();
-                            this.lives--;
-                            this.logger.info("Hit on player ship, " + this.lives
-                                    + " lives remaining.");
-                        }
-                        bulletsToRemove.add(b);
-                    }
-                }
-                /** all bullets are removed */
-                bossBullets.removeAll(bulletsToRemove);
-            }
+				for (BossBullet b : bossBullets) {
+					b.update();
+					/** If the bullet goes off the screen */
+					if (b.isOffScreen(width, height)) {
+						/** bulletsToRemove carry bullet */
+						bulletsToRemove.add(b);
+					}
+					/** If the bullet collides with ship */
+					else if (this.checkCollision(b,this.ship)) {
+						                        if (!this.ship.isDestroyed()) {
+						                            this.ship.destroy();
+						                            this.lives--;
+						                            this.logger.info("Hit on player ship, " + this.lives
+						                                    + " lives remaining.");
+						}
+						bulletsToRemove.add(b);
+					}
+				}
+				/** all bullets are removed */
+				bossBullets.removeAll(bulletsToRemove);
+			}
 
-            if (!this.gameTimer.isRunning()) {
+			if (!this.gameTimer.isRunning()) {
                 this.gameTimer.start();
             }
-            if (!this.ship.isDestroyed()) {
-                boolean moveRight = inputManager.isKeyDown(KeyEvent.VK_RIGHT)
-                        || inputManager.isKeyDown(KeyEvent.VK_D);
-                boolean moveLeft = inputManager.isKeyDown(KeyEvent.VK_LEFT)
-                        || inputManager.isKeyDown(KeyEvent.VK_A);
-                boolean moveUp = inputManager.isKeyDown(KeyEvent.VK_UP)
-                        || inputManager.isKeyDown(KeyEvent.VK_W);
-                boolean moveDown = inputManager.isKeyDown(KeyEvent.VK_DOWN)
-                        || inputManager.isKeyDown(KeyEvent.VK_S);
+			if (!this.ship.isDestroyed()) {
+				boolean moveRight = inputManager.isKeyDown(KeyEvent.VK_RIGHT)
+						|| inputManager.isKeyDown(KeyEvent.VK_D);
+				boolean moveLeft = inputManager.isKeyDown(KeyEvent.VK_LEFT)
+						|| inputManager.isKeyDown(KeyEvent.VK_A);
+				boolean moveUp = inputManager.isKeyDown(KeyEvent.VK_UP)
+						|| inputManager.isKeyDown(KeyEvent.VK_W);
+				boolean moveDown = inputManager.isKeyDown(KeyEvent.VK_DOWN)
+						|| inputManager.isKeyDown(KeyEvent.VK_S);
 
-                boolean isRightBorder = this.ship.getPositionX()
-                        + this.ship.getWidth() + this.ship.getSpeed() > this.width - 1;
-                boolean isLeftBorder = this.ship.getPositionX()
-                        - this.ship.getSpeed() < 1;
+				boolean isRightBorder = this.ship.getPositionX()
+						+ this.ship.getWidth() + this.ship.getSpeed() > this.width - 1;
+				boolean isLeftBorder = this.ship.getPositionX()
+						- this.ship.getSpeed() < 1;
                 boolean isUpBorder = this.ship.getPositionY()
                         - this.ship.getSpeed() < SEPARATION_LINE_HEIGHT;
                 boolean isDownBorder = this.ship.getPositionY()
                         + this.ship.getHeight() + this.ship.getSpeed() > ITEMS_SEPARATION_LINE_HEIGHT;
 
-                if (moveRight && !isRightBorder) {
-                    this.ship.moveRight();
-                }
-                if (moveLeft && !isLeftBorder) {
-                    this.ship.moveLeft();
-                }
+				if (moveRight && !isRightBorder) {
+					this.ship.moveRight();
+				}
+				if (moveLeft && !isLeftBorder) {
+					this.ship.moveLeft();
+				}
                 if (moveUp && !isUpBorder) {
                     this.ship.moveUp();
                 }
@@ -354,105 +290,106 @@ public class GameScreen extends Screen {
                     this.ship.moveDown();
                 }
 
-                if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
+				if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
                     if (this.ship.shoot(this.bullets)) {
-                        this.bulletsShot++;
-                        AchievementManager.getInstance().onShotFired();
-                    }
-            }
-            if (this.omegaBoss != null) {
-                if (!this.omegaBoss.isDestroyed()) {
-                    this.omegaBoss.update();
-                } else if (this.bossExplosionCooldown.checkFinished()) {
-                    this.omegaBoss = null;
-                }
-            }
-            this.ship.update();
-            if (!DropItem.isTimeFreezeActive()) {
-                this.enemyShipFormation.update();
-                this.enemyShipFormation.shoot(this.bullets);
-            }
-            /** when the final boss is at the field */
-            if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
-                this.finalBoss.update();
-            }
-            // special enemy update
-            this.enemyShipSpecialFormation.update();
-        }
-        if (this.gameTimer.isRunning()) {
+						this.bulletsShot++;
+						AchievementManager.getInstance().onShotFired();
+					}
+			}
+			if (this.omegaBoss != null){
+				if(!this.omegaBoss.isDestroyed()) {
+					this.omegaBoss.update();
+				}
+				else if (this.bossExplosionCooldown.checkFinished()) {
+					this.omegaBoss = null;
+				}
+			}
+			this.ship.update();
+			if (!DropItem.isTimeFreezeActive()) {
+				this.enemyShipFormation.update();
+				this.enemyShipFormation.shoot(this.bullets);
+			}
+			/** when the final boss is at the field */
+			if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
+				this.finalBoss.update();
+			}
+			// special enemy update
+			this.enemyShipSpecialFormation.update();
+		}
+		if (this.gameTimer.isRunning()) {
             this.elapsedTime = this.gameTimer.getElapsedTime();
-            AchievementManager.getInstance().onTimeElapsedSeconds((int) (this.elapsedTime / 1000));
+				AchievementManager.getInstance().onTimeElapsedSeconds((int)(this.elapsedTime / 1000));
         }
         cleanItems();
         manageBulletShipCollisions();
         manageShipEnemyCollisions();
         manageItemCollisions();
-        cleanBullets();
-        draw();
+		cleanBullets();
+		draw();
 
-        if ((this.enemyShipFormation.isEmpty() || this.lives == 0)
-                && !this.levelFinished) {
-            this.levelFinished = true;
-            this.screenFinishedCooldown.reset();
-            if (this.gameTimer.isRunning()) {
-                this.gameTimer.stop();
-            }
+		        if ((this.enemyShipFormation.isEmpty() || this.lives == 0)
+		                && !this.levelFinished) {
+		            this.levelFinished = true;
+		            this.screenFinishedCooldown.reset();
+		            if (this.gameTimer.isRunning()) {
+		                this.gameTimer.stop();
+		            }
 
-            if (this.lives > 0) {
-                if (this.level == 1) {
-                    AchievementManager.getInstance().unlockAchievement("Beginner");
-                } else if (this.level == 3) {
-                    AchievementManager.getInstance().unlockAchievement("Intermediate");
-                }
-            }
-        }
-        if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
-            this.isRunning = false;
+		            if (this.lives > 0) {
+		                if (this.level == 1) {
+		                    AchievementManager.getInstance().unlockAchievement("Beginner");
+		                } else if (this.level == 3) {
+		                    AchievementManager.getInstance().unlockAchievement("Intermediate");
+		                }
+		            }
+		        }
+		if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
+			this.isRunning = false;
 
-    }
+	}
 
-    /**
-     * Draws the elements associated with the screen.
-     */
-    private void draw() {
-        drawManager.initDrawing(this);
+	/**
+	 * Draws the elements associated with the screen.
+	 */
+	private void draw() {
+		drawManager.initDrawing(this);
 
-        drawManager.drawEntity(this.ship, this.ship.getPositionX(),
-                this.ship.getPositionY());
-        // special enemy draw
-        enemyShipSpecialFormation.draw();
+		drawManager.drawEntity(this.ship, this.ship.getPositionX(),
+				this.ship.getPositionY());
+		// special enemy draw
+		enemyShipSpecialFormation.draw();
 
-        /** draw final boss at the field */
-        /** draw final boss bullets */
-        if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
-            for (BossBullet bossBullet : bossBullets) {
-                drawManager.drawEntity(bossBullet, bossBullet.getPositionX(), bossBullet.getPositionY());
-            }
-            drawManager.drawEntity(finalBoss, finalBoss.getPositionX(), finalBoss.getPositionY());
-        }
+		/** draw final boss at the field */
+		/** draw final boss bullets */
+		if(this.finalBoss != null && !this.finalBoss.isDestroyed()){
+			for (BossBullet bossBullet : bossBullets) {
+				drawManager.drawEntity(bossBullet, bossBullet.getPositionX(), bossBullet.getPositionY());
+			}
+			drawManager.drawEntity(finalBoss, finalBoss.getPositionX(), finalBoss.getPositionY());
+		}
 
-        enemyShipFormation.draw();
+		enemyShipFormation.draw();
 
-        if (this.omegaBoss != null) {
-            this.omegaBoss.draw(drawManager);
-        }
+		if(this.omegaBoss != null) {
+			this.omegaBoss.draw(drawManager);
+		}
 
-        for (Bullet bullet : this.bullets)
-            drawManager.drawEntity(bullet, bullet.getPositionX(),
-                    bullet.getPositionY());
+		for (Bullet bullet : this.bullets)
+			drawManager.drawEntity(bullet, bullet.getPositionX(),
+					bullet.getPositionY());
 
-        for (DropItem dropItem : this.dropItems)
-            drawManager.drawEntity(dropItem, dropItem.getPositionX(), dropItem.getPositionY());
+    for (DropItem dropItem : this.dropItems)
+      drawManager.drawEntity(dropItem, dropItem.getPositionX(), dropItem.getPositionY());
 
-        // Interface.
-        drawManager.drawScore(this, this.score);
-        drawManager.drawCoin(this, this.coin);
-        drawManager.drawLives(this, this.lives);
-        drawManager.drawTime(this, this.elapsedTime);
-        drawManager.drawItemsHUD(this);
+		// Interface.
+		drawManager.drawScore(this, this.score);
+		drawManager.drawCoin(this,this.coin);
+		drawManager.drawLives(this, this.lives);
+		drawManager.drawTime(this, this.elapsedTime);
+		drawManager.drawItemsHUD(this);
         drawManager.drawLevel(this, this.level);
         drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
-        drawManager.drawHorizontalLine(this, ITEMS_SEPARATION_LINE_HEIGHT);
+		drawManager.drawHorizontalLine(this, ITEMS_SEPARATION_LINE_HEIGHT);
 
         if (this.achievementText != null && !this.achievementPopupCooldown.checkFinished()) {
             drawManager.drawAchievementPopup(this, this.achievementText);
@@ -462,42 +399,42 @@ public class GameScreen extends Screen {
 
 
         // Health notification popup
-        if (this.healthPopupText != null && !this.healthPopupCooldown.checkFinished()) {
+        if(this.healthPopupText != null && !this.healthPopupCooldown.checkFinished()) {
             drawManager.drawHealthPopup(this, this.healthPopupText);
         } else {
             this.healthPopupText = null;
         }
 
         // Countdown to game start.
-        if (!this.inputDelay.checkFinished()) {
-            int countdown = (int) ((INPUT_DELAY
-                    - (System.currentTimeMillis()
-                    - this.gameStartTime)) / 1000);
-            drawManager.drawCountDown(this, this.level, countdown,
-                    this.bonusLife);
-            drawManager.drawHorizontalLine(this, this.height / 2 - this.height
-                    / 12);
-            drawManager.drawHorizontalLine(this, this.height / 2 + this.height
-                    / 12);
-        }
+		if (!this.inputDelay.checkFinished()) {
+			int countdown = (int) ((INPUT_DELAY
+					- (System.currentTimeMillis()
+					- this.gameStartTime)) / 1000);
+			drawManager.drawCountDown(this, this.level, countdown,
+					this.bonusLife);
+			drawManager.drawHorizontalLine(this, this.height / 2 - this.height
+					/ 12);
+			drawManager.drawHorizontalLine(this, this.height / 2 + this.height
+					/ 12);
+		}
 
-        drawManager.completeDrawing(this);
-    }
+		drawManager.completeDrawing(this);
+	}
 
-    /**
-     * Cleans bullets that go off screen.
-     */
-    private void cleanBullets() {
-        Set<Bullet> recyclable = new HashSet<Bullet>();
-        for (Bullet bullet : this.bullets) {
-            bullet.update();
-            if (bullet.getPositionY() < SEPARATION_LINE_HEIGHT
-                    || bullet.getPositionY() > this.height)
-                recyclable.add(bullet);
-        }
-        this.bullets.removeAll(recyclable);
-        BulletPool.recycle(recyclable);
-    }
+	/**
+	 * Cleans bullets that go off screen.
+	 */
+	private void cleanBullets() {
+		Set<Bullet> recyclable = new HashSet<Bullet>();
+		for (Bullet bullet : this.bullets) {
+			bullet.update();
+			if (bullet.getPositionY() < SEPARATION_LINE_HEIGHT
+					|| bullet.getPositionY() > this.height)
+				recyclable.add(bullet);
+		}
+		this.bullets.removeAll(recyclable);
+		BulletPool.recycle(recyclable);
+	}
 
     /**
      * Cleans Items that go off screen.
@@ -515,10 +452,10 @@ public class GameScreen extends Screen {
         ItemPool.recycle(recyclable);
     }
 
-    /**
-     * Manages collisions between bullets and ships.
-     */
-    private void manageBulletShipCollisions() {
+	/**
+	 * Manages collisions between bullets and ships.
+	 */
+	private void manageBulletShipCollisions() {
         Set<Bullet> recyclable = new HashSet<Bullet>();
         for (Bullet bullet : this.bullets)
             if (bullet.getSpeed() > 0) {
@@ -670,12 +607,12 @@ public class GameScreen extends Screen {
                         case Shield:
                             ship.activateInvincibility(5000); // 5 seconds of invincibility
                             break;
-                        case Stop:
-                            DropItem.applyTimeFreezeItem(3000);
-                            break;
-                        case Push:
-                            DropItem.PushbackItem(this.enemyShipFormation, 20);
-                            break;
+						case Stop:
+							DropItem.applyTimeFreezeItem(3000);
+							break;
+						case Push:
+							DropItem.PushbackItem(this.enemyShipFormation,20);
+							break;
                         case Explode:
                             int destroyedEnemy = this.enemyShipFormation.destroyAll();
                             this.score += destroyedEnemy * 5;
@@ -695,6 +632,7 @@ public class GameScreen extends Screen {
             ItemPool.recycle(acquiredDropItems);
         }
     }
+
 
 
 
