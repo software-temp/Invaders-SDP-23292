@@ -57,8 +57,6 @@ public class GameScreen extends Screen {
 	private EnemyShipSpecialFormation enemyShipSpecialFormation;
 	/** Player's ship. */
 	private Ship ship;
-	/** Bonus enemy ship that appears sometimes. */
-	private EnemyShip enemyShipSpecial;
 	/** Minimum time between bonus ship appearances. */
 	private Cooldown enemyShipSpecialCooldown;
 	/** Time until bonus ship explosion disappears. */
@@ -111,10 +109,10 @@ public class GameScreen extends Screen {
   private Cooldown healthPopupCooldown;
 
 	    private GameState gameState;
-	
+
 	    /**
 	     * Constructor, establishes the properties of the screen.
-	     * 
+	     *
 	     * @param gameState
 	     *            Current game state.	 * @param level
 	 *            Current level settings.
@@ -184,7 +182,7 @@ public class GameScreen extends Screen {
 
 	/**
 	 * Starts the action.
-	 * 
+	 *
 	 * @return Next screen code.
 	 */
 	public final int run() {
@@ -323,7 +321,9 @@ public class GameScreen extends Screen {
 				AchievementManager.getInstance().onTimeElapsedSeconds((int)(this.elapsedTime / 1000));
         }
         cleanItems();
-		manageCollisions();
+        manageBulletShipCollisions();
+        manageShipEnemyCollisions();
+        manageItemCollisions();
 		cleanBullets();
 		draw();
 
@@ -334,7 +334,7 @@ public class GameScreen extends Screen {
 		            if (this.gameTimer.isRunning()) {
 		                this.gameTimer.stop();
 		            }
-		
+
 		            if (this.lives > 0) {
 		                if (this.level == 1) {
 		                    AchievementManager.getInstance().unlockAchievement("Beginner");
@@ -455,30 +455,31 @@ public class GameScreen extends Screen {
 	/**
 	 * Manages collisions between bullets and ships.
 	 */
-	private void manageCollisions() {
-		Set<Bullet> recyclable = new HashSet<Bullet>();
-		for (Bullet bullet : this.bullets)
-			if (bullet.getSpeed() > 0) {
-				if (checkCollision(bullet, this.ship) && !this.levelFinished) {
-					recyclable.add(bullet);
-					if (!this.ship.isInvincible()) {
-						if (!this.ship.isDestroyed()) {
-							                           this.ship.destroy();
-							                           this.lives--;
-							                           showHealthPopup("-1 Health");							this.logger.info("Hit on player ship, " + this.lives
-									+ " lives remaining.");
-						}
-					}
-				}
-			} else {
-				for (EnemyShip enemyShip : this.enemyShipFormation)
-					if (!enemyShip.isDestroyed()
-							&& checkCollision(bullet, enemyShip)) {
-						this.score += enemyShip.getPointValue();
-                        this.coin += (enemyShip.getPointValue()/10);
-						this.shipsDestroyed++;
-						this.enemyShipFormation.destroy(enemyShip);
-						AchievementManager.getInstance().onEnemyDefeated();
+	private void manageBulletShipCollisions() {
+        Set<Bullet> recyclable = new HashSet<Bullet>();
+        for (Bullet bullet : this.bullets)
+            if (bullet.getSpeed() > 0) {
+                if (checkCollision(bullet, this.ship) && !this.levelFinished) {
+                    recyclable.add(bullet);
+                    if (!this.ship.isInvincible()) {
+                        if (!this.ship.isDestroyed()) {
+                            this.ship.destroy();
+                            this.lives--;
+                            showHealthPopup("-1 Health");
+                            this.logger.info("Hit on player ship, " + this.lives
+                                    + " lives remaining.");
+                        }
+                    }
+                }
+            } else {
+                for (EnemyShip enemyShip : this.enemyShipFormation)
+                    if (!enemyShip.isDestroyed()
+                            && checkCollision(bullet, enemyShip)) {
+                        this.score += enemyShip.getPointValue();
+                        this.coin += (enemyShip.getPointValue() / 10);
+                        this.shipsDestroyed++;
+                        this.enemyShipFormation.destroy(enemyShip);
+                        AchievementManager.getInstance().onEnemyDefeated();
                         DropItem.ItemType droppedType = DropItem.getRandomItemType(0.3);
                         if (droppedType != null) {
                             final int ITEM_DROP_SPEED = 2;
@@ -493,51 +494,101 @@ public class GameScreen extends Screen {
                             this.logger.info("An item (" + droppedType + ") dropped");
                         }
 
-						if (!bullet.penetration()) {
-							recyclable.add(bullet);
-							break;
-						}
+                        if (!bullet.penetration()) {
+                            recyclable.add(bullet);
+                            break;
+                        }
 
-					}
+                    }
 
-				// special enemy bullet event
-				for (EnemyShip enemyShipSpecial : this.enemyShipSpecialFormation)
-					if (enemyShipSpecial != null && !enemyShipSpecial.isDestroyed()
-							&& checkCollision(bullet, enemyShipSpecial)) {
-						this.score += enemyShipSpecial.getPointValue();
-						this.coin += (enemyShipSpecial.getPointValue()/10);
-						this.shipsDestroyed++;
-						this.enemyShipSpecialFormation.destroy(enemyShipSpecial);
-						recyclable.add(bullet);
-				}
-				if (this.omegaBoss != null
-						&& !this.omegaBoss.isDestroyed()
-						&& checkCollision(bullet, this.omegaBoss)) {
-					this.omegaBoss.takeDamage(2);
-					if(this.omegaBoss.getHealPoint() <= 0) {
-						this.shipsDestroyed++;
-						this.score += this.omegaBoss.getPointValue();
-						                        this.coin += (this.omegaBoss.getPointValue()/10);
-						                        this.omegaBoss.destroy();
-						                        AchievementManager.getInstance().unlockAchievement("Boss Slayer");						this.bossExplosionCooldown.reset();
-					}
-					recyclable.add(bullet);
-				}
+                // special enemy bullet event
+                for (EnemyShip enemyShipSpecial : this.enemyShipSpecialFormation)
+                    if (enemyShipSpecial != null && !enemyShipSpecial.isDestroyed()
+                            && checkCollision(bullet, enemyShipSpecial)) {
+                        this.score += enemyShipSpecial.getPointValue();
+                        this.coin += (enemyShipSpecial.getPointValue() / 10);
+                        this.shipsDestroyed++;
+                        this.enemyShipSpecialFormation.destroy(enemyShipSpecial);
+                        recyclable.add(bullet);
+                    }
+                if (this.omegaBoss != null
+                        && !this.omegaBoss.isDestroyed()
+                        && checkCollision(bullet, this.omegaBoss)) {
+                    this.omegaBoss.takeDamage(2);
+                    if (this.omegaBoss.getHealPoint() <= 0) {
+                        this.shipsDestroyed++;
+                        this.score += this.omegaBoss.getPointValue();
+                        this.coin += (this.omegaBoss.getPointValue() / 10);
+                        this.omegaBoss.destroy();
+                        AchievementManager.getInstance().unlockAchievement("Boss Slayer");
+                        this.bossExplosionCooldown.reset();
+                    }
+                    recyclable.add(bullet);
+                }
 
-				/** when final boss collide with bullet */
-				if(this.finalBoss != null && !this.finalBoss.isDestroyed() && checkCollision(bullet,this.finalBoss)){
-					this.finalBoss.takeDamage(1);
-					                    if(this.finalBoss.getHealPoint() <= 0){
-					                        this.score += this.finalBoss.getPointValue();
-					                        this.coin += (this.finalBoss.getPointValue()/10);
-					                        AchievementManager.getInstance().unlockAchievement("Boss Slayer");
-					                    }					recyclable.add(bullet);
-				}
+                /** when final boss collide with bullet */
+                if (this.finalBoss != null && !this.finalBoss.isDestroyed() && checkCollision(bullet, this.finalBoss)) {
+                    this.finalBoss.takeDamage(1);
+                    if (this.finalBoss.getHealPoint() <= 0) {
+                        this.score += this.finalBoss.getPointValue();
+                        this.coin += (this.finalBoss.getPointValue() / 10);
+                        AchievementManager.getInstance().unlockAchievement("Boss Slayer");
+                    }
+                    recyclable.add(bullet);
+                }
 
-			}
-		this.bullets.removeAll(recyclable);
-		BulletPool.recycle(recyclable);
+            }
+        this.bullets.removeAll(recyclable);
+        BulletPool.recycle(recyclable);
+    }
 
+    /**
+     * Manages collisions between player ship and enemy ships.
+     * Player loses a life immediately upon collision with any enemy.
+     */
+    private void manageShipEnemyCollisions() {
+        // Check collision between player ship and enemy ships (instant life loss)
+        if (!this.levelFinished && !this.ship.isDestroyed() && !this.ship.isInvincible()) {
+            // Check collision with normal enemy ships
+            for (EnemyShip enemyShip : this.enemyShipFormation) {
+                if (!enemyShip.isDestroyed() && checkCollision(this.ship, enemyShip)) {
+                    enemyShip.destroy();
+                    handlePlayerShipCollision("Ship collided with enemy!", "-1 Life (Collision!)");
+                    return;
+                }
+            }
+
+            // Check collision with special enemy formation (red/blue ships)
+            for (EnemyShip enemyShipSpecial : this.enemyShipSpecialFormation) {
+                if (enemyShipSpecial != null && !enemyShipSpecial.isDestroyed()
+                        && checkCollision(this.ship, enemyShipSpecial)) {
+                    enemyShipSpecial.destroy();
+                    handlePlayerShipCollision("Ship collided with special enemy formation!", "-1 Life (Collision!)");
+                    return;
+                }
+            }
+
+            // Check collision with omega boss (mid boss - yellow/pink ship)
+            if (this.omegaBoss != null && !this.omegaBoss.isDestroyed()
+                    && checkCollision(this.ship, this.omegaBoss)) {
+                handlePlayerShipCollision("Ship collided with omega boss!", "-1 Life (Boss Collision!)");
+                return;
+            }
+
+            // Check collision with final boss
+            if (this.finalBoss != null && !this.finalBoss.isDestroyed()
+                    && checkCollision(this.ship, this.finalBoss)) {
+                handlePlayerShipCollision("Ship collided with final boss!", "-1 Life (Boss Collision!)");
+                return;
+            }
+        }
+    }
+
+    /**
+     * Manages collisions between player ship and dropped items.
+     * Applies item effects when player collects them.
+     */
+    private void manageItemCollisions() {
         Set<DropItem> acquiredDropItems = new HashSet<DropItem>();
 
         if (!this.levelFinished && !this.ship.isDestroyed()) {
@@ -545,10 +596,10 @@ public class GameScreen extends Screen {
 
                 if (checkCollision(this.ship, dropItem)) {
                     this.logger.info("Player acquired dropItem: " + dropItem.getItemType());
-                    
+
                     // Add item to HUD display
                     ItemHUDManager.getInstance().addDroppedItem(dropItem.getItemType());
-                    
+
                     switch (dropItem.getItemType()) {
                         case Heal:
                             gainLife();
@@ -609,6 +660,20 @@ public class GameScreen extends Screen {
 
 		return distanceX < maxDistanceX && distanceY < maxDistanceY;
 	}
+
+    /**
+     * Processes player ship destruction upon collision with enemies.
+     * Centralizes the common destruction logic to reduce code duplication.
+     *
+     * @param logMessage Message to log to the console
+     * @param popupMessage Message to display in the popup
+     */
+    private void handlePlayerShipCollision(String logMessage, String popupMessage) {
+        this.ship.destroy();
+        this.lives--;
+        showHealthPopup(popupMessage);
+        this.logger.info(logMessage + " " + this.lives + " lives remaining.");
+    }
 
     /**
      * Shows an achievement popup message on the HUD.
