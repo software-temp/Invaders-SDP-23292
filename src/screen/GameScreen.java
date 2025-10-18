@@ -57,8 +57,6 @@ public class GameScreen extends Screen {
 	private EnemyShipSpecialFormation enemyShipSpecialFormation;
 	/** Player's ship. */
 	private Ship ship;
-	/** Bonus enemy ship that appears sometimes. */
-	private EnemyShip enemyShipSpecial;
 	/** Minimum time between bonus ship appearances. */
 	private Cooldown enemyShipSpecialCooldown;
 	/** Time until bonus ship explosion disappears. */
@@ -538,72 +536,39 @@ public class GameScreen extends Screen {
 		this.bullets.removeAll(recyclable);
 		BulletPool.recycle(recyclable);
 
+        // Check collision between player ship and enemy ships (instant life loss)
         if (!this.levelFinished && !this.ship.isDestroyed() && !this.ship.isInvincible()) {
             // Check collision with normal enemy ships
             for (EnemyShip enemyShip : this.enemyShipFormation) {
                 if (!enemyShip.isDestroyed() && checkCollision(this.ship, enemyShip)) {
-                    // Destroy both the enemy ship and player ship
                     enemyShip.destroy();
-                    this.ship.destroy();
-                    this.lives--;
-                    showHealthPopup("-1 Life (Collision!)");
-                    this.logger.info("Ship collided with enemy! " + this.lives + " lives remaining.");
-                    // Only process one collision per frame
-                    break;
+                    handlePlayerShipCollision("Ship collided with enemy!", "-1 Life (Collision!)");
+                    return;
                 }
             }
 
             // Check collision with special enemy formation (red/blue ships)
-            if (!this.ship.isDestroyed()) {
-                for (EnemyShip enemyShipSpecial : this.enemyShipSpecialFormation) {
-                    if (enemyShipSpecial != null && !enemyShipSpecial.isDestroyed()
-                            && checkCollision(this.ship, enemyShipSpecial)) {
-                        // Destroy both the special enemy and player ship
-                        enemyShipSpecial.destroy();
-                        this.ship.destroy();
-                        this.lives--;
-                        showHealthPopup("-1 Life (Collision!)");
-                        this.logger.info("Ship collided with special enemy formation! " + this.lives + " lives remaining.");
-                        break;
-                    }
+            for (EnemyShip enemyShipSpecial : this.enemyShipSpecialFormation) {
+                if (enemyShipSpecial != null && !enemyShipSpecial.isDestroyed()
+                        && checkCollision(this.ship, enemyShipSpecial)) {
+                    enemyShipSpecial.destroy();
+                    handlePlayerShipCollision("Ship collided with special enemy formation!", "-1 Life (Collision!)");
+                    return;
                 }
             }
 
-            // Check collision with bonus enemy ship (yellow ship)
-            if (!this.ship.isDestroyed() && this.enemyShipSpecial != null) {
-                if (!this.enemyShipSpecial.isDestroyed()
-                        && checkCollision(this.ship, this.enemyShipSpecial)) {
-                    // Destroy both the bonus enemy and player ship
-                    this.enemyShipSpecial.destroy();
-                    this.ship.destroy();
-                    this.lives--;
-                    showHealthPopup("-1 Life (Collision!)");
-                    this.logger.info("Ship collided with bonus enemy! " + this.lives + " lives remaining.");
-                }
+            // Check collision with omega boss (mid boss - yellow/pink ship)
+            if (this.omegaBoss != null && !this.omegaBoss.isDestroyed()
+                    && checkCollision(this.ship, this.omegaBoss)) {
+                handlePlayerShipCollision("Ship collided with omega boss!", "-1 Life (Boss Collision!)");
+                return;
             }
 
             // Check collision with final boss
-            if (!this.ship.isDestroyed() && this.finalBoss != null) {
-                if (!this.finalBoss.isDestroyed()
-                        && checkCollision(this.ship, this.finalBoss)) {
-                    // Player ship destroyed on boss collision
-                    this.ship.destroy();
-                    this.lives--;
-                    showHealthPopup("-1 Life (Boss Collision!)");
-                    this.logger.info("Ship collided with final boss! " + this.lives + " lives remaining.");
-                }
-            }
-
-            // Check collision with omega boss (mid boss)
-            if (!this.ship.isDestroyed() && this.omegaBoss != null) {
-                if (!this.omegaBoss.isDestroyed()
-                        && checkCollision(this.ship, this.omegaBoss)) {
-                    // Player ship destroyed on omega boss collision
-                    this.ship.destroy();
-                    this.lives--;
-                    showHealthPopup("-1 Life (Boss Collision!)");
-                    this.logger.info("Ship collided with omega boss! " + this.lives + " lives remaining.");
-                }
+            if (this.finalBoss != null && !this.finalBoss.isDestroyed()
+                    && checkCollision(this.ship, this.finalBoss)) {
+                handlePlayerShipCollision("Ship collided with final boss!", "-1 Life (Boss Collision!)");
+                return;
             }
         }
 
@@ -678,6 +643,20 @@ public class GameScreen extends Screen {
 
 		return distanceX < maxDistanceX && distanceY < maxDistanceY;
 	}
+
+    /**
+     * Processes player ship destruction upon collision with enemies.
+     * Centralizes the common destruction logic to reduce code duplication.
+     *
+     * @param logMessage Message to log to the console
+     * @param popupMessage Message to display in the popup
+     */
+    private void handlePlayerShipCollision(String logMessage, String popupMessage) {
+        this.ship.destroy();
+        this.lives--;
+        showHealthPopup(popupMessage);
+        this.logger.info(logMessage + " " + this.lives + " lives remaining.");
+    }
 
     /**
      * Shows an achievement popup message on the HUD.
