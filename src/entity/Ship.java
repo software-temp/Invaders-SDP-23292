@@ -30,7 +30,7 @@ public class Ship extends Entity {
 	private Cooldown shieldCooldown;
 	/** Checks if the ship is invincible. */
 	private boolean isInvincible;
-    // === [ADD] 哪个玩家：1=P1, 2=P2（默认 1 以兼容单人模式） ===
+    // === [ADD] Which player: 1 = P1, 2 = P2 (default 1 for single-player compatibility) ===
     private int playerId = 1;
     public void setPlayerId(int pid) { this.playerId = pid; }
     public int getPlayerId() { return this.playerId; }
@@ -111,7 +111,8 @@ public class Ship extends Entity {
 			if (bulletCount == 1) {
 				// Normal shot (when Spread Shot is not purchased)
 				Bullet b = BulletPool.getBullet(centerX, centerY, BULLET_SPEED);
-                b.setOwnerId(this.playerId);  // === [ADD] 归属 ===
+                b.setOwnerId(this.playerId);  // === [ADD] Ownership flag: 1 = P1, 2 = P2, null for legacy logic ===
+
                 bullets.add(b);
 			} else {
 				// Fire Spread Shot
@@ -120,7 +121,8 @@ public class Ship extends Entity {
 				for (int i = 0; i < bulletCount; i++) {
 					int offsetX = startOffset + (i * spacing);
                     Bullet b = BulletPool.getBullet(centerX + offsetX, centerY, BULLET_SPEED);
-                    b.setOwnerId(this.playerId);   // 归属标记
+                    b.setOwnerId(this.playerId);   // Ownership flag
+
                     bullets.add(b);
 				}
 			}

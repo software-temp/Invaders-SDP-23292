@@ -295,12 +295,12 @@ public final class DrawManager {
 		String scoreString = String.format("P1:%04d", score);
 		backBufferGraphics.drawString(scoreString, screen.getWidth() - 120, 25);
 	}
-    // === [ADD] 在 Score 下面一行绘制 P2 的分数 ===
+    //  === [ADD] Draw P2's score on the line below P1's score ===
     public void drawScoreP2(final Screen screen, final int scoreP2) {
         backBufferGraphics.setFont(fontRegular);
         backBufferGraphics.setColor(Color.WHITE);
         String text = String.format("P2:%04d", scoreP2);
-        // Y 坐标比 Score 多 15px，避免重叠
+        //  Y coordinate is 15px lower than P1 score to avoid overlapping
         backBufferGraphics.drawString(text, screen.getWidth() - 120, 40);
     }
 
