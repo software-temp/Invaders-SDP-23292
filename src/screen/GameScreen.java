@@ -80,7 +80,7 @@ public class GameScreen extends Screen {
 	private Set<DropItem> dropItems;
 	/** Current score. */
 	private int score;
-    // === [ADD] 双人独立分数 ===
+    // === [ADD] Independent scores for two players ===
     private int scoreP1 = 0;
     private int scoreP2 = 0;
 
@@ -101,15 +101,17 @@ public class GameScreen extends Screen {
 	private int maxLives;
 	/** Current coin. */
 	private int coin;
-    // 统一的加分入口：既维护 P1/P2，又维护 legacy this.score（总分）
+    // Unified scoring entry: maintains both P1/P2 and legacy this.score (total score)
     private void addPointsFor(Bullet bullet, int pts) {
         Integer owner = (bullet != null ? bullet.getOwnerId() : null);
         if (owner != null && owner == 2) {
             this.scoreP2 += pts;   // P2
         } else {
-            this.scoreP1 += pts;   // 默认给 P1（兼容 null）
+            this.scoreP1 += pts;   // Default to P1 (for null compatibility)
+
         }
-        this.score += pts;         // 继续维护总分，兼容旧流程
+        this.score += pts;        // Keep maintaining the total score, for legacy process compatibility
+
     }
 
     /** bossBullets carry bullets which Boss fires */
@@ -180,9 +182,10 @@ public class GameScreen extends Screen {
 		enemyShipFormation = new EnemyShipFormation(this.gameSettings);
 		enemyShipFormation.attach(this);
 		this.ship = new Ship(this.width / 2 - 100, ITEMS_SEPARATION_LINE_HEIGHT - 50);
-        this.ship.setPlayerId(1);   // === [ADD] 玩家1 ===
+        this.ship.setPlayerId(1);   //=== [ADD] Player 1 ===
+
         this.shipP2 = new Ship(this.width / 2 + 100, ITEMS_SEPARATION_LINE_HEIGHT - 50);
-        this.shipP2.setPlayerId(2); // === [ADD] 玩家2 ===
+        this.shipP2.setPlayerId(2); // === [ADD] Player2 ===
         // special enemy initial
 		enemyShipSpecialFormation = new EnemyShipSpecialFormation(this.gameSettings,
 				Core.getVariableCooldown(BONUS_SHIP_INTERVAL, BONUS_SHIP_VARIANCE),
@@ -434,8 +437,8 @@ public class GameScreen extends Screen {
 			drawManager.drawEntity(dropItem, dropItem.getPositionX(), dropItem.getPositionY());
 
 		// Interface.
-        drawManager.drawScore(this, this.scoreP1);   // 顶部仍显示 P1
-        drawManager.drawScoreP2(this, this.scoreP2); // 新增第二行：P2
+        drawManager.drawScore(this, this.scoreP1);   // Top line still displays P1
+        drawManager.drawScoreP2(this, this.scoreP2); // Added second line for P2
         drawManager.drawCoin(this,this.coin);
 		drawManager.drawLives(this, this.livesP1);
 		drawManager.drawLivesP2(this, this.livesP2);

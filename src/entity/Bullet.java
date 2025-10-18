@@ -11,7 +11,7 @@ import engine.DrawManager.SpriteType;
  * 
  */
 public class Bullet extends Entity {
-    // === [ADD] owner 标记：1=P1, 2=P2，null 兼容旧逻辑 ===
+    // === [ADD] Owner flag: 1 = P1, 2 = P2, null for legacy compatibility ===
     private Integer ownerId;
 
     public Integer getOwnerId() { return ownerId; }
