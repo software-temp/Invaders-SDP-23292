@@ -426,7 +426,7 @@ public class GameScreen extends Screen {
 		drawManager.drawLivesP2(this, this.livesP2);
 		drawManager.drawTime(this, this.elapsedTime);
 		drawManager.drawItemsHUD(this);
-		drawManager.drawLevel(this, this.level);
+		drawManager.drawLevel(this, this.currentLevel.getLevelName());
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 		drawManager.drawHorizontalLine(this, ITEMS_SEPARATION_LINE_HEIGHT);
 
@@ -530,20 +530,36 @@ public class GameScreen extends Screen {
                         addPointsFor(bullet, pts);
                         this.coin += (pts / 10);
                         this.shipsDestroyed++;
+
+                        String enemyType = enemyShip.getEnemyType();
 						this.enemyShipFormation.destroy(enemyShip);
 						AchievementManager.getInstance().onEnemyDefeated();
-						DropItem.ItemType droppedType = DropItem.getRandomItemType(0.3);
-						if (droppedType != null) {
-							final int ITEM_DROP_SPEED = 2;
 
-							DropItem newDropItem = ItemPool.getItem(
-									enemyShip.getPositionX() + enemyShip.getWidth() / 2,
-									enemyShip.getPositionY() + enemyShip.getHeight() / 2,
-									ITEM_DROP_SPEED,
-									droppedType
-							);
-							this.dropItems.add(newDropItem);
-							this.logger.info("An item (" + droppedType + ") dropped");
+                        logger.info("Take down: " + enemyType);
+
+						if (enemyType != null && this.currentLevel.getItemDrops() != null) {
+							for (engine.level.ItemDrop itemDrop : this.currentLevel.getItemDrops()) {
+                                logger.info("Item drop system checking: " + itemDrop.getEnemyType());
+								if (enemyType.equals(itemDrop.getEnemyType())) {
+                                    logger.info("Item drop system: This is Item-dropper enemy");
+									if (Math.random() < itemDrop.getDropChance()) {
+										DropItem.ItemType droppedType = DropItem.fromString(itemDrop.getItemId());
+										if (droppedType != null) {
+											final int ITEM_DROP_SPEED = 2;
+
+											DropItem newDropItem = ItemPool.getItem(
+													enemyShip.getPositionX() + enemyShip.getWidth() / 2,
+													enemyShip.getPositionY() + enemyShip.getHeight() / 2,
+													ITEM_DROP_SPEED,
+													droppedType
+											);
+											this.dropItems.add(newDropItem);
+											this.logger.info("An item (" + droppedType + ") dropped");
+											break; // One item drop per enemy
+										}
+									}
+								}
+							}
 						}
 
 						if (!bullet.penetration()) {
