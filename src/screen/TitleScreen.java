@@ -259,19 +259,29 @@ public class TitleScreen extends Screen {
 					this.isRunning = false;
 				} else if (this.returnCode == 5) {
 					this.soundButton.changeSoundState();
-					// TODO : Sound setting.
+					
+					if (SoundButton.getIsSoundOn()) {
+						// TODO : Sound setting.
+					}
 
-					this.selectionCooldown.reset();
+					if (this.soundButton.isTeamCreditScreenPossible()) {
+						this.returnCode = 8;
+						this.isRunning = false;
+					} else {
+						this.selectionCooldown.reset();
+					}
 				}
 			}
 			if (inputManager.isKeyDown(KeyEvent.VK_RIGHT)
 					|| inputManager.isKeyDown(KeyEvent.VK_D)) {
 				this.returnCode = 5;
+				this.targetAngle += 90;
 				this.selectionCooldown.reset();
 			}
 			if (this.returnCode == 5 && inputManager.isKeyDown(KeyEvent.VK_LEFT)
 					|| inputManager.isKeyDown(KeyEvent.VK_A)) {
 				this.returnCode = 4;
+				this.targetAngle -= 90;
 				this.selectionCooldown.reset();
 			}
 		}
@@ -281,16 +291,19 @@ public class TitleScreen extends Screen {
 	 * Shifts the focus to the next menu item.
 	 */
 	private void nextMenuItem() {
-		if (this.returnCode == 4)
+		if (this.returnCode == 2)
+			this.returnCode = 3;
+		else if (this.returnCode == 3)
+			this.returnCode = 6;
+		else if (this.returnCode == 6)
+			this.returnCode = 4;
+		else if (this.returnCode == 4)
 			this.returnCode = 0;
 		else if (this.returnCode == 0)
 			this.returnCode = 2;
 		else if (this.returnCode == 5) {
 			this.returnCode = 0;
-		} 
-		else
-			this.returnCode++;
-
+		}
 		this.targetAngle += 90;
 	}
 
@@ -298,16 +311,19 @@ public class TitleScreen extends Screen {
 	 * Shifts the focus to the previous menu item.
 	 */
 	private void previousMenuItem() {
-		if (this.returnCode == 0)
-			this.returnCode = 4;
-		else if (this.returnCode == 2)
+		if (this.returnCode == 2)
 			this.returnCode = 0;
-		else if (this.returnCode == 5) {
+		else if (this.returnCode == 0)
+			this.returnCode = 4;
+		else if (this.returnCode == 4)
+			this.returnCode = 6;
+		else if (this.returnCode == 6)
 			this.returnCode = 3;
+		else if (this.returnCode == 3)
+			this.returnCode = 2;
+		else if (this.returnCode == 5) {
+			this.returnCode = 6;
 		}
-		else
-			this.returnCode--;
-
 		this.targetAngle -= 90;
 	}
 
@@ -356,6 +372,6 @@ public class TitleScreen extends Screen {
 	 * @return isSoundOn of the sound button.
 	 */
 	public boolean getIsSoundOn() {
-		return this.soundButton.getIsSoundOn();
+		return SoundButton.getIsSoundOn();
 	}
 }
