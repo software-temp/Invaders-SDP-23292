@@ -3,8 +3,6 @@
     {
       "level": 1,
       "levelName": "Stage 1: The Beginning",
-      "bgm": "bgm_stage1.mp3",
-      "visualTheme": "space_default",
       "enemyFormation": {
         "formationWidth": 5,
         "formationHeight": 4,
@@ -26,8 +24,6 @@
     {
       "level": 2,
       "levelName": "Stage 2: Asteroid Belt",
-      "bgm": "bgm_stage2.mp3",
-      "visualTheme": "asteroid",
       "specialGimmick": "bouncing_bullets",
       "enemyFormation": {
         "formationWidth": 6,
@@ -51,8 +47,6 @@
     {
       "level": 3,
       "levelName": "Boss Battle: The Mothership",
-      "bgm": "bgm_boss1.mp3",
-      "visualTheme": "boss_hangar",
       "bossId": "mothership_alpha",
       "itemDrops": [
         { "bossId": "mothership_alpha", "itemId": "penetrating_shot", "dropChance": 1.0 }
@@ -65,9 +59,7 @@
     {
       "level": 99,
       "levelName": "Hidden Stage: Easter Egg",
-      "unlockCondition": "clear_stage_5_with_100%_accuracy",
-      "bgm": "bgm_hidden.mp3",
-      "visualTheme": "glitch"
+      "unlockCondition": "clear_stage_5_with_100%_accuracy"
     }
   ]
 }
