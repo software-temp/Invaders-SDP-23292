@@ -84,7 +84,8 @@ public class GameScreen extends Screen {
     // === [ADD] Independent scores for two players ===
     private int scoreP1 = 0;
     private int scoreP2 = 0;
-
+	/** current level parameter */
+	public Level currentlevel;
     /** Player lives left. */
 	private int livesP1;
 	private int livesP2;
@@ -126,6 +127,8 @@ public class GameScreen extends Screen {
   // Achievement popup
   private String achievementText;
   private Cooldown achievementPopupCooldown;
+  private enum StagePhase{wave, boss_wave};
+  private StagePhase currentPhase;
   /** Health change popup. */
   private String healthPopupText;
   private Cooldown healthPopupCooldown;
@@ -156,6 +159,7 @@ public class GameScreen extends Screen {
 
         this.currentLevel = level;
 		this.bonusLife = bonusLife;
+		this.currentlevel = level;
 		this.maxLives = maxLives;
 		        this.level = gameState.getLevel();
 		        this.score = gameState.getScore();
@@ -202,10 +206,13 @@ public class GameScreen extends Screen {
 		this.inputDelay.reset();
 
 		// Initializing Middle Boss
-		this.omegaBoss = new OmegaBoss(Color.ORANGE);
-		omegaBoss.attach(this);
+		// this.omegaBoss = new OmegaBoss(Color.ORANGE);
+		// omegaBoss.attach(this);
 		this.gameTimer = new GameTimer();
         this.elapsedTime = 0;
+		this.finalBoss = null;
+		this.omegaBoss = null;
+		this.currentPhase = StagePhase.wave;
 	}
 
 	/**
@@ -230,60 +237,6 @@ public class GameScreen extends Screen {
 		super.update();
 
 		if (this.inputDelay.checkFinished() && !this.levelFinished) {
-
-			/** spawn final boss to check object (for test) */
-			if (this.finalBoss == null) {
-				this.finalBoss = new FinalBoss(this.width / 2 - 50, 50, this.width, this.height);
-				this.logger.info("Final Boss created.");
-			}
-
-			if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
-				/** called the boss shoot logic */
-				if (this.finalBoss.getHealPoint() > this.finalBoss.getMaxHp() / 4) {
-					bossBullets.addAll(this.finalBoss.shoot1());
-					bossBullets.addAll(this.finalBoss.shoot2());
-				} else {
-					/** Is the bullet on the screen erased */
-					if (!is_cleared) {
-						bossBullets.clear();
-						is_cleared = true;
-						logger.info("boss is angry");
-					} else {
-						bossBullets.addAll(this.finalBoss.shoot3());
-					}
-				}
-
-				/** bullets to erase */
-				Set<BossBullet> bulletsToRemove = new HashSet<>();
-
-				for (BossBullet b : bossBullets) {
-					b.update();
-					/** If the bullet goes off the screen */
-					if (b.isOffScreen(width, height)) {
-						/** bulletsToRemove carry bullet */
-						bulletsToRemove.add(b);
-					}
-					/** If the bullet collides with ship */
-					else if (this.livesP1 > 0 && this.checkCollision(b, this.ship)) {
-						if (!this.ship.isDestroyed()) {
-							this.ship.destroy();
-							this.livesP1--;
-							this.logger.info("Hit on player ship, " + this.livesP1 + " lives remaining.");
-						}
-						bulletsToRemove.add(b);
-					}
-					else if (this.shipP2 != null && this.livesP2 > 0 && !this.shipP2.isDestroyed() && this.checkCollision(b, this.shipP2)) {
-						if (!this.shipP2.isDestroyed()) {
-							this.shipP2.destroy();
-							this.livesP2--;
-							this.logger.info("Hit on player ship, " + this.livesP2 + " lives remaining.");
-						}
-						bulletsToRemove.add(b);
-					}
-				}
-				/** all bullets are removed */
-				bossBullets.removeAll(bulletsToRemove);
-			}
 
 			if (!this.gameTimer.isRunning()) {
 				this.gameTimer.start();
@@ -342,25 +295,48 @@ public class GameScreen extends Screen {
 					}
 				}
 			}
-
-			if (this.omegaBoss != null) {
-				if (!this.omegaBoss.isDestroyed()) {
-					this.omegaBoss.update();
-				} else if (this.bossExplosionCooldown.checkFinished()) {
-					this.omegaBoss = null;
+				switch (this.currentPhase) {
+					case wave:
+						if (!DropItem.isTimeFreezeActive()) {
+							this.enemyShipFormation.update();
+							this.enemyShipFormation.shoot(this.bullets);
+						}
+						if (this.enemyShipFormation.isEmpty()) {
+							this.currentPhase = StagePhase.boss_wave;
+						}
+						break;
+					case boss_wave:
+						if (this.finalBoss == null && this.omegaBoss == null){
+							bossReveal();
+							this.enemyShipFormation.clear();
+						}
+						if(this.finalBoss != null){
+							finalbossManage();
+						}
+						else if (this.omegaBoss != null){
+							this.omegaBoss.update();
+							if (this.omegaBoss.isDestroyed()) {
+								if ("omegaAndFinal".equals(this.currentlevel.getBossId())) {
+									this.omegaBoss = null;
+                                    this.finalBoss = new FinalBoss(this.width / 2 - 50, 50, this.width, this.height);
+                                    this.logger.info("Final Boss has spawned!");
+								} else {
+									this.levelFinished = true;
+									this.screenFinishedCooldown.reset();
+								}
+							}
+						}
+						else{
+							if(!this.levelFinished){
+								this.levelFinished = true;
+								this.screenFinishedCooldown.reset();
+							}
+						}
+						break;
 				}
-			}
 			this.ship.update();
 			if (this.shipP2 != null) {
 				this.shipP2.update();
-			}
-			if (!DropItem.isTimeFreezeActive()) {
-				this.enemyShipFormation.update();
-				this.enemyShipFormation.shoot(this.bullets);
-			}
-			/** when the final boss is at the field */
-			if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
-				this.finalBoss.update();
 			}
 			// special enemy update
 			this.enemyShipSpecialFormation.update();
@@ -375,7 +351,7 @@ public class GameScreen extends Screen {
 		cleanBullets();
 		draw();
 
-		if ((this.enemyShipFormation.isEmpty() || ((this.livesP1 == 0) && (this.shipP2 == null || this.livesP2 == 0))) && !this.levelFinished) {
+		if ((((this.livesP1 == 0) && (this.shipP2 == null || this.livesP2 == 0))) && !this.levelFinished) {
 			this.levelFinished = true;
 			this.screenFinishedCooldown.reset();
 			if (this.gameTimer.isRunning()) {
@@ -390,8 +366,15 @@ public class GameScreen extends Screen {
 				}
 			}
 		}
-		if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
+		if (this.levelFinished && this.screenFinishedCooldown.checkFinished()) {
+			if (this.livesP1 > 0 || (this.shipP2 != null && this.livesP2 > 0)) { // Check for win condition
+				if (this.currentlevel.getCompletionBonus() != null) {
+					this.coin += this.currentlevel.getCompletionBonus().getCurrency();
+					this.logger.info("Awarded " + this.currentlevel.getCompletionBonus().getCurrency() + " coins for level completion.");
+				}
+			}
 			this.isRunning = false;
+		}
 	}
 
 
@@ -604,6 +587,7 @@ public class GameScreen extends Screen {
                         int pts = this.finalBoss.getPointValue();
                         addPointsFor(bullet, pts);
                         this.coin += (pts / 10);
+						this.finalBoss.destroy();
                         AchievementManager.getInstance().unlockAchievement("Boss Slayer");
 					}
 					recyclable.add(bullet);
@@ -768,6 +752,93 @@ public class GameScreen extends Screen {
 	public final void gainLifeP2() {
 		if (this.livesP2 < this.maxLives) {
 			this.livesP2++;
+		}
+	}
+
+	private void bossReveal() {
+		String bossName = this.currentlevel.getBossId();
+
+		if (bossName == null || bossName.isEmpty()) {
+			this.logger.info("No boss for this level. Proceeding to finish.");
+			return;
+		}
+
+		this.logger.info("Spawning boss: " + bossName);
+		switch (bossName) {
+			case "finalBoss":
+				this.finalBoss = new FinalBoss(this.width / 2 - 50, 50, this.width, this.height);
+				this.logger.info("Final Boss has spawned!");
+				break;
+			case "omegaBoss":
+				this.omegaBoss = new OmegaBoss(Color.ORANGE);
+				omegaBoss.attach(this);
+				this.logger.info("Omega Boss has spawned!");
+				break;
+			case "omegaAndFinal":
+				this.omegaBoss = new OmegaBoss(Color.ORANGE);
+				omegaBoss.attach(this);
+				this.logger.info("Omega Boss has spawned!");
+				break;
+			default:
+				this.logger.warning("Unknown bossId: " + bossName);
+				break;
+		}
+	}
+
+
+	public void finalbossManage(){
+		if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
+			this.finalBoss.update();
+			/** called the boss shoot logic */
+			if (this.finalBoss.getHealPoint() > this.finalBoss.getMaxHp() / 4) {
+				bossBullets.addAll(this.finalBoss.shoot1());
+				bossBullets.addAll(this.finalBoss.shoot2());
+			} else {
+				/** Is the bullet on the screen erased */
+				if (!is_cleared) {
+					bossBullets.clear();
+					is_cleared = true;
+					logger.info("boss is angry");
+				} else {
+					bossBullets.addAll(this.finalBoss.shoot3());
+				}
+			}
+
+			/** bullets to erase */
+			Set<BossBullet> bulletsToRemove = new HashSet<>();
+
+			for (BossBullet b : bossBullets) {
+				b.update();
+				/** If the bullet goes off the screen */
+				if (b.isOffScreen(width, height)) {
+					/** bulletsToRemove carry bullet */
+					bulletsToRemove.add(b);
+				}
+				/** If the bullet collides with ship */
+				else if (this.livesP1 > 0 && this.checkCollision(b, this.ship)) {
+					if (!this.ship.isDestroyed()) {
+						this.ship.destroy();
+						this.livesP1--;
+						this.logger.info("Hit on player ship, " + this.livesP1 + " lives remaining.");
+					}
+					bulletsToRemove.add(b);
+				}
+				else if (this.shipP2 != null && this.livesP2 > 0 && !this.shipP2.isDestroyed() && this.checkCollision(b, this.shipP2)) {
+					if (!this.shipP2.isDestroyed()) {
+						this.shipP2.destroy();
+						this.livesP2--;
+						this.logger.info("Hit on player ship, " + this.livesP2 + " lives remaining.");
+					}
+					bulletsToRemove.add(b);
+				}
+			}
+			/** all bullets are removed */
+			bossBullets.removeAll(bulletsToRemove);
+
+		}
+		if (this.finalBoss != null && this.finalBoss.isDestroyed()) {
+			this.levelFinished = true;
+			this.screenFinishedCooldown.reset();
 		}
 	}
 }

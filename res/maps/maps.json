@@ -14,7 +14,7 @@
       "enemyTypes": [
         { "type": "enemyA", "count": 20 }
       ],
-      "completionBonus": { "currency": 100 }
+      "completionBonus": { "currency": 10 }
     },
     {
       "level": 2,
@@ -31,7 +31,8 @@
         { "type": "enemyA", "count": 15 },
         { "type": "enemyB", "count": 10 }
       ],
-      "completionBonus": { "currency": 150 }
+      "bossId": "omegaBoss",
+      "completionBonus": { "currency": 20 }
     },
     {
       "level": 3,
@@ -51,7 +52,8 @@
       "itemDrops": [
         { "enemyType": "enemyB", "itemId": "extra_life", "dropChance": 0.05 }
       ],
-      "completionBonus": { "currency": 200 }
+      "bossId": "omegaBoss",
+      "completionBonus": { "currency": 30 }
     },
     {
       "level": 4,
@@ -68,7 +70,8 @@
         { "type": "enemyA", "count": 18 },
         { "type": "enemyB", "count": 18 }
       ],
-      "completionBonus": { "currency": 250 }
+      "bossId": "finalBoss",
+      "completionBonus": { "currency": 40 }
     },
     {
       "level": 5,
@@ -89,7 +92,8 @@
       "itemDrops": [
         { "enemyType": "enemyC", "itemId": "multi_shot", "dropChance": 0.1 }
       ],
-      "completionBonus": { "currency": 300 }
+      "bossId": "omegaBoss",
+      "completionBonus": { "currency": 50 }
     },
     {
       "level": 6,
@@ -106,7 +110,8 @@
         { "type": "enemyB", "count": 25 },
         { "type": "enemyC", "count": 24 }
       ],
-      "completionBonus": { "currency": 400 }
+      "bossId": "finalBoss",
+      "completionBonus": { "currency": 70 }
     },
     {
       "level": 7,
@@ -127,7 +132,8 @@
       "itemDrops": [
         { "enemyType": "enemyC", "itemId": "penetrating_shot", "dropChance": 0.1 }
       ],
-      "completionBonus": { "currency": 500 }
+      "bossId": "omegaAndFinal",
+      "completionBonus": { "currency": 90 }
     }
   ]
 }

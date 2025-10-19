@@ -428,6 +428,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	 */
 	public final void shoot(final Set<Bullet> bullets) {
 		// For now, only ships in the bottom row are able to shoot.
+		if (this.shooters.isEmpty()) {return; }
 		int index = (int) (Math.random() * this.shooters.size());
 		EnemyShip shooter = this.shooters.get(index);
 
@@ -578,4 +579,12 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
             }
         }
     }
+
+	public final void clear() {
+		for (List<EnemyShip> column : this.enemyShips) {
+			column.clear();
+		}
+		this.enemyShips.clear();
+		this.shipCount = 0;
+	}
 }
