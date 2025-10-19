@@ -58,9 +58,11 @@ public class GameScreen extends Screen {
 	private EnemyShipSpecialFormation enemyShipSpecialFormation;
 	/** Player's ship. */
 	private Ship ship;
+
 	private Ship shipP2;
 	/** Bonus enemy ship that appears sometimes. */
 	private EnemyShip enemyShipSpecial;
+
 	/** Minimum time between bonus ship appearances. */
 	private Cooldown enemyShipSpecialCooldown;
 	/** Time until bonus ship explosion disappears. */
@@ -210,7 +212,7 @@ public class GameScreen extends Screen {
 
 	/**
 	 * Starts the action.
-	 * 
+	 *
 	 * @return Next screen code.
 	 */
 	public final int run() {
@@ -367,11 +369,13 @@ public class GameScreen extends Screen {
 		}
 
 		if (this.gameTimer.isRunning()) {
-			this.elapsedTime = this.gameTimer.getElapsedTime();
-			AchievementManager.getInstance().onTimeElapsedSeconds((int) (this.elapsedTime / 1000));
-		}
-		cleanItems();
-		manageCollisions();
+            this.elapsedTime = this.gameTimer.getElapsedTime();
+				AchievementManager.getInstance().onTimeElapsedSeconds((int)(this.elapsedTime / 1000));
+        }
+        cleanItems();
+        manageBulletShipCollisions();
+        manageShipEnemyCollisions();
+        manageItemCollisions();
 		cleanBullets();
 		draw();
 
@@ -511,7 +515,7 @@ public class GameScreen extends Screen {
 	/**
 	 * Manages collisions between bullets and ships.
 	 */
-	private void manageCollisions() {
+	private void manageBulletShipCollisions() {
 		Set<Bullet> recyclable = new HashSet<Bullet>();
 		for (Bullet bullet : this.bullets)
 			if (bullet.getSpeed() > 0) {
@@ -552,7 +556,6 @@ public class GameScreen extends Screen {
 						DropItem.ItemType droppedType = DropItem.getRandomItemType(0.3);
 						if (droppedType != null) {
 							final int ITEM_DROP_SPEED = 2;
-
 							DropItem newDropItem = ItemPool.getItem(
 									enemyShip.getPositionX() + enemyShip.getWidth() / 2,
 									enemyShip.getPositionY() + enemyShip.getHeight() / 2,
@@ -563,12 +566,12 @@ public class GameScreen extends Screen {
 							this.logger.info("An item (" + droppedType + ") dropped");
 						}
 
-						if (!bullet.penetration()) {
-							recyclable.add(bullet);
-							break;
-						}
+                        if (!bullet.penetration()) {
+                            recyclable.add(bullet);
+                            break;
+                        }
 
-					}
+                    }
 
 				// special enemy bullet event
 				for (EnemyShip enemyShipSpecial : this.enemyShipSpecialFormation)
@@ -608,12 +611,129 @@ public class GameScreen extends Screen {
 					}
 					recyclable.add(bullet);
 				}
+            }
+        this.bullets.removeAll(recyclable);
+        BulletPool.recycle(recyclable);
+    }
 
-			}
-		this.bullets.removeAll(recyclable);
-		BulletPool.recycle(recyclable);
+    /**
+     * Manages collisions between player ship and enemy ships.
+     * Player loses a life immediately upon collision with any enemy.
+     */
+    private void manageShipEnemyCollisions() {
+        // ===== P1 collision check =====
+        if (!this.levelFinished && this.livesP1 > 0 && !this.ship.isDestroyed()
+                && !this.ship.isInvincible()) {
+            // Check collision with normal enemy ships
+            for (EnemyShip enemyShip : this.enemyShipFormation) {
+                if (!enemyShip.isDestroyed() && checkCollision(this.ship, enemyShip)) {
+                    enemyShip.destroy();
+                    this.ship.destroy();
+                    this.livesP1--;
+                    showHealthPopup("-1 Life (Collision!)");
+                    this.logger.info("Ship collided with enemy! " + this.livesP1
+                            + " lives remaining.");
+                    return;
+                }
+            }
 
-		Set<DropItem> acquiredDropItems = new HashSet<DropItem>();
+            // Check collision with special enemy formation (red/blue ships)
+            for (EnemyShip enemyShipSpecial : this.enemyShipSpecialFormation) {
+                if (enemyShipSpecial != null && !enemyShipSpecial.isDestroyed()
+                        && checkCollision(this.ship, enemyShipSpecial)) {
+                    enemyShipSpecial.destroy();
+                    this.ship.destroy();
+                    this.livesP1--;
+                    showHealthPopup("-1 Life (Collision!)");
+                    this.logger.info("Ship collided with special enemy formation! "
+                            + this.livesP1 + " lives remaining.");
+                    return;
+                }
+            }
+
+            // Check collision with omega boss (mid boss - yellow/pink ship)
+            if (this.omegaBoss != null && !this.omegaBoss.isDestroyed()
+                    && checkCollision(this.ship, this.omegaBoss)) {
+                this.ship.destroy();
+                this.livesP1--;
+                showHealthPopup("-1 Life (Boss Collision!)");
+                this.logger.info("Ship collided with omega boss! " + this.livesP1
+                        + " lives remaining.");
+                return;
+            }
+
+            // Check collision with final boss
+            if (this.finalBoss != null && !this.finalBoss.isDestroyed()
+                    && checkCollision(this.ship, this.finalBoss)) {
+                this.ship.destroy();
+                this.livesP1--;
+                showHealthPopup("-1 Life (Boss Collision!)");
+                this.logger.info("Ship collided with final boss! " + this.livesP1
+                        + " lives remaining.");
+                return;
+            }
+        }
+
+        // ===== P2 collision check =====
+        if (!this.levelFinished && this.shipP2 != null && this.livesP2 > 0
+                && !this.shipP2.isDestroyed() && !this.shipP2.isInvincible()) {
+            // Check collision with normal enemy ships
+            for (EnemyShip enemyShip : this.enemyShipFormation) {
+                if (!enemyShip.isDestroyed() && checkCollision(this.shipP2, enemyShip)) {
+                    enemyShip.destroy();
+                    this.shipP2.destroy();
+                    this.livesP2--;
+                    showHealthPopup("-1 Life (Collision!)");
+                    this.logger.info("Ship P2 collided with enemy! " + this.livesP2
+                            + " lives remaining.");
+                    return;
+                }
+            }
+
+            // Check collision with special enemy formation
+            for (EnemyShip enemyShipSpecial : this.enemyShipSpecialFormation) {
+                if (enemyShipSpecial != null && !enemyShipSpecial.isDestroyed()
+                        && checkCollision(this.shipP2, enemyShipSpecial)) {
+                    enemyShipSpecial.destroy();
+                    this.shipP2.destroy();
+                    this.livesP2--;
+                    showHealthPopup("-1 Life (Collision!)");
+                    this.logger.info("Ship P2 collided with special enemy formation! "
+                            + this.livesP2 + " lives remaining.");
+                    return;
+                }
+            }
+
+            // Check collision with omega boss
+            if (this.omegaBoss != null && !this.omegaBoss.isDestroyed()
+                    && checkCollision(this.shipP2, this.omegaBoss)) {
+                this.shipP2.destroy();
+                this.livesP2--;
+                showHealthPopup("-1 Life (Boss Collision!)");
+                this.logger.info("Ship P2 collided with omega boss! " + this.livesP2
+                        + " lives remaining.");
+                return;
+            }
+
+            // Check collision with final boss
+            if (this.finalBoss != null && !this.finalBoss.isDestroyed()
+                    && checkCollision(this.shipP2, this.finalBoss)) {
+                this.shipP2.destroy();
+                this.livesP2--;
+                showHealthPopup("-1 Life (Boss Collision!)");
+                this.logger.info("Ship P2 collided with final boss! " + this.livesP2
+                        + " lives remaining.");
+                return;
+            }
+        }
+    }
+
+    /**
+     * Manages collisions between player ship and dropped items.
+     * Applies item effects when player collects them.
+     */
+    private void manageItemCollisions() {
+        Set<DropItem> acquiredDropItems = new HashSet<DropItem>();
 
 		if (!this.levelFinished && ((this.livesP1 > 0 && !this.ship.isDestroyed())
 				|| (this.shipP2 != null && this.livesP2 > 0 && !this.shipP2.isDestroyed()))) {
