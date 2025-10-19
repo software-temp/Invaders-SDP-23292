@@ -67,6 +67,18 @@ public class SoundManager {
         }
     }
 
+    public static void stop(String resourcePath) {
+        try {
+            Clip c = CACHE.get(resourcePath);
+            if (c != null && c.isRunning()) {
+                c.stop();
+                c.setFramePosition(0);
+            }
+        } catch (Exception e) {
+            System.err.println("[Sound] Stop failed: " + resourcePath + " -> " + e.getMessage());
+        }
+    }
+
     public static void stopAll() {
         for (Clip c : CACHE.values()) {
             if (c.isRunning()) c.stop();
