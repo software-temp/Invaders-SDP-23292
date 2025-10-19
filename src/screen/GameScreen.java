@@ -202,7 +202,7 @@ public class GameScreen extends Screen {
 		this.inputDelay.reset();
 
 		// Initializing Middle Boss
-		this.omegaBoss = new OmegaBoss(Color.ORANGE);
+		this.omegaBoss = new OmegaBoss(Color.ORANGE, ITEMS_SEPARATION_LINE_HEIGHT);
 		omegaBoss.attach(this);
 		this.gameTimer = new GameTimer();
         this.elapsedTime = 0;
