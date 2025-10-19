@@ -811,10 +811,10 @@ public class GameScreen extends Screen {
 			/** all bullets are removed */
 			bossBullets.removeAll(bulletsToRemove);
 
-			if (this.finalBoss != null && this.finalBoss.isDestroyed()) {
-				this.levelFinished = true;
-				this.screenFinishedCooldown.reset();
-			}
+		}
+		if (this.finalBoss != null && this.finalBoss.isDestroyed()) {
+			this.levelFinished = true;
+			this.screenFinishedCooldown.reset();
 		}
 	}
 }
