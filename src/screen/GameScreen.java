@@ -532,32 +532,37 @@ public class GameScreen extends Screen {
                         this.shipsDestroyed++;
 
                         String enemyType = enemyShip.getEnemyType();
-						this.enemyShipFormation.destroy(enemyShip);
-						AchievementManager.getInstance().onEnemyDefeated();
-
-                        logger.info("Take down: " + enemyType);
-
+						                        this.enemyShipFormation.destroy(enemyShip);
+												AchievementManager.getInstance().onEnemyDefeated();
 						if (enemyType != null && this.currentLevel.getItemDrops() != null) {
+							List<engine.level.ItemDrop> potentialDrops = new ArrayList<>();
 							for (engine.level.ItemDrop itemDrop : this.currentLevel.getItemDrops()) {
-                                logger.info("Item drop system checking: " + itemDrop.getEnemyType());
 								if (enemyType.equals(itemDrop.getEnemyType())) {
-                                    logger.info("Item drop system: This is Item-dropper enemy");
-									if (Math.random() < itemDrop.getDropChance()) {
-										DropItem.ItemType droppedType = DropItem.fromString(itemDrop.getItemId());
-										if (droppedType != null) {
-											final int ITEM_DROP_SPEED = 2;
+									potentialDrops.add(itemDrop);
+								}
+							}
 
-											DropItem newDropItem = ItemPool.getItem(
-													enemyShip.getPositionX() + enemyShip.getWidth() / 2,
-													enemyShip.getPositionY() + enemyShip.getHeight() / 2,
-													ITEM_DROP_SPEED,
-													droppedType
-											);
-											this.dropItems.add(newDropItem);
-											this.logger.info("An item (" + droppedType + ") dropped");
-											break; // One item drop per enemy
-										}
-									}
+							List<engine.level.ItemDrop> successfulDrops = new ArrayList<>();
+							for (engine.level.ItemDrop itemDrop : potentialDrops) {
+								if (Math.random() < itemDrop.getDropChance()) {
+									successfulDrops.add(itemDrop);
+								}
+							}
+
+							if (!successfulDrops.isEmpty()) {
+								engine.level.ItemDrop selectedDrop = successfulDrops.get((int) (Math.random() * successfulDrops.size()));
+								DropItem.ItemType droppedType = DropItem.fromString(selectedDrop.getItemId());
+								if (droppedType != null) {
+									final int ITEM_DROP_SPEED = 2;
+
+									DropItem newDropItem = ItemPool.getItem(
+											enemyShip.getPositionX() + enemyShip.getWidth() / 2,
+											enemyShip.getPositionY() + enemyShip.getHeight() / 2,
+											ITEM_DROP_SPEED,
+											droppedType
+									);
+									this.dropItems.add(newDropItem);
+									this.logger.info("An item (" + droppedType + ") dropped");
 								}
 							}
 						}
