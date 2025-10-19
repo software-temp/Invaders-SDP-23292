@@ -103,6 +103,8 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
     private static final int SLOWED_X_SPEED = 4;
     /** Duration of slowdown effect (in movement cycles) */
     private static final int SLOWDOWN_DURATION = 18;
+    /** Height of the items separation line (above items). */
+    private static final int ITEMS_SEPARATION_LINE_HEIGHT = 400;
 
     /** Directions the formation can move. */
     private enum Direction {
@@ -282,7 +284,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
             updateSlowdown();
 
 			boolean isAtBottom = positionY
-					+ this.height > screen.getHeight() - BOTTOM_MARGIN;
+					+ this.height > ITEMS_SEPARATION_LINE_HEIGHT;
 			boolean isAtRightSide = positionX
 					+ this.width >= screen.getWidth() - SIDE_MARGIN;
 			boolean isAtLeftSide = positionX <= SIDE_MARGIN;
