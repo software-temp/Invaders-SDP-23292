@@ -258,14 +258,13 @@ public final class DrawManager {
     /**
      * Draws the current level on the bottom-left of the screen.
      */
-    public void drawLevel(final Screen screen, final int level) {
+    public void drawLevel(final Screen screen, final String levelName) {
         final int paddingX = 20;
         final int paddingY = 50;
         backBufferGraphics.setFont(fontRegular);
         backBufferGraphics.setColor(Color.WHITE);
-        String levelText = "Level " + level;
         int yPos = screen.getHeight() - paddingY;
-        backBufferGraphics.drawString(levelText, paddingX, yPos);
+        backBufferGraphics.drawString(levelName, paddingX, yPos);
     }
 
     /**

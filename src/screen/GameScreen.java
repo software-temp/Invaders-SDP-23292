@@ -426,7 +426,7 @@ public class GameScreen extends Screen {
 		drawManager.drawLivesP2(this, this.livesP2);
 		drawManager.drawTime(this, this.elapsedTime);
 		drawManager.drawItemsHUD(this);
-		drawManager.drawLevel(this, this.level);
+		drawManager.drawLevel(this, this.currentLevel.getLevelName());
 		drawManager.drawHorizontalLine(this, SEPARATION_LINE_HEIGHT - 1);
 		drawManager.drawHorizontalLine(this, ITEMS_SEPARATION_LINE_HEIGHT);
 
@@ -530,20 +530,41 @@ public class GameScreen extends Screen {
                         addPointsFor(bullet, pts);
                         this.coin += (pts / 10);
                         this.shipsDestroyed++;
-						this.enemyShipFormation.destroy(enemyShip);
-						AchievementManager.getInstance().onEnemyDefeated();
-						DropItem.ItemType droppedType = DropItem.getRandomItemType(0.3);
-						if (droppedType != null) {
-							final int ITEM_DROP_SPEED = 2;
 
-							DropItem newDropItem = ItemPool.getItem(
-									enemyShip.getPositionX() + enemyShip.getWidth() / 2,
-									enemyShip.getPositionY() + enemyShip.getHeight() / 2,
-									ITEM_DROP_SPEED,
-									droppedType
-							);
-							this.dropItems.add(newDropItem);
-							this.logger.info("An item (" + droppedType + ") dropped");
+                        String enemyType = enemyShip.getEnemyType();
+						                        this.enemyShipFormation.destroy(enemyShip);
+												AchievementManager.getInstance().onEnemyDefeated();
+						if (enemyType != null && this.currentLevel.getItemDrops() != null) {
+							List<engine.level.ItemDrop> potentialDrops = new ArrayList<>();
+							for (engine.level.ItemDrop itemDrop : this.currentLevel.getItemDrops()) {
+								if (enemyType.equals(itemDrop.getEnemyType())) {
+									potentialDrops.add(itemDrop);
+								}
+							}
+
+							List<engine.level.ItemDrop> successfulDrops = new ArrayList<>();
+							for (engine.level.ItemDrop itemDrop : potentialDrops) {
+								if (Math.random() < itemDrop.getDropChance()) {
+									successfulDrops.add(itemDrop);
+								}
+							}
+
+							if (!successfulDrops.isEmpty()) {
+								engine.level.ItemDrop selectedDrop = successfulDrops.get((int) (Math.random() * successfulDrops.size()));
+								DropItem.ItemType droppedType = DropItem.fromString(selectedDrop.getItemId());
+								if (droppedType != null) {
+									final int ITEM_DROP_SPEED = 2;
+
+									DropItem newDropItem = ItemPool.getItem(
+											enemyShip.getPositionX() + enemyShip.getWidth() / 2,
+											enemyShip.getPositionY() + enemyShip.getHeight() / 2,
+											ITEM_DROP_SPEED,
+											droppedType
+									);
+									this.dropItems.add(newDropItem);
+									this.logger.info("An item (" + droppedType + ") dropped");
+								}
+							}
 						}
 
 						if (!bullet.penetration()) {
