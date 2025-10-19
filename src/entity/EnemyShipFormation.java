@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import screen.Screen;
+import screen.GameScreen;
 import engine.Cooldown;
 import engine.Core;
 import engine.DrawManager;
@@ -103,8 +104,6 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
     private static final int SLOWED_X_SPEED = 4;
     /** Duration of slowdown effect (in movement cycles) */
     private static final int SLOWDOWN_DURATION = 18;
-    /** Height of the items separation line (above items). */
-    private static final int ITEMS_SEPARATION_LINE_HEIGHT = 400;
 
     /** Directions the formation can move. */
     private enum Direction {
@@ -284,7 +283,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
             updateSlowdown();
 
 			boolean isAtBottom = positionY
-					+ this.height > ITEMS_SEPARATION_LINE_HEIGHT;
+					+ this.height > GameScreen.getItemsSeparationLineHeight();
 			boolean isAtRightSide = positionX
 					+ this.width >= screen.getWidth() - SIDE_MARGIN;
 			boolean isAtLeftSide = positionX <= SIDE_MARGIN;
