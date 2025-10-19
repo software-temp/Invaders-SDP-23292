@@ -4,14 +4,16 @@
     "formationWidth": 8,
     "formationHeight": 5,
     "baseSpeed": 400,
-    "shootingFrecuency": 1500
+    "shootingFrecuency": 1500,
+    "bossId" : "omegaBoss"
   },
   {
     "level": 2,
     "formationWidth": 9,
     "formationHeight": 5,
     "baseSpeed": 350,
-    "shootingFrecuency": 1200
+    "shootingFrecuency": 1200,
+    "bossId" : "finalBoss"
   },
   {
     "level": 3,
