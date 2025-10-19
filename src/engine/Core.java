@@ -98,6 +98,8 @@ public final class Core {
                 case 1:
                     // Main menu.
                     currentScreen = new TitleScreen(width, height, FPS);
+					SoundManager.stopAll();
+					SoundManager.playLoop("sfx/menu_music.wav");
                     LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
                             + " title screen at " + FPS + " fps.");
                     returnCode = frame.setScreen(currentScreen);
@@ -143,6 +145,7 @@ public final class Core {
                         LOGGER.info("Closing game screen.");
                         gameState = ((GameScreen) currentScreen).getGameState();
                         if (gameState.getLivesRemaining() > 0) {
+							SoundManager.stopAll();
 							SoundManager.play("sfx/levelup.wav");
 
 							LOGGER.info("Opening shop screen with "
@@ -191,6 +194,7 @@ public final class Core {
                     break;
                 case 4:
                     // Shop opened manually from main menu
+
                     currentScreen = new ShopScreen(gameState, width, height, FPS, false);
                     LOGGER.info("Starting shop screen (menu) with " + gameState.getCoin() + " coins.");
                     returnCode = frame.setScreen(currentScreen);

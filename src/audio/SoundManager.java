@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SoundManager {
     private static final Map<String, Clip> CACHE = new ConcurrentHashMap<>();
     private static volatile boolean muted = false;  // global state of sound
+    private static volatile String currentLooping = null;
 
     public static void play(String resourcePath) {
         if (muted) return;  // no sound played
@@ -45,6 +46,7 @@ public class SoundManager {
             c.setFramePosition(0);
             c.loop(Clip.LOOP_CONTINUOUSLY);
             c.start();
+            currentLooping = resourcePath;  // useful for unmute
         } catch (Exception e) {
             System.err.println("[Sound] Loop failed: " + resourcePath + " -> " + e.getMessage());
         }
@@ -59,17 +61,9 @@ public class SoundManager {
     public static void uncutAllSound() {
         muted = false;
         System.out.println("[Sound] Global sound unmuted");
-    }
-
-    public static void stop(String resourcePath) {
-        try {
-            Clip c = CACHE.get(resourcePath);
-            if (c != null && c.isRunning()) {
-                c.stop();
-                c.setFramePosition(0);
-            }
-        } catch (Exception e) {
-            System.err.println("[Sound] Stop failed: " + resourcePath + " -> " + e.getMessage());
+        System.out.println("[Sound] current looping : " + currentLooping);
+        if (currentLooping != null) {  // when unmute
+            playLoop(currentLooping);
         }
     }
 

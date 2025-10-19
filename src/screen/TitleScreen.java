@@ -15,6 +15,7 @@ import entity.SoundButton;
 
 import audio.SoundManager;
 
+
 /**
  * Implements the title screen.
  * 
@@ -109,7 +110,6 @@ public class TitleScreen extends Screen {
 	/** Sound button on/off object. */
 	private SoundButton soundButton;
 
-    private static final String MENU_MUSIC = "sfx/menu_music.wav";
     private boolean musicStarted = false;
 
 	/** Current rotation angle of the starfield. */
@@ -157,8 +157,6 @@ public class TitleScreen extends Screen {
 		// Initialize rotation angles
 		this.currentAngle = 0;
 		this.targetAngle = 0;
-
-        SoundManager.playLoop(MENU_MUSIC);
 	}
 
 
@@ -168,16 +166,8 @@ public class TitleScreen extends Screen {
 	 * @return Next screen code.
 	 */
 	public final int run() {
-        if (!musicStarted) {
-			SoundManager.uncutAllSound();
-            SoundManager.playLoop(MENU_MUSIC);
-            musicStarted = true;
-        }
-
 		super.run();
 
-        SoundManager.stopAll();
-		SoundManager.cutAllSound();
 		return this.returnCode;
 	}
 
@@ -272,11 +262,13 @@ public class TitleScreen extends Screen {
 			if (inputManager.isKeyDown(KeyEvent.VK_SPACE)){
 				if (this.returnCode != 5) {
 					this.isRunning = false;
-				} else if (this.returnCode == 5) {
+				} else {
 					this.soundButton.changeSoundState();
 
 					if (SoundButton.getIsSoundOn()) {
-						// TODO : Sound setting.
+						SoundManager.uncutAllSound();
+					} else {
+						SoundManager.cutAllSound();
 					}
 
 					if (this.soundButton.isTeamCreditScreenPossible()) {
