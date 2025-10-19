@@ -308,12 +308,23 @@ public class GameScreen extends Screen {
 					case boss_wave:
 						if (this.finalBoss == null && this.omegaBoss == null){
 							bossReveal();
+							this.enemyShipFormation.clear();
 						}
 						if(this.finalBoss != null){
 							finalbossManage();
 						}
 						else if (this.omegaBoss != null){
-							break;
+							this.omegaBoss.update();
+							if (this.omegaBoss.isDestroyed()) {
+								if ("omegaAndFinal".equals(this.currentlevel.getBossId())) {
+									this.omegaBoss = null;
+                                    this.finalBoss = new FinalBoss(this.width / 2 - 50, 50, this.width, this.height);
+                                    this.logger.info("Final Boss has spawned!");
+								} else {
+									this.levelFinished = true;
+									this.screenFinishedCooldown.reset();
+								}
+							}
 						}
 						else{
 							if(!this.levelFinished){
@@ -355,8 +366,15 @@ public class GameScreen extends Screen {
 				}
 			}
 		}
-		if (this.levelFinished && this.screenFinishedCooldown.checkFinished())
+		if (this.levelFinished && this.screenFinishedCooldown.checkFinished()) {
+			if (this.livesP1 > 0 || (this.shipP2 != null && this.livesP2 > 0)) { // Check for win condition
+				if (this.currentlevel.getCompletionBonus() != null) {
+					this.coin += this.currentlevel.getCompletionBonus().getCurrency();
+					this.logger.info("Awarded " + this.currentlevel.getCompletionBonus().getCurrency() + " coins for level completion.");
+				}
+			}
 			this.isRunning = false;
+		}
 	}
 
 
@@ -569,6 +587,7 @@ public class GameScreen extends Screen {
                         int pts = this.finalBoss.getPointValue();
                         addPointsFor(bullet, pts);
                         this.coin += (pts / 10);
+						this.finalBoss.destroy();
                         AchievementManager.getInstance().unlockAchievement("Boss Slayer");
 					}
 					recyclable.add(bullet);
@@ -737,26 +756,31 @@ public class GameScreen extends Screen {
 	}
 
 	private void bossReveal() {
-		//String bossName = this.currentlevel.getBossId();
-		/** for test */
-		String bossName = "finalBoss";
-		this.logger.info("Level complete.");
+		String bossName = this.currentlevel.getBossId();
+
 		if (bossName == null || bossName.isEmpty()) {
+			this.logger.info("No boss for this level. Proceeding to finish.");
 			return;
 		}
+
+		this.logger.info("Spawning boss: " + bossName);
 		switch (bossName) {
 			case "finalBoss":
 				this.finalBoss = new FinalBoss(this.width / 2 - 50, 50, this.width, this.height);
-				/** when the final boss is at the field */
-				this.logger.info(bossName + "Final Boss has spawned ! ");
+				this.logger.info("Final Boss has spawned!");
 				break;
-
 			case "omegaBoss":
 				this.omegaBoss = new OmegaBoss(Color.ORANGE);
 				omegaBoss.attach(this);
-				this.logger.info(bossName + "Omega Boss has spawned ! ");
+				this.logger.info("Omega Boss has spawned!");
+				break;
+			case "omegaAndFinal":
+				this.omegaBoss = new OmegaBoss(Color.ORANGE);
+				omegaBoss.attach(this);
+				this.logger.info("Omega Boss has spawned!");
 				break;
 			default:
+				this.logger.warning("Unknown bossId: " + bossName);
 				break;
 		}
 	}
@@ -764,6 +788,7 @@ public class GameScreen extends Screen {
 
 	public void finalbossManage(){
 		if (this.finalBoss != null && !this.finalBoss.isDestroyed()) {
+			this.finalBoss.update();
 			/** called the boss shoot logic */
 			if (this.finalBoss.getHealPoint() > this.finalBoss.getMaxHp() / 4) {
 				bossBullets.addAll(this.finalBoss.shoot1());

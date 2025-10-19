@@ -579,4 +579,12 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
             }
         }
     }
+
+	public final void clear() {
+		for (List<EnemyShip> column : this.enemyShips) {
+			column.clear();
+		}
+		this.enemyShips.clear();
+		this.shipCount = 0;
+	}
 }
