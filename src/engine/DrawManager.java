@@ -448,7 +448,7 @@ public final class DrawManager {
             } else {
                 backBufferGraphics.setColor(Color.WHITE);
             }
-            drawCenteredRegularString(screen, achievement.getName() + " - " + achievement.getDescription(), screen.getHeight() / 4 + fontRegularMetrics.getHeight() * (i + 1) * 2);
+            drawCenteredRegularString(screen, achievement.getName() + " - " + achievement.getDescription(), screen.getHeight() / 5 + fontRegularMetrics.getHeight() * (i + 1) * 2);
             i++;
         }
         backBufferGraphics.setColor(Color.GRAY);
