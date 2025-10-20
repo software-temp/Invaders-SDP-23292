@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.Collections;
 import java.awt.Color;
 
 import screen.Screen;
@@ -15,7 +16,6 @@ import engine.DrawManager;
 import engine.DrawManager.SpriteType;
 import engine.GameSettings;
 import engine.level.Level;
-
 /**
  * Groups enemy ships into a formation that moves together.
  * 
@@ -55,6 +55,8 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 	private Logger logger;
 	/** Screen to draw ships on. */
 	private Screen screen;
+    /** Level reference to read enemyTypes/counts. */
+    private Level levelObj;
 
 	/** List of enemy ships forming the formation. */
 	private List<List<EnemyShip>> enemyShips;
@@ -199,7 +201,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
         this.positionX = INIT_POS_X;
         this.positionY = INIT_POS_Y;
         this.shooters = new ArrayList<EnemyShip>();
-
+        this.levelObj = level;
         SpriteType spriteType;
 
         this.logger.info("Initializing " + nShipsWide + "x" + nShipsHigh
@@ -209,19 +211,30 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
         for (int i = 0; i < this.nShipsWide; i++)
             this.enemyShips.add(new ArrayList<EnemyShip>());
 
+        final int cells = this.nShipsWide * this.nShipsHigh;
+        List<SpriteType> spriteQueue = buildLayeredQueueFromLevel(level, this.nShipsWide, this.nShipsHigh);
+        boolean useQueue = (spriteQueue != null && spriteQueue.size() == cells);
+        int qIndex = 0;
+
         for (List<EnemyShip> column : this.enemyShips) {
             for (int i = 0; i < this.nShipsHigh; i++) {
-                if (i / (float) this.nShipsHigh < PROPORTION_C)
-                    spriteType = SpriteType.EnemyShipC1;
-                else if (i / (float) this.nShipsHigh < PROPORTION_B + PROPORTION_C)
-                    spriteType = SpriteType.EnemyShipB1;
-                else
-                    spriteType = SpriteType.EnemyShipA1;
+                SpriteType chosen;
+                if (useQueue) {
+                    chosen = spriteQueue.get(qIndex++);
+                } else {
+                    // Fallback: legacy proportion-based selection
+                    if (i / (float) this.nShipsHigh < PROPORTION_C)
+                        chosen = SpriteType.EnemyShipC1;
+                    else if (i / (float) this.nShipsHigh < PROPORTION_B + PROPORTION_C)
+                        chosen = SpriteType.EnemyShipB1;
+                    else
+                        chosen = SpriteType.EnemyShipA1;
+                }
 
                 column.add(new EnemyShip(
                         (SEPARATION_DISTANCE * this.enemyShips.indexOf(column)) + positionX,
                         (SEPARATION_DISTANCE * i) + positionY,
-                        spriteType));
+                        chosen));
                 this.shipCount++;
             }
         }
@@ -238,7 +251,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 	/**
 	 * Associates the formation to a given screen.
-	 * 
+	 *
 	 * @param newScreen
 	 *            Screen to attach.
 	 */
@@ -423,7 +436,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 	/**
 	 * Shoots a bullet downwards.
-	 * 
+	 *
 	 * @param bullets
 	 *            Bullets set to add the bullet being shot.
 	 */
@@ -442,7 +455,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 	/**
 	 * Destroys a ship.
-	 * 
+	 *
 	 * @param destroyedShip
 	 *            Ship to be destroyed.
 	 */
@@ -483,7 +496,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 	/**
 	 * Gets the ship on a given column that will be in charge of shooting.
-	 * 
+	 *
 	 * @param column
 	 *            Column to search.
 	 * @return New shooter ship.
@@ -502,7 +515,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 
 	/**
 	 * Returns an iterator over the ships in the formation.
-	 * 
+	 *
 	 * @return Iterator over the enemy ships.
 	 */
 	@Override
@@ -588,6 +601,73 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 		this.enemyShips.clear();
 		this.shipCount = 0;
 	}
+
+   private List<SpriteType> buildLayeredQueueFromLevel(final Level level, final int width, final int height) {
+        final int cells = width * height;
+        List<SpriteType> rowMajor = new ArrayList<>(cells);
+
+        if (level == null || level.getEnemyTypes() == null || level.getEnemyTypes().isEmpty()) {
+            return new ArrayList<>(); // empty -> caller will fallback
+        }
+
+        int countA = 0, countB = 0, countC = 0;
+        for (engine.level.EnemyType t : level.getEnemyTypes()) {
+            String kind = (t.getType() == null) ? "enemya" : t.getType().trim().toLowerCase();
+            int cnt = Math.max(0, t.getCount());
+            switch (kind) {
+                case "enemya":
+                case "a":
+                    countA += cnt; break;
+                case "enemyb":
+                case "b":
+                    countB += cnt; break;
+                case "enemyc":
+                case "c":
+                    countC += cnt; break;
+                default:
+                    countA += cnt;
+            }
+        }
+
+        int total = countA + countB + countC;
+        if (total < cells) countA += (cells - total);
+
+
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                if (countC > 0) {
+                    rowMajor.add(SpriteType.EnemyShipC1);
+                    countC--;
+                } else if (countB > 0) {
+                    rowMajor.add(SpriteType.EnemyShipB1);
+                    countB--;
+                } else if (countA > 0) {
+                    rowMajor.add(SpriteType.EnemyShipA1);
+                    countA--;
+                } else {
+                    // Safety pad
+                    rowMajor.add(SpriteType.EnemyShipA1);
+                }
+            }
+        }
+
+        // Convert to column-major order because constructor consumes by column then row.
+        List<SpriteType> columnMajor = new ArrayList<>(cells);
+        for (int col = 0; col < width; col++) {
+            for (int row = 0; row < height; row++) {
+                columnMajor.add(rowMajor.get(row * width + col));
+            }
+        }
+
+        // Clamp/pad to exact cells size for safety.
+        if (columnMajor.size() > cells) {
+            return new ArrayList<>(columnMajor.subList(0, cells));
+        }
+        while (columnMajor.size() < cells) {
+            columnMajor.add(SpriteType.EnemyShipA1);
+        }
+        return columnMajor;
+    }
     public void applyEnemyColor(final Color color) {
         for (java.util.List<EnemyShip> column : this.enemyShips) {
             for (EnemyShip ship : column) {
