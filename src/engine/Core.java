@@ -144,7 +144,7 @@ public final class Core {
                         frame.setScreen(currentScreen);
                         LOGGER.info("Closing game screen.");
                         gameState = ((GameScreen) currentScreen).getGameState();
-                        if (gameState.getLivesRemaining() > 0) {
+                        if (gameState.getLivesRemaining() > 0 || gameState.getLivesRemainingP2() > 0) {
 							SoundManager.stopAll();
 							SoundManager.play("sfx/levelup.wav");
 
@@ -168,7 +168,7 @@ public final class Core {
                             );
                         }
                         // Loop while player still has lives and levels remaining
-                    } while (gameState.getLivesRemaining() > 0);
+                    } while (gameState.getLivesRemaining() > 0 || gameState.getLivesRemainingP2() > 0);
 
 					SoundManager.stopAll();
 					SoundManager.play("sfx/gameover.wav");

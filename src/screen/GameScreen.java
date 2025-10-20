@@ -299,45 +299,45 @@ public class GameScreen extends Screen {
 					}
 				}
 			}
-				switch (this.currentPhase) {
-					case wave:
-						if (!DropItem.isTimeFreezeActive()) {
-							this.enemyShipFormation.update();
-							this.enemyShipFormation.shoot(this.bullets);
-						}
-						if (this.enemyShipFormation.isEmpty()) {
-							this.currentPhase = StagePhase.boss_wave;
-						}
-						break;
-					case boss_wave:
-						if (this.finalBoss == null && this.omegaBoss == null){
-							bossReveal();
-							this.enemyShipFormation.clear();
-						}
-						if(this.finalBoss != null){
-							finalbossManage();
-						}
-						else if (this.omegaBoss != null){
-							this.omegaBoss.update();
-							if (this.omegaBoss.isDestroyed()) {
-								if ("omegaAndFinal".equals(this.currentlevel.getBossId())) {
-									this.omegaBoss = null;
-                                    this.finalBoss = new FinalBoss(this.width / 2 - 50, 50, this.width, this.height);
-                                    this.logger.info("Final Boss has spawned!");
-								} else {
-									this.levelFinished = true;
-									this.screenFinishedCooldown.reset();
-								}
-							}
-						}
-						else{
-							if(!this.levelFinished){
+			switch (this.currentPhase) {
+				case wave:
+					if (!DropItem.isTimeFreezeActive()) {
+						this.enemyShipFormation.update();
+						this.enemyShipFormation.shoot(this.bullets);
+					}
+					if (this.enemyShipFormation.isEmpty()) {
+						this.currentPhase = StagePhase.boss_wave;
+					}
+					break;
+				case boss_wave:
+					if (this.finalBoss == null && this.omegaBoss == null){
+						bossReveal();
+						this.enemyShipFormation.clear();
+					}
+					if(this.finalBoss != null){
+						finalbossManage();
+					}
+					else if (this.omegaBoss != null){
+						this.omegaBoss.update();
+						if (this.omegaBoss.isDestroyed()) {
+							if ("omegaAndFinal".equals(this.currentlevel.getBossId())) {
+								this.omegaBoss = null;
+                                this.finalBoss = new FinalBoss(this.width / 2 - 50, 50, this.width, this.height);
+                                this.logger.info("Final Boss has spawned!");
+							} else {
 								this.levelFinished = true;
 								this.screenFinishedCooldown.reset();
 							}
 						}
-						break;
-				}
+					}
+					else{
+						if(!this.levelFinished){
+							this.levelFinished = true;
+							this.screenFinishedCooldown.reset();
+						}
+					}
+					break;
+			}
 			this.ship.update();
 			if (this.shipP2 != null) {
 				this.shipP2.update();
@@ -357,7 +357,7 @@ public class GameScreen extends Screen {
 		cleanBullets();
 		draw();
 
-		if ((((this.livesP1 == 0) && (this.shipP2 == null || this.livesP2 == 0))) && !this.levelFinished) {
+		if (((this.livesP1 == 0) && (this.shipP2 == null || this.livesP2 == 0)) && !this.levelFinished) {
 			this.levelFinished = true;
 			this.screenFinishedCooldown.reset();
 			if (this.gameTimer.isRunning()) {
