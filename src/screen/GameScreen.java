@@ -186,6 +186,7 @@ public class GameScreen extends Screen {
 		this.bossBullets = new HashSet<>();
         enemyShipFormation = new EnemyShipFormation(this.currentLevel);
 		enemyShipFormation.attach(this);
+        this.enemyShipFormation.applyEnemyColorByLevel(this.currentLevel);
 		this.ship = new Ship(this.width / 2 - 100, ITEMS_SEPARATION_LINE_HEIGHT - 50);
 		    this.ship.setPlayerId(1);   //=== [ADD] Player 1 ===
 
@@ -367,12 +368,19 @@ public class GameScreen extends Screen {
 					AchievementManager.getInstance().unlockAchievement("Intermediate");
 				}
 			}
+
 		}
 		if (this.levelFinished && this.screenFinishedCooldown.checkFinished()) {
 			if (this.livesP1 > 0 || (this.shipP2 != null && this.livesP2 > 0)) { // Check for win condition
 				if (this.currentlevel.getCompletionBonus() != null) {
 					this.coin += this.currentlevel.getCompletionBonus().getCurrency();
 					this.logger.info("Awarded " + this.currentlevel.getCompletionBonus().getCurrency() + " coins for level completion.");
+				}
+
+				String achievement = this.currentlevel.getAchievementTrigger();
+				if (achievement != null && !achievement.isEmpty()) {
+					AchievementManager.getInstance().unlockAchievement(achievement);
+					this.logger.info("Unlocked achievement: " + achievement);
 				}
 			}
 			this.isRunning = false;
