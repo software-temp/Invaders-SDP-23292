@@ -186,6 +186,7 @@ public class GameScreen extends Screen {
 		this.bossBullets = new HashSet<>();
         enemyShipFormation = new EnemyShipFormation(this.currentLevel);
 		enemyShipFormation.attach(this);
+        this.enemyShipFormation.applyEnemyColorByLevel(this.currentLevel);
 		this.ship = new Ship(this.width / 2 - 100, ITEMS_SEPARATION_LINE_HEIGHT - 50);
 		    this.ship.setPlayerId(1);   //=== [ADD] Player 1 ===
 
