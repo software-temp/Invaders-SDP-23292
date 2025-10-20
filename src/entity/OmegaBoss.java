@@ -17,15 +17,15 @@ public class OmegaBoss extends MidBoss {
 	/** Height of Omega */
 	private static final int OMEGA_HEIGHT = 14;
 	/** Current Health of Omega */
-	private static final int OMEGA_HEALTH = 10;
+	private static final int OMEGA_HEALTH = 45;
 	/** Point of Omega when destroyed */
 	private static final int OMEGA_POINT_VALUE = 500;
 	/** Speed of x in pattern 1 */
 	private static final int PATTERN_1_X_SPEED = 1;
 	/** Speed of x in pattern 2 */
-	private static final int PATTERN_2_X_SPEED = 3;
+	private static final int PATTERN_2_X_SPEED = 4;
 	/** Speed of y in pattern 2 */
-	private static final int PATTERN_2_Y_SPEED = 1;
+	private static final int PATTERN_2_Y_SPEED = 3;
 	/** Color of pattern 2 */
 	private static final Color PATTERN_2_COLOR = Color.MAGENTA;
 	/** Current horizontal movement direction. true for right, false for left. */
