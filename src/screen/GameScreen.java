@@ -47,6 +47,10 @@ public class GameScreen extends Screen {
 	private static final int SEPARATION_LINE_HEIGHT = 45;
 	/** Height of the items separation line (above items). */
 	private static final int ITEMS_SEPARATION_LINE_HEIGHT = 400;
+    /** Returns the Y-coordinate of the bottom boundary for enemies (above items HUD) */
+    public static int getItemsSeparationLineHeight() {
+        return ITEMS_SEPARATION_LINE_HEIGHT;
+    }
 
     /** Current level data (direct from Level system). */
     private Level currentLevel;

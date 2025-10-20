@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import screen.Screen;
+import screen.GameScreen;
 import engine.Cooldown;
 import engine.Core;
 import engine.DrawManager;
@@ -282,7 +283,7 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
             updateSlowdown();
 
 			boolean isAtBottom = positionY
-					+ this.height > screen.getHeight() - BOTTOM_MARGIN;
+					+ this.height > GameScreen.getItemsSeparationLineHeight();
 			boolean isAtRightSide = positionX
 					+ this.width >= screen.getWidth() - SIDE_MARGIN;
 			boolean isAtLeftSide = positionX <= SIDE_MARGIN;
