@@ -143,7 +143,8 @@
         { "enemyType": "enemyC", "itemId": "Heal", "dropChance": 0.05 }
       ],
       "bossId": "omegaAndFinal",
-      "completionBonus": { "currency": 90 }
+      "completionBonus": { "currency": 90 },
+      "achievementTrigger": "Conqueror"
     }
   ]
 }
