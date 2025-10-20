@@ -65,7 +65,7 @@ public final class DrawManager {
 	public static enum SpriteType {
 		Ship, ShipDestroyed, Bullet, EnemyBullet, EnemyShipA1, EnemyShipA2,
 		EnemyShipB1, EnemyShipB2, EnemyShipC1, EnemyShipC2, EnemyShipSpecial,
-		FinalBoss1, FinalBoss2,FinalBossBullet,FinalBossDeath, Explosion, SoundOn, SoundOff, Item_MultiShot,
+		FinalBoss1, FinalBoss2,FinalBossBullet,FinalBossDeath,OmegaBoss1, OmegaBoss2,OmegaBossDeath, Explosion, SoundOn, SoundOff, Item_MultiShot,
 		Item_Atkspeed, Item_Penetrate, Item_Explode, Item_Slow, Item_Stop,
 		Item_Push, Item_Shield, Item_Heal
 	}
@@ -104,7 +104,9 @@ public final class DrawManager {
 			spriteMap.put(SpriteType.FinalBoss2, new boolean[50][40]);
 			spriteMap.put(SpriteType.FinalBossBullet,new boolean[3][5]);
 			spriteMap.put(SpriteType.FinalBossDeath, new boolean[50][40]);
-
+			spriteMap.put(SpriteType.OmegaBoss1, new boolean[32][14]);
+			spriteMap.put(SpriteType.OmegaBoss2, new boolean[32][14]);
+			spriteMap.put(SpriteType.OmegaBossDeath, new boolean[16][16]);
 			fileManager.loadSprite(spriteMap);
 			logger.info("Finished loading the sprites.");
 
