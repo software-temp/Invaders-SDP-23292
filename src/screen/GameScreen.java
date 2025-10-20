@@ -794,10 +794,6 @@ public class GameScreen extends Screen {
 				this.logger.info("Final Boss has spawned!");
 				break;
 			case "omegaBoss":
-				this.omegaBoss = new OmegaBoss(Color.ORANGE);
-				omegaBoss.attach(this);
-				this.logger.info("Omega Boss has spawned!");
-				break;
 			case "omegaAndFinal":
 				this.omegaBoss = new OmegaBoss(Color.ORANGE);
 				omegaBoss.attach(this);
