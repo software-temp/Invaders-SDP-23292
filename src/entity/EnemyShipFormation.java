@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.awt.Color;
 
 import screen.Screen;
 import engine.Cooldown;
@@ -587,4 +588,33 @@ public class EnemyShipFormation implements Iterable<EnemyShip> {
 		this.enemyShips.clear();
 		this.shipCount = 0;
 	}
+    public void applyEnemyColor(final Color color) {
+        for (java.util.List<EnemyShip> column : this.enemyShips) {
+            for (EnemyShip ship : column) {
+                if (ship != null && !ship.isDestroyed()) {
+                    ship.setColor(color);
+                }
+            }
+        }
+    }
+    public void applyEnemyColorByLevel(final Level level) {
+        if (level == null) return;
+        final int lv = level.getLevel();
+        applyEnemyColor(getColorForLevel(lv));
+    }
+    private Color getColorForLevel(final int levelNumber) {
+        switch (levelNumber) {
+            case 1: return new Color(0x3DDC84); // green
+            case 2: return new Color(0x00BCD4); // cyan
+            case 3: return new Color(0xFF4081); // pink
+            case 4: return new Color(0xFFC107); // amber
+            case 5: return new Color(0x9C27B0); // purple
+            case 6: return new Color(0xFF5722); // deep orange
+            case 7: return new Color(0x8BC34A); // light green
+            case 8: return new Color(0x03A9F4); // light blue
+            case 9: return new Color(0xE91E63); // magenta
+            case 10: return new Color(0x607D8B); // blue gray
+            default: return Color.WHITE;
+        }
+    }
 }
